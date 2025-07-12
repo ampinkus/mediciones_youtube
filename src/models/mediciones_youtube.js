@@ -32,9 +32,13 @@ const MedicionYouTube = sequelize.define('MedicionYouTube', {
         type: DataTypes.BIGINT,
         allowNull: false
     },
-    vistas_video: {
+    view_count: {
         type: DataTypes.BIGINT,
         allowNull: false
+    },
+    concurrent_viewers: {
+        type: DataTypes.BIGINT,
+        allowNull: true
     },
     likes_video: {
         type: DataTypes.BIGINT,

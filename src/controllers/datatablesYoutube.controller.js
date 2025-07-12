@@ -1,16 +1,16 @@
-import moment from 'moment'; // Asegurate de tener instalado moment
-import sequelize from '../database/database.js';
-import StreamYouTube from '../models/streams_youtube.js';
-import MedicionYouTube from '../models/mediciones_youtube.js';
-import { Op } from 'sequelize';
+import moment from "moment"; // Asegurate de tener instalado moment
+import sequelize from "../database/database.js";
+import StreamYouTube from "../models/streams_youtube.js";
+import MedicionYouTube from "../models/mediciones_youtube.js";
+import { Op } from "sequelize";
 
 // Mostrar formulario
 export const mostrarFormulario = async (req, res) => {
   const streams = await StreamYouTube.findAll({
-    order: [['nombre_stream', 'ASC']]
+    order: [["nombre_stream", "ASC"]],
   });
 
-  res.render('youtube/formularioYoutube', { streams });
+  res.render("youtube/formularioYoutube", { streams });
 };
 
 // Generar tabla
@@ -19,10 +19,14 @@ export const generarTabla = async (req, res) => {
 
   let condiciones = {};
 
-  const fechaInicioDate = fechaInicio ? moment(fechaInicio, 'DD/MM/YYYY').toDate() : null;
-  const fechaFinDate = fechaFin ? moment(fechaFin, 'DD/MM/YYYY').toDate() : null;
+  const fechaInicioDate = fechaInicio
+    ? moment(fechaInicio, "DD/MM/YYYY").toDate()
+    : null;
+  const fechaFinDate = fechaFin
+    ? moment(fechaFin, "DD/MM/YYYY").toDate()
+    : null;
 
-  if (streamId && streamId !== 'todos') {
+  if (streamId && streamId !== "todos") {
     condiciones.streamId = streamId;
   }
 
@@ -45,23 +49,27 @@ export const generarTabla = async (req, res) => {
   try {
     const mediciones = await MedicionYouTube.findAll({
       where: condiciones,
-      include: {
-        model: StreamYouTube,
-        attributes: ['nombre_stream']
-      },
-      order: [['fecha', 'ASC'], ['hora_medicion', 'ASC']]
+      include: [StreamYouTube],
+      order: [
+        ["fecha", "ASC"],
+        ["hora_medicion", "ASC"],
+      ],
     });
 
-    // ✅ Formatear fechas y horas para la vista
-    const medicionesFormateadas = mediciones.map(medicion => ({
-      ...medicion.toJSON(),
-      fecha_formateada: moment(medicion.fecha).format('DD/MM/YYYY'),
-      hora_formateada: moment(medicion.hora_medicion, 'HH:mm:ss').format('HH:mm')
+    // ✅ Formatear fechas y campos para la vista
+    const medicionesFormateadas = mediciones.map((medicion) => ({
+      nombre_stream: medicion.StreamYouTube?.nombre_stream || "Sin nombre",
+      fecha: moment(medicion.fecha).format("DD/MM/YYYY"),
+      hora: moment(medicion.hora_medicion, "HH:mm:ss").format("HH:mm"),
+      view_count: medicion.view_count,
+      concurrent_viewers: medicion.concurrent_viewers ?? "—",
+      likes_video: medicion.likes_video,
+      comentarios_video: medicion.comentarios_video,
     }));
 
-    res.render('youtube/tablaYoutube', { mediciones: medicionesFormateadas });
+    res.render("youtube/tablaYoutube", { mediciones: medicionesFormateadas });
   } catch (error) {
-    console.error('Error al generar la tabla:', error);
-    res.status(500).send('Error al generar la tabla.');
+    console.error("Error al generar la tabla:", error);
+    res.status(500).send("Error al generar la tabla.");
   }
 };

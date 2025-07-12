@@ -1,4 +1,3 @@
-// src/jobs/medicionYoutube.js
 import fetch from "node-fetch";
 import sequelize from "../database/database.js";
 import StreamYouTube from "../models/streams_youtube.js";
@@ -15,7 +14,7 @@ async function obtenerDatosYouTube(stream) {
     const channelID = stream.id_canal;
 
     const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${channelID}&key=${apiKey}`;
-    const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoID}&key=${apiKey}`;
+    const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,liveStreamingDetails&id=${videoID}&key=${apiKey}`;
 
     const [channelResponse, videoResponse] = await Promise.all([
       fetch(channelUrl).then((res) => res.json()),
@@ -24,9 +23,35 @@ async function obtenerDatosYouTube(stream) {
 
     const channel = channelResponse.items?.[0];
     const video = videoResponse.items?.[0];
-
     const now = new Date();
     const hora_medicion = now.toTimeString().split(" ")[0];
+
+    const viewCount = video?.statistics?.viewCount || 0;
+    const concurrentViewers =
+      video?.liveStreamingDetails?.concurrentViewers || null;
+
+    // ✅ Mostrar información de stream o no stream, separando fecha y hora
+    const lsd = video?.liveStreamingDetails;
+    if (lsd) {
+      console.log("🎥 Este video ES un stream en vivo o lo fue:");
+
+      const formatDateTime = (iso) => {
+        if (!iso) return "undefined";
+        const [fecha, hora] = iso.split("T");
+        return `📅 ${fecha} 🕒 ${hora.replace("Z", "")}`;
+      };
+
+      console.log("▶️ actualStartTime:", formatDateTime(lsd.actualStartTime));
+      console.log("⏹ actualEndTime:", formatDateTime(lsd.actualEndTime));
+      console.log(
+        "🕓 scheduledStartTime:",
+        formatDateTime(lsd.scheduledStartTime)
+      );
+      console.log("🕘 scheduledEndTime:", formatDateTime(lsd.scheduledEndTime));
+    } else {
+      console.log("❌ Este video NO es un stream en vivo.");
+    }
+
     await MedicionYouTube.create({
       streamId: stream.id,
       fecha: stream.ConfiguracionYouTube.fecha,
@@ -34,7 +59,8 @@ async function obtenerDatosYouTube(stream) {
       suscriptores_canal: channel?.statistics?.subscriberCount || 0,
       cantidad_videos_canal: channel?.statistics?.videoCount || 0,
       vistas_canal: channel?.statistics?.viewCount || 0,
-      vistas_video: video?.statistics?.viewCount || 0,
+      view_count: viewCount,
+      concurrent_viewers: concurrentViewers,
       likes_video: video?.statistics?.likeCount || 0,
       comentarios_video: video?.statistics?.commentCount || 0,
     });
@@ -47,24 +73,6 @@ async function obtenerDatosYouTube(stream) {
       `❌ Error al obtener datos para ${stream.nombre_stream}:`,
       error
     );
-  }
-}
-
-function extraerVideoID(url) {
-  const regex =
-    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)\S*|youtu\.be\/\S*)([a-zA-Z0-9_-]{11})/;
-  const match = url.match(regex);
-  return match && match[1] ? match[1] : url.trim();
-}
-
-async function iniciarMediciones() {
-  try {
-    await sequelize.authenticate();
-    console.log("✅ Conectado a la base de datos para iniciar mediciones.");
-
-    supervisor(); // Iniciar el supervisor
-  } catch (error) {
-    console.error("❌ Error al iniciar mediciones:", error);
   }
 }
 
@@ -192,6 +200,24 @@ async function medirStreamConTimeout(stream) {
   } catch (error) {
     console.error("❌ Error en medición dinámica:", error);
   }
+}
+
+async function iniciarMediciones() {
+  try {
+    await sequelize.authenticate();
+    console.log("✅ Conectado a la base de datos para iniciar mediciones.");
+    supervisor(); // Iniciar el supervisor
+  } catch (error) {
+    console.error("❌ Error al iniciar mediciones:", error);
+  }
+}
+
+// ✅ Esta función extrae el ID del video desde una URL de YouTube
+function extraerVideoID(url) {
+  const regex =
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match && match[1] ? match[1] : url.trim();
 }
 
 export default iniciarMediciones;
