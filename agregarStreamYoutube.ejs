@@ -1,0 +1,56 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/homeNav.ejs') %>
+
+<div class="container mt-4">
+  <h2>Agregar Nuevo Stream de YouTube</h2>
+
+  <% if (typeof error !== 'undefined') { %>
+    <div class="alert alert-danger mt-2" role="alert">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <form action="/youtube/agregar" method="POST" class="mt-4">
+    <div class="row mb-3">
+      <div class="col">
+        <label for="nombre_stream" class="form-label">Nombre</label>
+        <input type="text" name="nombre_stream" id="nombre_stream" class="form-control" required />
+      </div>
+      <div class="col">
+        <label for="url_stream" class="form-label">URL</label>
+        <input type="text" name="url_stream" id="url_stream" class="form-control" required />
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        <label for="fecha" class="form-label">Fecha Inicial de Medición</label>
+        <input type="date" name="fecha" id="fecha" class="form-control" required value="<%= fechaHoy %>" />
+      </div>
+      <div class="col">
+        <label for="fecha_final" class="form-label">Fecha Final de Medición</label>
+        <input type="date" name="fecha_final" id="fecha_final" class="form-control" required />
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        <label for="hora_comienzo_medicion" class="form-label">Hora de comienzo de medición</label>
+        <input type="time" name="hora_comienzo_medicion" id="hora_comienzo_medicion" class="form-control" required />
+      </div>
+      <div class="col">
+        <label for="hora_fin_medicion" class="form-label">Hora de fin de medición</label>
+        <input type="time" name="hora_fin_medicion" id="hora_fin_medicion" class="form-control" required />
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        <label for="intervalo_medicion" class="form-label">Intervalo de medición (minutos)</label>
+        <input type="number" name="intervalo_medicion" id="intervalo_medicion" class="form-control" required value="30" />
+      </div>
+      <div class="col"></div>
+    </div>
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a href="/youtube" class="btn btn-warning">Volver</a>
+  </form>
+</div>
+
+<%- include('../partials/foot.ejs') %>

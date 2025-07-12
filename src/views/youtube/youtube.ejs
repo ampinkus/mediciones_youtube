@@ -1,0 +1,103 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/homeNav.ejs') %>
+
+<div class="container-fluid pt-4 pb-2">
+  <div class="row">
+    <div class="col-10">
+      <h2>Streams de YouTube</h2>
+    </div>
+    <div class="col-2 d-flex justify-content-around mb-2">
+      <a href="/youtube/agregar" class="btn btn-primary align-self-center">Agregar Nuevo Stream</a>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <table id="youtube" class="table table-sm align-middle table-primary table-bordered table-striped table-light mt-3 mb-3" style="width: 100%">
+      <thead>
+        <tr class="bg-primary text-white">
+          <th class="text-center">Nombre</th>
+          <th class="text-center">URL</th>
+          <th class="text-center">ID Canal</th>
+          <th class="text-center">Fecha Inicial Medición</th>
+          <th class="text-center">Fecha Final Medición</th>
+          <th class="text-center">Hora Comienzo</th>
+          <th class="text-center">Hora Fin</th>
+          <th class="text-center">Intervalo Minutos</th>
+          <th class="text-center">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% streams.forEach(stream => { %>
+          <tr>
+            <td class="text-center"><%= stream.nombre_stream %></td>
+            <td class="text-center"><%= stream.url_stream %></td>
+            <td class="text-center"><%= stream.id_canal %></td>
+            <td class="text-center">
+              <%= stream.ConfiguracionYouTube?.fecha_formateada || 'Sin medición' %>
+            </td>
+            <td class="text-center">
+              <%= stream.ConfiguracionYouTube?.fecha_final_formateada || 'Sin medición' %>
+            </td>
+            <td class="text-center">
+              <%= stream.ConfiguracionYouTube?.hora_comienzo_medicion || 'Sin medición' %>
+            </td>
+            <td class="text-center">
+              <%= stream.ConfiguracionYouTube?.hora_fin_medicion || 'Sin medición' %>
+            </td>
+            <td class="text-center">
+              <%= stream.ConfiguracionYouTube?.intervalo_medicion || 'Sin medición' %>
+            </td>
+            <td>
+              <a href="/youtube/ver/<%= stream.id %>" class="btn btn-info btn-sm">Ver</a>
+              <a href="/youtube/editar/<%= stream.id %>" class="btn btn-warning btn-sm">Editar</a>
+
+              <!-- Botón de borrado con confirmación SweetAlert -->
+              <button type="button" class="btn btn-danger btn-sm" onclick="confirmarBorrado(<%= stream.id %>)">Borrar</button>
+
+              <!-- Botón de Iniciar/Detener -->
+              <form action="/youtube/toggle/<%= stream.id %>" method="POST" style="display: inline">
+                <% if (stream.ConfiguracionYouTube?.activo) { %>
+                  <button type="submit" class="btn btn-danger btn-sm">Detener</button>
+                <% } else { %>
+                  <button type="submit" class="btn btn-success btn-sm">Iniciar</button>
+                <% } %>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="/public/scriptStreamYoutube.js"></script>
+
+<%- include('../partials/foot.ejs') %>
+<script src="../../public/scriptYoutube.js"></script>
+
+<!-- CDN de SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Confirmación de borrado con SweetAlert2 -->
+<script>
+  function confirmarBorrado(streamId) {
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: 'Usted va a borrar este stream y su información asociada. Esta acción no puede deshacerse.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/youtube/borrar/${streamId}`;
+        document.body.appendChild(form);
+        form.submit();
+      }
+    });
+  }
+</script>

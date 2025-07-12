@@ -1,0 +1,47 @@
+<%- include('../partials/head.ejs') %> <%- include('../partials/homeNav.ejs') %>
+
+<div class="container mt-4">
+  <h2>Ver Detalle del Stream</h2>
+
+  <table class="table table-bordered mt-4">
+    <thead>
+      <tr>
+        <th class="text-center">Nombre</th>
+        <th class="text-center">URL</th>
+        <th class="text-center">ID Canal</th>
+        <th class="text-center">Fecha Inicial</th>
+        <th class="text-center">Fecha Final</th>
+        <th class="text-center">Hora Comienzo</th>
+        <th class="text-center">Hora Fin</th>
+        <th class="text-center">Intervalo minutos</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-center"><%= stream.nombre_stream %></td>
+        <td class="text-center"><%= stream.url_stream %></td>
+        <td class="text-center"><%= stream.id_canal %></td>
+        <td class="text-center">
+          <%= stream.ConfiguracionYouTube.fecha_formateada %>
+        </td>
+        <td class="text-center">
+          <%= stream.ConfiguracionYouTube.fecha_final_formateada %>
+        </td>
+
+        <td class="text-center">
+          <%= stream.ConfiguracionYouTube.hora_comienzo_medicion %>
+        </td>
+        <td class="text-center">
+          <%= stream.ConfiguracionYouTube.hora_fin_medicion %>
+        </td>
+        <td class="text-center">
+          <%= stream.ConfiguracionYouTube.intervalo_medicion %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <a href="/youtube" class="btn btn-secondary mt-3">Volver</a>
+</div>
+
+<%- include('../partials/foot.ejs') %>

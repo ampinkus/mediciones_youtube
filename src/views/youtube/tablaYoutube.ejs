@@ -1,0 +1,48 @@
+<!--  tablaYoutube.ejs -->
+
+<%- include('../partials/head.ejs') %> 
+<%- include('../partials/homeNav.ejs') %>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between mb-3">
+    <h2>Tabla de Mediciones - YouTube</h2>
+    <a href="/datatablesYouTube" class="btn btn-primary ms-2 d-flex align-items-center justify-content-center" style="height: 40px; min-width: 100px;">Volver</a>
+  </div>
+
+  <div class="row mt-4">
+    <table
+      id="tablaYoutube"
+      class="table table-sm align-middle table-primary table-bordered table-striped table-light mt-3 mb-3"
+      style="width: 100%"
+    >
+      <thead>
+        <tr class="bg-primary text-white text-center">
+          <th class="text-center">Nombre</th>
+          <th class="text-center">Fecha</th>
+          <th class="text-center">Hora Medición</th>
+          <th class="text-center">Vistas Video</th>
+          <th class="text-center">Likes</th>
+          <th class="text-center">Comentarios</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% mediciones.forEach(medicion => { %>
+        <tr class="text-center">
+          <td class="text-center"><%= medicion.StreamYouTube.nombre_stream %></td>
+          <td class="text-center"><%= medicion.fecha_formateada %></td>
+          <td class="text-center"><%= medicion.hora_formateada %></td>
+          <td class="text-center"><%= medicion.vistas_video %></td>
+          <td class="text-center"><%= medicion.likes_video %></td>
+          <td class="text-center"><%= medicion.comentarios_video %></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/foot.ejs') %>
+<!-- script de datatables -->
+<script src="../../public/scriptTablaYoutube.js"></script>
+
+

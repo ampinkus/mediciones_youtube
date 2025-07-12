@@ -1,0 +1,67 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/homeNav.ejs') %>
+
+<div class="container mt-4">
+  <h2>Formulario de Generación de Tabla</h2>
+
+  <form action="/datatablesYouTube/tabla" method="GET" class="row g-3 mt-3">
+
+    <div class="col-md-4">
+      <label for="streamId" class="form-label">Stream</label>
+      <select name="streamId" class="form-select" required>
+        <option value="todos" selected>Todos</option>
+        <% streams.forEach(stream => { %>
+          <option value="<%= stream.id %>"><%= stream.nombre_stream %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="col-md-2">
+      <label for="fechaInicio" class="form-label">Fecha Inicial</label>
+      <input type="text" name="fechaInicio" class="form-control datepicker" />
+    </div>
+
+    <div class="col-md-2">
+      <label for="fechaFin" class="form-label">Fecha Final</label>
+      <input type="text" name="fechaFin" class="form-control datepicker" />
+    </div>
+
+    <div class="col-md-2">
+      <label for="horaInicio" class="form-label">Hora Inicial</label>
+      <input type="text" name="horaInicio" class="form-control timepicker" />
+    </div>
+
+    <div class="col-md-2">
+      <label for="horaFin" class="form-label">Hora Final</label>
+      <input type="text" name="horaFin" class="form-control timepicker" />
+    </div>
+
+    <div class="col-md-12 mt-4">
+      <button type="submit" class="btn btn-success me-3">Generar</button>
+      <a href="/youtube" class="btn btn-primary">Volver</a>
+    </div>
+
+  </form>
+</div>
+
+<%- include('../partials/foot.ejs') %>
+
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+<script>
+  flatpickr(".datepicker", {
+    dateFormat: "d/m/Y",
+    locale: "es"
+  });
+
+  flatpickr(".timepicker", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+    locale: "es"
+  });
+</script>

@@ -1,0 +1,105 @@
+<!-- youtube.ejs -->
+<%- include('../partials/head.ejs') %>
+
+<div class="container mt-4">
+  <h2>YouTube Channel and Video Statistics</h2>
+
+  <div class="mb-3">
+    <label>Channel ID</label>
+    <input
+      type="text"
+      id="channelID"
+      class="form-control"
+      placeholder="Ej: UCJz5qRjguB9vpEvoNwrLo2A"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label>Video URL or ID</label>
+    <input
+      type="text"
+      id="videoID"
+      class="form-control"
+      placeholder="Pegá el enlace completo o solo el ID"
+    />
+  </div>
+
+  <button
+    class="btn btn-primary mb-4"
+    type="button"
+    onclick="channel(); video();"
+  >
+    Show Statistics
+  </button>
+
+  <p>
+    <strong>Estadísticas:</strong><br />
+    - Nombre del Canal: <span id="channelName"></span><br />
+    - Suscriptores del Canal: <span id="channelSubscribers"></span><br />
+    - Cantidad de Videos del Canal: <span id="channelVideos"></span><br />
+    - Visualizaciones del Canal: <span id="channelViews"></span><br />
+    - Visualizaciones del Video: <span id="videoViews"></span><br />
+    - Likes del Video: <span id="videoLikes"></span><br />
+    - Comentarios del Video: <span id="videoComments"></span><br />
+</p>
+
+</div>
+
+<script>
+  var apiKey = "AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0"; // Insert your YouTube Data API v3 Key here.
+
+  function channel() {
+    const channelID = document.querySelector("#channelID").value.trim();
+    const url = `https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${channelID}&key=${apiKey}`;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        const channel = data.items[0];
+        document.querySelector("#channelName").innerHTML =
+          channel.snippet.title;
+        document.querySelector("#channelSubscribers").innerHTML =
+          channel.statistics.subscriberCount;
+        document.querySelector("#channelVideos").innerHTML =
+          channel.statistics.videoCount;
+        document.querySelector("#channelViews").innerHTML =
+          channel.statistics.viewCount;
+      });
+  }
+
+  // ✅ Función para extraer automáticamente el ID desde cualquier enlace de YouTube
+  function extractVideoID(url) {
+    const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+
+    const match = url.match(regex);
+
+    if (match && match[1]) {
+        return match[1];
+    }
+
+    // Si el usuario ingresó solo el ID
+    return url.trim();
+}
+
+
+  function video() {
+    const rawVideoInput = document.querySelector("#videoID").value;
+    const videoID = extractVideoID(rawVideoInput);
+
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoID}&key=${apiKey}`;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        const video = data.items[0];
+        document.querySelector("#videoViews").innerHTML =
+          video.statistics.viewCount;
+        document.querySelector("#videoLikes").innerHTML =
+          video.statistics.likeCount;
+        document.querySelector("#videoComments").innerHTML =
+          video.statistics.commentCount;
+      });
+  }
+</script>
+
+<%- include('../partials/foot.ejs') %>

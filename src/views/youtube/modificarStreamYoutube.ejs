@@ -1,0 +1,178 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/homeNav.ejs') %>
+
+<div class="container mt-4">
+  <h2>Modificar Stream de YouTube</h2>
+
+  <% if (errorIdCanal) { %>
+    <div class="alert alert-warning" role="alert">
+      <%= errorIdCanal %>
+    </div>
+  <% } %>
+
+  <form action="/youtube/editar/<%= stream.id %>" method="POST" class="mt-4">
+    <div class="row mb-3">
+      <div class="col">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input
+          type="text"
+          name="nombre"
+          id="nombre"
+          class="form-control"
+          value="<%= stream.nombre_stream %>"
+          required
+        />
+      </div>
+      <div class="col">
+        <label for="url" class="form-label">URL</label>
+        <input
+          type="text"
+          name="url"
+          id="url"
+          class="form-control"
+          value="<%= stream.url_stream %>"
+          required
+        />
+      </div>
+      <div class="col">
+        <label for="id_canal" class="form-label">ID Canal</label>
+        <input
+          type="text"
+          name="id_canal"
+          id="id_canal"
+          class="form-control"
+          value="<%= stream.id_canal %>"
+          required
+          readonly
+        />
+      </div>
+    </div>
+
+    <h4 class="mt-4">Datos de configuración de la medición</h4>
+    <div class="row mb-3">
+      <div class="col">
+        <label for="fecha_inicial" class="form-label">Fecha Inicial</label>
+        <input
+          type="text"
+          name="fecha_inicial"
+          id="fecha_inicial"
+          class="form-control datepicker"
+          value="<%= stream.ConfiguracionYouTube?.fecha_formateada || '' %>"
+          required
+        />
+      </div>
+      <div class="col">
+        <label for="fecha_final" class="form-label">Fecha Final</label>
+        <input
+          type="text"
+          name="fecha_final"
+          id="fecha_final"
+          class="form-control datepicker"
+          value="<%= stream.ConfiguracionYouTube?.fecha_final_formateada || '' %>"
+          required
+        />
+      </div>
+      <div class="col">
+        <label for="hora_comienzo_medicion" class="form-label">Hora Comienzo</label>
+        <input
+          type="text"
+          name="hora_comienzo_medicion"
+          id="hora_comienzo_medicion"
+          class="form-control timepicker"
+          value="<%= stream.ConfiguracionYouTube?.hora_comienzo_medicion || '' %>"
+          required
+        />
+      </div>
+      <div class="col">
+        <label for="hora_fin_medicion" class="form-label">Hora Fin</label>
+        <input
+          type="text"
+          name="hora_fin_medicion"
+          id="hora_fin_medicion"
+          class="form-control timepicker"
+          value="<%= stream.ConfiguracionYouTube?.hora_fin_medicion || '' %>"
+          required
+        />
+      </div>
+      <div class="col">
+        <label for="intervalo_medicion" class="form-label">Intervalo (minutos)</label>
+        <input
+          type="number"
+          name="intervalo_medicion"
+          id="intervalo_medicion"
+          class="form-control"
+          value="<%= stream.ConfiguracionYouTube?.intervalo_medicion || 30 %>"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-success">Actualizar</button>
+      <a href="/youtube" class="btn btn-warning">Volver</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/foot.ejs') %>
+
+<!-- Flatpickr Date and Time Pickers -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+  flatpickr(".datepicker", {
+    dateFormat: "d/m/Y",
+    locale: "es"
+  });
+
+  flatpickr(".timepicker", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+    locale: "es"
+  });
+
+  function extraerVideoID(url) {
+    const regex =
+      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  }
+
+  async function obtenerIDCanal(videoID) {
+    const apiKey = "<%= process.env.YOUTUBE_API_KEY || 'AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0' %>";
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoID}&key=${apiKey}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.items && data.items.length > 0) {
+        return data.items[0].snippet.channelId;
+      }
+    } catch (error) {
+      console.error("Error al obtener ID del canal:", error);
+    }
+
+    return null;
+  }
+
+  document.getElementById("url").addEventListener("change", async function () {
+    const url = this.value;
+    const videoID = extraerVideoID(url);
+    if (videoID) {
+      const canalID = await obtenerIDCanal(videoID);
+      if (canalID) {
+        document.getElementById("id_canal").value = canalID;
+      } else {
+        alert("⚠️ No se pudo obtener el ID del canal. Ingréselo manualmente.");
+        document.getElementById("id_canal").removeAttribute("readonly");
+        document.getElementById("id_canal").value = "";
+      }
+    } else {
+      alert("⚠️ URL de video inválida.");
+      document.getElementById("id_canal").removeAttribute("readonly");
+      document.getElementById("id_canal").value = "";
+    }
+  });
+</script>

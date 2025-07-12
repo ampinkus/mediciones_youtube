@@ -1,0 +1,118 @@
+<%- include('../partials/head.ejs') %> 
+<%- include('../partials/homeNav.ejs') %>
+
+<div class="container mt-4">
+  <h2>Agregar Nuevo Stream de YouTube</h2>
+
+  <form action="/youtube/agregar" method="POST" class="mt-4">
+    <div class="row mb-3">
+      <div class="col">
+        <label for="nombre_stream" class="form-label">Nombre</label>
+        <input type="text" name="nombre_stream" id="nombre_stream" class="form-control" required />
+      </div>
+      <div class="col">
+        <label for="url_stream" class="form-label">URL</label>
+        <input type="text" name="url_stream" id="url_stream" class="form-control" required />
+      </div>
+      <div class="col">
+        <label for="id_canal" class="form-label">ID Canal</label>
+        <input type="text" name="id_canal" id="id_canal" class="form-control" required readonly />
+      </div>
+    </div>
+
+    <h4 class="mt-4">Datos de configuración de la medición</h4>
+
+    <div class="row mb-3">
+      <div class="col">
+        <label for="fecha" class="form-label">Fecha Inicial de Medición</label>
+        <input type="text" name="fecha" id="fecha" class="form-control datepicker" value="<%= fechaHoy %>" required />
+      </div>
+      <div class="col">
+        <label for="fecha_final" class="form-label">Fecha Final de Medición</label>
+        <input type="text" name="fecha_final" id="fecha_final" class="form-control datepicker" required />
+      </div>
+      <div class="col">
+        <label for="hora_comienzo_medicion" class="form-label">Hora de comienzo de medición</label>
+        <input type="text" name="hora_comienzo_medicion" id="hora_comienzo_medicion" class="form-control timepicker" required />
+      </div>
+      <div class="col">
+        <label for="hora_fin_medicion" class="form-label">Hora de fin de medición</label>
+        <input type="text" name="hora_fin_medicion" id="hora_fin_medicion" class="form-control timepicker" required />
+      </div>
+      <div class="col">
+        <label for="intervalo_medicion" class="form-label">Intervalo de medición (minutos)</label>
+        <input type="number" name="intervalo_medicion" id="intervalo_medicion" class="form-control" value="30" required />
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a href="/youtube" class="btn btn-warning">Volver</a>
+  </form>
+</div>
+
+<%- include('../partials/foot.ejs') %>
+
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+<script>
+  flatpickr(".datepicker", {
+    dateFormat: "d/m/Y",
+    locale: "es"
+  });
+
+  flatpickr(".timepicker", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+    locale: "es"
+  });
+
+  function extraerVideoID(url) {
+    const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  }
+
+  async function obtenerIDCanal(videoID) {
+    const apiKey = "<%= process.env.YOUTUBE_API_KEY || 'AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0' %>";
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoID}&key=${apiKey}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.items && data.items.length > 0) {
+        return data.items[0].snippet.channelId;
+      }
+    } catch (error) {
+      console.error("Error al obtener ID del canal:", error);
+    }
+
+    return null;
+  }
+
+  document.getElementById("url_stream").addEventListener("change", async function () {
+    const url = this.value;
+    const videoID = extraerVideoID(url);
+    const idCanalInput = document.getElementById("id_canal");
+
+    if (videoID) {
+      const canalID = await obtenerIDCanal(videoID);
+      if (canalID) {
+        idCanalInput.value = canalID;
+        idCanalInput.readOnly = true;
+      } else {
+        alert("⚠️ No se pudo obtener el ID del canal. Ingréselo manualmente.");
+        idCanalInput.readOnly = false;
+        idCanalInput.value = "";
+      }
+    } else {
+      alert("⚠️ URL de video inválida.");
+      idCanalInput.readOnly = false;
+      idCanalInput.value = "";
+    }
+  });
+</script>

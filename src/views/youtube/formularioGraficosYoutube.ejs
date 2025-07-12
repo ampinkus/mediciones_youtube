@@ -1,0 +1,58 @@
+<%- include('../partials/head.ejs') %>
+<%- include('../partials/homeNav.ejs') %>
+
+<div class="container mt-4" style="max-width: 1400px;">
+  <h2>Formulario de Generación de Gráficos</h2>
+  <form action="/graficosYouTube/generar" method="GET">
+    <div class="row mb-3">
+      <div class="col">
+        <label>Stream (selección múltiple con CTRL)</label>
+        <select name="streamId" class="form-select" multiple required size="10">
+          <% streams.forEach(stream => { %>
+            <option value="<%= stream.id %>"><%= stream.nombre_stream %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="col">
+        <label>Fecha Inicio</label>
+        <input type="text" name="fechaInicio" class="form-control datepicker" />
+      </div>
+      <div class="col">
+        <label>Fecha Fin</label>
+        <input type="text" name="fechaFin" class="form-control datepicker" />
+      </div>
+      <div class="col">
+        <label>Hora Inicial</label>
+        <input type="text" name="horaInicio" class="form-control timepicker" />
+      </div>
+      <div class="col">
+        <label>Hora Final</label>
+        <input type="text" name="horaFin" class="form-control timepicker" />
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-success me-2">Generar</button>
+    <a href="/" class="btn btn-primary">Volver</a>
+  </form>
+</div>
+
+<%- include('../partials/foot.ejs') %>
+
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+<script>
+  flatpickr(".datepicker", {
+    dateFormat: "d/m/Y",
+    locale: "es"
+  });
+
+  flatpickr(".timepicker", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+    locale: "es"
+  });
+</script>
