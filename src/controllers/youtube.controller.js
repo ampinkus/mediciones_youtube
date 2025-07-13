@@ -63,8 +63,7 @@ export const guardarStream = async (req, res) => {
       fecha_final,
       hora_comienzo_medicion,
       hora_fin_medicion,
-      intervalo_medicion,
-      usar_hora_stream,
+      intervalo_medicion
     } = req.body;
 
     const fechaInicioISO = moment(fecha, "DD/MM/YYYY", true).isValid()
@@ -95,7 +94,6 @@ export const guardarStream = async (req, res) => {
       hora_fin_medicion: hora_fin_medicion || null,
       intervalo_medicion,
       activo: true,
-      usar_hora_stream: usar_hora_stream === "true",
     });
 
     res.redirect("/youtube");
@@ -105,7 +103,6 @@ export const guardarStream = async (req, res) => {
   }
 };
 
-// Ver stream individual
 export const verStream = async (req, res) => {
   const { id } = req.params;
 
@@ -188,8 +185,7 @@ export const actualizarStream = async (req, res) => {
       fecha_final,
       hora_comienzo_medicion,
       hora_fin_medicion,
-      intervalo_medicion,
-      usar_hora_stream,
+      intervalo_medicion
     } = req.body;
 
     console.log("📥 Body recibido:", req.body);
@@ -213,16 +209,13 @@ export const actualizarStream = async (req, res) => {
       return res.status(400).send("Formato de fecha inválido");
     }
 
-    const usarHoraStream = usar_hora_stream === "true";
-
     await ConfiguracionYouTube.update(
       {
         fecha: fechaInicialDate,
         fecha_final: fechaFinalDate,
         hora_comienzo_medicion: hora_comienzo_medicion?.trim() || null,
         hora_fin_medicion: hora_fin_medicion?.trim() || null,
-        intervalo_medicion: intervalo_medicion ? parseInt(intervalo_medicion) : null,
-        usar_hora_stream: usarHoraStream,
+        intervalo_medicion: intervalo_medicion ? parseInt(intervalo_medicion) : null
       },
       { where: { streamId: id } }
     );

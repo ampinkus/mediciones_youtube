@@ -1,10 +1,11 @@
-<%- include('../partials/head.ejs') %> <%- include('../partials/homeNav.ejs') %>
+<%- include('../partials/head.ejs') %> 
+<%- include('../partials/homeNav.ejs') %>
 
 <div class="container mt-4">
   <h2>Modificar Stream de YouTube</h2>
 
   <% if (errorIdCanal) { %>
-  <div class="alert alert-warning" role="alert"><%= errorIdCanal %></div>
+    <div class="alert alert-warning" role="alert"><%= errorIdCanal %></div>
   <% } %>
 
   <form action="/youtube/editar/<%= stream.id %>" method="POST" class="mt-4">
@@ -68,23 +69,8 @@
           value="<%= stream.ConfiguracionYouTube?.fecha_final_formateada || '' %>"
         />
       </div>
-      <div class="col d-flex align-items-end">
-        <!-- Campo oculto para enviar false si el checkbox está desmarcado -->
-        <input type="hidden" name="usar_hora_stream" value="false" />
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="true"
-          id="usar_hora_stream" name="usar_hora_stream" <%=
-          stream.ConfiguracionYouTube?.usar_hora_stream ? "checked" : "" %> />
-          <label class="form-check-label" for="usar_hora_stream">
-            Usar hora stream
-          </label>
-        </div>
-      </div>
-
       <div class="col">
-        <label for="hora_comienzo_medicion" class="form-label"
-          >Hora Comienzo</label
-        >
+        <label for="hora_comienzo_medicion" class="form-label">Hora Comienzo</label>
         <input
           type="text"
           name="hora_comienzo_medicion"
@@ -104,9 +90,7 @@
         />
       </div>
       <div class="col">
-        <label for="intervalo_medicion" class="form-label"
-          >Intervalo (minutos)</label
-        >
+        <label for="intervalo_medicion" class="form-label">Intervalo (minutos)</label>
         <input
           type="number"
           name="intervalo_medicion"
@@ -128,10 +112,7 @@
 <%- include('../partials/foot.ejs') %>
 
 <!-- Flatpickr Date and Time Pickers -->
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
-/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
   flatpickr(".datepicker", {
@@ -190,17 +171,4 @@
       document.getElementById("id_canal").value = "";
     }
   });
-
-  const checkboxUsarHoraStream = document.getElementById("usar_hora_stream");
-  const horaInicioInput = document.getElementById("hora_comienzo_medicion");
-  const horaFinInput = document.getElementById("hora_fin_medicion");
-
-  function toggleHoraInputs() {
-    const disabled = checkboxUsarHoraStream.checked;
-    horaInicioInput.disabled = disabled;
-    horaFinInput.disabled = disabled;
-  }
-
-  checkboxUsarHoraStream.addEventListener("change", toggleHoraInputs);
-  toggleHoraInputs();
 </script>

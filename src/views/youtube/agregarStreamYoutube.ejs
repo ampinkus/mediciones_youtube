@@ -1,11 +1,12 @@
-<%- include('../partials/head.ejs') %> <%- include('../partials/homeNav.ejs') %>
+<%- include('../partials/head.ejs') %> 
+<%- include('../partials/homeNav.ejs') %>
+
 <div class="container mt-4">
   <h2>Agregar Nuevo Stream de YouTube</h2>
 
   <form action="/youtube/agregar" method="POST" class="mt-4">
-    <!-- Fila 1: Nombre, URL, ID Canal -->
     <div class="row mb-3">
-      <div class="col-md-4">
+      <div class="col">
         <label for="nombre_stream" class="form-label">Nombre</label>
         <input
           type="text"
@@ -15,7 +16,7 @@
           required
         />
       </div>
-      <div class="col-md-4">
+      <div class="col">
         <label for="url_stream" class="form-label">URL</label>
         <input
           type="text"
@@ -25,7 +26,7 @@
           required
         />
       </div>
-      <div class="col-md-4">
+      <div class="col">
         <label for="id_canal" class="form-label">ID Canal</label>
         <input
           type="text"
@@ -38,13 +39,10 @@
       </div>
     </div>
 
-    <!-- Título -->
     <h4 class="mt-4">Datos de configuración de la medición</h4>
-
-    <!-- Fila 2: Fecha inicio, Fecha fin, Checkbox -->
     <div class="row mb-3">
-      <div class="col-md-4">
-        <label for="fecha" class="form-label">Fecha Inicial de Medición</label>
+      <div class="col">
+        <label for="fecha" class="form-label">Fecha Inicial</label>
         <input
           type="text"
           name="fecha"
@@ -54,65 +52,35 @@
           required
         />
       </div>
-
-      <div class="col-md-4">
-        <label for="fecha_final" class="form-label"
-          >Fecha Final de Medición (opcional)</label
-        >
+      <div class="col">
+        <label for="fecha_final" class="form-label">Fecha Final</label>
         <input
           type="text"
           name="fecha_final"
           id="fecha_final"
           class="form-control datepicker"
-          placeholder="DD/MM/AAAA"
         />
       </div>
-
-      <div class="col-md-4 d-flex align-items-end">
-        <div class="form-check">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="usar_hora_stream"
-            name="usar_hora_stream"
-          />
-          <label class="form-check-label" for="usar_hora_stream">
-            Usar hora stream
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <!-- Fila 3: Hora inicio, Hora fin, Intervalo -->
-    <div class="row mb-3">
-      <div class="col-md-4">
-        <label for="hora_comienzo_medicion" class="form-label"
-          >Hora de comienzo de medición</label
-        >
+      <div class="col">
+        <label for="hora_comienzo_medicion" class="form-label">Hora Comienzo</label>
         <input
           type="text"
           name="hora_comienzo_medicion"
           id="hora_comienzo_medicion"
           class="form-control timepicker"
-          required
         />
       </div>
-      <div class="col-md-4">
-        <label for="hora_fin_medicion" class="form-label"
-          >Hora de fin de medición</label
-        >
+      <div class="col">
+        <label for="hora_fin_medicion" class="form-label">Hora Fin</label>
         <input
           type="text"
           name="hora_fin_medicion"
           id="hora_fin_medicion"
           class="form-control timepicker"
-          required
         />
       </div>
-      <div class="col-md-4">
-        <label for="intervalo_medicion" class="form-label"
-          >Intervalo de medición (minutos)</label
-        >
+      <div class="col">
+        <label for="intervalo_medicion" class="form-label">Intervalo (minutos)</label>
         <input
           type="number"
           name="intervalo_medicion"
@@ -124,21 +92,18 @@
       </div>
     </div>
 
-    <button type="submit" class="btn btn-success">Guardar</button>
-    <a href="/youtube" class="btn btn-warning">Volver</a>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Agregar</button>
+      <a href="/youtube" class="btn btn-warning">Volver</a>
+    </div>
   </form>
 </div>
 
 <%- include('../partials/foot.ejs') %>
 
-<!-- Flatpickr -->
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
-/>
+<!-- Flatpickr Date and Time Pickers -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-
 <script>
   flatpickr(".datepicker", {
     dateFormat: "d/m/Y",
@@ -178,45 +143,22 @@
     return null;
   }
 
-  document
-    .getElementById("url_stream")
-    .addEventListener("change", async function () {
-      const url = this.value;
-      const videoID = extraerVideoID(url);
-      const idCanalInput = document.getElementById("id_canal");
-
-      if (videoID) {
-        const canalID = await obtenerIDCanal(videoID);
-        if (canalID) {
-          idCanalInput.value = canalID;
-          idCanalInput.readOnly = true;
-        } else {
-          alert(
-            "⚠️ No se pudo obtener el ID del canal. Ingréselo manualmente."
-          );
-          idCanalInput.readOnly = false;
-          idCanalInput.value = "";
-        }
+  document.getElementById("url_stream").addEventListener("change", async function () {
+    const url = this.value;
+    const videoID = extraerVideoID(url);
+    if (videoID) {
+      const canalID = await obtenerIDCanal(videoID);
+      if (canalID) {
+        document.getElementById("id_canal").value = canalID;
       } else {
-        alert("⚠️ URL de video inválida.");
-        idCanalInput.readOnly = false;
-        idCanalInput.value = "";
+        alert("⚠️ No se pudo obtener el ID del canal. Ingréselo manualmente.");
+        document.getElementById("id_canal").removeAttribute("readonly");
+        document.getElementById("id_canal").value = "";
       }
-    });
-
-  const checkboxUsarHoraStream = document.getElementById("usar_hora_stream");
-  const horaInicioInput = document.getElementById("hora_comienzo_medicion");
-  const horaFinInput = document.getElementById("hora_fin_medicion");
-
-  function toggleHoraInputs() {
-    const disabled = checkboxUsarHoraStream.checked;
-    horaInicioInput.disabled = disabled;
-    horaFinInput.disabled = disabled;
-  }
-
-  // 🔄 Ejecutar cuando el checkbox cambia
-  checkboxUsarHoraStream.addEventListener("change", toggleHoraInputs);
-
-  // ⚙️ Ejecutar una vez al cargar por si ya está marcado
-  toggleHoraInputs();
+    } else {
+      alert("⚠️ URL de video inválida.");
+      document.getElementById("id_canal").removeAttribute("readonly");
+      document.getElementById("id_canal").value = "";
+    }
+  });
 </script>

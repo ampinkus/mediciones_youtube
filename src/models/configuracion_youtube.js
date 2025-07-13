@@ -40,11 +40,6 @@ const ConfiguracionYouTube = sequelize.define(
       allowNull: false,
       defaultValue: true,
     },
-    usar_hora_stream: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
   },
   {
     tableName: "configuracion_youtube",
