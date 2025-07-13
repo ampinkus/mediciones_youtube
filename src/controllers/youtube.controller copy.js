@@ -190,7 +190,6 @@ export const formularioEditar = async (req, res) => {
 };
 
 // Actualizar stream
-// Actualizar stream
 export const actualizarStream = async (req, res) => {
   try {
     const { id } = req.params;
@@ -246,7 +245,6 @@ export const actualizarStream = async (req, res) => {
     res.status(500).send("Error al actualizar el stream.");
   }
 };
-
 
 // Eliminar stream
 export const eliminarStream = async (req, res) => {

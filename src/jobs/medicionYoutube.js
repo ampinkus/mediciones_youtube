@@ -5,7 +5,6 @@ import ConfiguracionYouTube from "../models/configuracion_youtube.js";
 import MedicionYouTube from "../models/mediciones_youtube.js";
 
 const apiKey = "AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0";
-
 const medicionesActivas = new Map();
 
 async function obtenerDatosYouTube(stream) {
@@ -30,17 +29,14 @@ async function obtenerDatosYouTube(stream) {
     const concurrentViewers =
       video?.liveStreamingDetails?.concurrentViewers || null;
 
-    // ✅ Mostrar información de stream o no stream, separando fecha y hora
     const lsd = video?.liveStreamingDetails;
     if (lsd) {
       console.log("🎥 Este video ES un stream en vivo o lo fue:");
-
       const formatDateTime = (iso) => {
         if (!iso) return "undefined";
         const [fecha, hora] = iso.split("T");
         return `📅 ${fecha} 🕒 ${hora.replace("Z", "")}`;
       };
-
       console.log("▶️ actualStartTime:", formatDateTime(lsd.actualStartTime));
       console.log("⏹ actualEndTime:", formatDateTime(lsd.actualEndTime));
       console.log(
@@ -110,7 +106,6 @@ async function medirStreamConTimeout(stream) {
     });
 
     const config = streamActualizado.ConfiguracionYouTube;
-
     if (!config) {
       console.log(
         `⚠️ No hay configuración para ${streamActualizado.nombre_stream}.`
@@ -123,52 +118,93 @@ async function medirStreamConTimeout(stream) {
       hora_fin_medicion,
       intervalo_medicion,
       activo,
-      fecha, // fecha de inicio
-      fecha_final, // fecha de fin
+      fecha,
+      fecha_final,
     } = config;
+
+    const usarHoraStream = config.usar_hora_stream === true;
 
     const ahora = new Date();
     const hoy = ahora.toISOString().split("T")[0]; // yyyy-mm-dd
 
-    // ✅ Verificar si hoy está dentro del rango [fecha, fecha_final]
-    if (hoy < fecha || hoy > fecha_final) {
+    // ✅ Verificar si hoy está dentro del rango [fecha, fecha_final] (si existe)
+    if (hoy < fecha || (fecha_final && hoy > fecha_final)) {
       console.log(
-        `⏰ Medición no realizada para ${streamActualizado.nombre_stream}: fuera del rango de fechas (${fecha} a ${fecha_final}). Hoy es ${hoy}.`
+        `⏰ Medición no realizada para ${
+          streamActualizado.nombre_stream
+        }: fuera del rango de fechas (${fecha} a ${
+          fecha_final || "∞"
+        }). Hoy es ${hoy}.`
       );
-
       console.log(
         `🔄 Próxima medición en 120 segundos para ${streamActualizado.nombre_stream}`
       );
-
       return setTimeout(
         () => medirStreamConTimeout(streamActualizado),
         120 * 1000
       );
     }
 
-    const [inicioHoras, inicioMinutos, inicioSegundos] = hora_comienzo_medicion
-      .split(":")
-      .map(Number);
-    const [finHoras, finMinutos, finSegundos] = hora_fin_medicion
-      .split(":")
-      .map(Number);
+    let inicio, fin;
 
-    const inicio = new Date(
-      ahora.getFullYear(),
-      ahora.getMonth(),
-      ahora.getDate(),
-      inicioHoras,
-      inicioMinutos,
-      inicioSegundos
-    );
-    const fin = new Date(
-      ahora.getFullYear(),
-      ahora.getMonth(),
-      ahora.getDate(),
-      finHoras,
-      finMinutos,
-      finSegundos
-    );
+    if (!usarHoraStream) {
+      if (!hora_comienzo_medicion || !hora_fin_medicion) {
+        console.log(
+          `⚠️ Horarios manuales no definidos correctamente para ${streamActualizado.nombre_stream}. Se pospone.`
+        );
+        return setTimeout(
+          () => medirStreamConTimeout(streamActualizado),
+          120 * 1000
+        );
+      }
+
+      const [inicioHoras, inicioMinutos, inicioSegundos = 0] =
+        hora_comienzo_medicion.split(":").map(Number);
+      const [finHoras, finMinutos, finSegundos = 0] =
+        hora_fin_medicion.split(":").map(Number);
+
+      inicio = new Date(
+        ahora.getFullYear(),
+        ahora.getMonth(),
+        ahora.getDate(),
+        inicioHoras,
+        inicioMinutos,
+        inicioSegundos
+      );
+      fin = new Date(
+        ahora.getFullYear(),
+        ahora.getMonth(),
+        ahora.getDate(),
+        finHoras,
+        finMinutos,
+        finSegundos
+      );
+
+      console.log(`⏱️ Usando horario definido manualmente por el usuario`);
+    } else {
+      const videoID = extraerVideoID(streamActualizado.url_stream);
+      const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoID}&key=${apiKey}`;
+      const videoResponse = await fetch(videoUrl).then((res) => res.json());
+      const video = videoResponse.items?.[0];
+
+      const startTime = video?.liveStreamingDetails?.actualStartTime;
+      const endTime = video?.liveStreamingDetails?.actualEndTime;
+
+      if (!startTime || !endTime) {
+        console.log(
+          `❌ No se pudo obtener actualStartTime o actualEndTime para ${streamActualizado.nombre_stream}. Se pospone.`
+        );
+        return setTimeout(
+          () => medirStreamConTimeout(streamActualizado),
+          120 * 1000
+        );
+      }
+
+      inicio = new Date(startTime);
+      fin = new Date(endTime);
+
+      console.log(`⏱️ Usando horario obtenido desde YouTube (API)`);
+    }
 
     console.log(`⏰ Hora actual: ${ahora.toTimeString().split(" ")[0]}`);
     console.log(`⏱️ Inicio: ${inicio.toTimeString().split(" ")[0]}`);
@@ -206,13 +242,12 @@ async function iniciarMediciones() {
   try {
     await sequelize.authenticate();
     console.log("✅ Conectado a la base de datos para iniciar mediciones.");
-    supervisor(); // Iniciar el supervisor
+    supervisor();
   } catch (error) {
     console.error("❌ Error al iniciar mediciones:", error);
   }
 }
 
-// ✅ Esta función extrae el ID del video desde una URL de YouTube
 function extraerVideoID(url) {
   const regex =
     /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;

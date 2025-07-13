@@ -18,17 +18,17 @@ const ConfiguracionYouTube = sequelize.define(
       type: DataTypes.DATEONLY,
       allowNull: false,
     },
-    fecha_final: { // 🔹 Campo correctamente agregado
+    fecha_final: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
+      allowNull: true,
     },
     hora_comienzo_medicion: {
       type: DataTypes.TIME,
-      allowNull: false,
+      allowNull: true,
     },
     hora_fin_medicion: {
       type: DataTypes.TIME,
-      allowNull: false,
+      allowNull: true,
     },
     intervalo_medicion: {
       type: DataTypes.INTEGER,
@@ -39,6 +39,11 @@ const ConfiguracionYouTube = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
+    },
+    usar_hora_stream: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
   },
   {
