@@ -20,6 +20,8 @@
         <p class="card-text"><strong>Fecha Final:</strong> <%= stream.ConfiguracionYouTube.fecha_final_formateada || "—" %></p>
         <p class="card-text"><strong>Hora Comienzo:</strong> <%= stream.ConfiguracionYouTube.hora_comienzo_medicion || "—" %></p>
         <p class="card-text"><strong>Hora Fin:</strong> <%= stream.ConfiguracionYouTube.hora_fin_medicion || "—" %></p>
+        <p class="card-text"><strong>Hora Inicio Stream:</strong> <%= stream.ConfiguracionYouTube.actual_start_time_formateada || "—" %></p>
+        <p class="card-text"><strong>Hora Finalización Stream:</strong> <%= stream.ConfiguracionYouTube.actual_end_time_formateada || "—" %></p>
         <p class="card-text"><strong>Intervalo de Medición (minutos):</strong> <%= stream.ConfiguracionYouTube.intervalo_medicion %></p>
         <p class="card-text"><strong>Estado:</strong>
           <% if (stream.ConfiguracionYouTube.activo) { %>
@@ -34,7 +36,6 @@
 
   <div class="mt-4 d-flex gap-2">
     <a href="/youtube" class="btn btn-warning">Volver</a>
-    <a href="/youtube/editar/<%= stream.id %>" class="btn btn-primary">Modificar</a>
   </div>
 </div>
 
