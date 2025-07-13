@@ -21,4 +21,8 @@ router.post('/youtube/editar/:id', youtubeController.actualizarStream);
 // Borrar stream
 router.post('/youtube/borrar/:id', youtubeController.eliminarStream);
 
+// ✅ Ruta para iniciar/detener stream
+router.post('/youtube/toggle/:id', youtubeController.toggleStream);
+
+
 export default router;

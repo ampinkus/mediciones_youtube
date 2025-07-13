@@ -3,7 +3,6 @@ import StreamYouTube from "../models/streams_youtube.js";
 import ConfiguracionYouTube from "../models/configuracion_youtube.js";
 import moment from "moment";
 
-// Función para formatear fecha a dd/mm/yyyy
 function formatearFecha(fechaISO) {
   if (!fechaISO) return null;
   const fecha = new Date(fechaISO);
@@ -13,14 +12,12 @@ function formatearFecha(fechaISO) {
   return `${dia}/${mes}/${anio}`;
 }
 
-// Función para formatear hora a HH:mm
 function formatearHora(horaCompleta) {
   if (!horaCompleta) return "";
   const [hh, mm] = horaCompleta.split(":");
   return `${hh}:${mm}`;
 }
 
-// Mostrar todos los streams
 export const verStreams = async (req, res) => {
   try {
     const streams = await StreamYouTube.findAll({
@@ -33,9 +30,7 @@ export const verStreams = async (req, res) => {
       if (config) {
         config.fecha_formateada = formatearFecha(config.fecha);
         config.fecha_final_formateada = formatearFecha(config.fecha_final);
-        config.hora_comienzo_medicion = formatearHora(
-          config.hora_comienzo_medicion
-        );
+        config.hora_comienzo_medicion = formatearHora(config.hora_comienzo_medicion);
         config.hora_fin_medicion = formatearHora(config.hora_fin_medicion);
       }
     });
@@ -47,7 +42,6 @@ export const verStreams = async (req, res) => {
   }
 };
 
-// Mostrar formulario para agregar stream
 export const formularioAgregar = (req, res) => {
   const hoy = new Date();
   const dia = String(hoy.getDate()).padStart(2, "0");
@@ -58,7 +52,6 @@ export const formularioAgregar = (req, res) => {
   res.render("youtube/agregarStreamYoutube", { fechaHoy });
 };
 
-// Guardar nuevo stream
 export const guardarStream = async (req, res) => {
   try {
     const {
@@ -73,7 +66,6 @@ export const guardarStream = async (req, res) => {
       usar_hora_stream,
     } = req.body;
 
-    // ✅ Validar fechas y convertir a ISO
     const fechaInicioISO = moment(fecha, "DD/MM/YYYY", true).isValid()
       ? moment(fecha, "DD/MM/YYYY").format("YYYY-MM-DD")
       : null;
@@ -97,16 +89,14 @@ export const guardarStream = async (req, res) => {
     await ConfiguracionYouTube.create({
       streamId: nuevoStream.id,
       fecha: fechaInicioISO,
-      fecha_final: fechaFinalISO, // puede ser null
+      fecha_final: fechaFinalISO,
       hora_comienzo_medicion:
-        usar_hora_stream || !hora_comienzo_medicion
-          ? null
-          : hora_comienzo_medicion,
+        usar_hora_stream === "true" || !hora_comienzo_medicion ? null : hora_comienzo_medicion,
       hora_fin_medicion:
-        usar_hora_stream || !hora_fin_medicion ? null : hora_fin_medicion,
+        usar_hora_stream === "true" || !hora_fin_medicion ? null : hora_fin_medicion,
       intervalo_medicion,
       activo: true,
-      usar_hora_stream: usar_hora_stream ? true : false,
+      usar_hora_stream: usar_hora_stream === "true",
     });
 
     res.redirect("/youtube");
@@ -116,9 +106,26 @@ export const guardarStream = async (req, res) => {
   }
 };
 
+
 // Ver stream individual
 export const verStream = async (req, res) => {
   const { id } = req.params;
+
+  // 🔧 Asegurarse de tener las funciones auxiliares disponibles
+  function formatearFecha(fechaISO) {
+    if (!fechaISO) return null;
+    const fecha = new Date(fechaISO);
+    const dia = String(fecha.getUTCDate()).padStart(2, "0");
+    const mes = String(fecha.getUTCMonth() + 1).padStart(2, "0");
+    const anio = fecha.getUTCFullYear();
+    return `${dia}/${mes}/${anio}`;
+  }
+
+  function formatearHora(horaCompleta) {
+    if (!horaCompleta) return "";
+    const [hh, mm] = horaCompleta.split(":");
+    return `${hh}:${mm}`;
+  }
 
   try {
     const stream = await StreamYouTube.findByPk(id, {
@@ -129,6 +136,7 @@ export const verStream = async (req, res) => {
       return res.status(404).send("Stream no encontrado");
     }
 
+    // Formatear fechas y horas
     if (stream.ConfiguracionYouTube) {
       stream.ConfiguracionYouTube.fecha_formateada = formatearFecha(
         stream.ConfiguracionYouTube.fecha
@@ -144,6 +152,7 @@ export const verStream = async (req, res) => {
       );
     }
 
+    // 🔧 Asegurarse de que exista la vista verStreamYoutube.ejs
     res.render("youtube/verStreamYoutube", { stream });
   } catch (error) {
     console.error("Error al buscar el stream:", error);
@@ -151,7 +160,7 @@ export const verStream = async (req, res) => {
   }
 };
 
-// Formulario para editar
+
 export const formularioEditar = async (req, res) => {
   try {
     const { id } = req.params;
@@ -189,8 +198,7 @@ export const formularioEditar = async (req, res) => {
   }
 };
 
-// Actualizar stream
-// Actualizar stream
+
 export const actualizarStream = async (req, res) => {
   try {
     const { id } = req.params;
@@ -206,12 +214,13 @@ export const actualizarStream = async (req, res) => {
       usar_hora_stream,
     } = req.body;
 
+    console.log("📥 Body recibido:", req.body); // Debug: confirmar checkbox
+
     await StreamYouTube.update(
       { nombre_stream: nombre, url_stream: url, id_canal: id_canal },
       { where: { id } }
     );
 
-    // ✅ Validar y convertir fechas
     const fechaInicialDate = moment(fecha_inicial, "DD/MM/YYYY", true).isValid()
       ? moment(fecha_inicial, "DD/MM/YYYY").toDate()
       : null;
@@ -234,7 +243,7 @@ export const actualizarStream = async (req, res) => {
         fecha_final: fechaFinalDate,
         hora_comienzo_medicion: usarHoraStream ? null : (hora_comienzo_medicion?.trim() || null),
         hora_fin_medicion: usarHoraStream ? null : (hora_fin_medicion?.trim() || null),
-        intervalo_medicion,
+        intervalo_medicion: intervalo_medicion ? parseInt(intervalo_medicion) : null,
         usar_hora_stream: usarHoraStream,
       },
       { where: { streamId: id } }
@@ -247,8 +256,6 @@ export const actualizarStream = async (req, res) => {
   }
 };
 
-
-// Eliminar stream
 export const eliminarStream = async (req, res) => {
   try {
     const { id } = req.params;
@@ -263,7 +270,6 @@ export const eliminarStream = async (req, res) => {
   }
 };
 
-// Alternar el estado "activo"
 export const toggleStream = async (req, res) => {
   const { id } = req.params;
 

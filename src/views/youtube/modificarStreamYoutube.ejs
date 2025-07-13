@@ -70,11 +70,12 @@
       </div>
       <div class="col d-flex align-items-end">
         <!-- Campo oculto para enviar false si el checkbox está desmarcado -->
+        <!-- Campo oculto para enviar false si el checkbox está desmarcado -->
         <input type="hidden" name="usar_hora_stream" value="false" />
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="true" id="usar_hora_stream"
-          name="usar_hora_stream" <%=
-          stream.ConfiguracionYouTube?.usar_hora_stream ? 'checked' : '' %>>
+          <input class="form-check-input" type="checkbox" value="true"
+          id="usar_hora_stream" name="usar_hora_stream" <%=
+          stream.ConfiguracionYouTube?.usar_hora_stream ? "checked" : "" %> />
           <label class="form-check-label" for="usar_hora_stream">
             Usar hora stream
           </label>
