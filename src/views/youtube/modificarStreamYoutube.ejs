@@ -4,10 +4,6 @@
 <div class="container mt-4">
   <h2>Modificar Stream de YouTube</h2>
 
-  <% if (errorIdCanal) { %>
-    <div class="alert alert-warning" role="alert"><%= errorIdCanal %></div>
-  <% } %>
-
   <form action="/youtube/editar/<%= stream.id %>" method="POST" class="mt-4">
     <div class="row mb-3">
       <div class="col">
@@ -43,6 +39,9 @@
           required
           readonly
         />
+        <% if (errorIdCanal) { %>
+          <div class="text-danger mt-1"><%= errorIdCanal %></div>
+        <% } %>
       </div>
     </div>
 
@@ -55,7 +54,7 @@
           name="fecha_inicial"
           id="fecha_inicial"
           class="form-control datepicker"
-          value="<%= stream.ConfiguracionYouTube?.fecha_formateada || '' %>"
+          value="<%= stream.ConfiguracionYouTube.fecha_formateada %>"
           required
         />
       </div>
@@ -66,7 +65,7 @@
           name="fecha_final"
           id="fecha_final"
           class="form-control datepicker"
-          value="<%= stream.ConfiguracionYouTube?.fecha_final_formateada || '' %>"
+          value="<%= stream.ConfiguracionYouTube.fecha_final_formateada || '' %>"
         />
       </div>
       <div class="col">
@@ -76,7 +75,7 @@
           name="hora_comienzo_medicion"
           id="hora_comienzo_medicion"
           class="form-control timepicker"
-          value="<%= stream.ConfiguracionYouTube?.hora_comienzo_medicion || '' %>"
+          value="<%= stream.ConfiguracionYouTube.hora_comienzo_medicion || '' %>"
         />
       </div>
       <div class="col">
@@ -86,7 +85,7 @@
           name="hora_fin_medicion"
           id="hora_fin_medicion"
           class="form-control timepicker"
-          value="<%= stream.ConfiguracionYouTube?.hora_fin_medicion || '' %>"
+          value="<%= stream.ConfiguracionYouTube.hora_fin_medicion || '' %>"
         />
       </div>
       <div class="col">
@@ -96,15 +95,15 @@
           name="intervalo_medicion"
           id="intervalo_medicion"
           class="form-control"
-          value="<%= stream.ConfiguracionYouTube?.intervalo_medicion || 30 %>"
+          value="<%= stream.ConfiguracionYouTube.intervalo_medicion %>"
           required
         />
       </div>
     </div>
 
     <div class="d-flex gap-2">
-      <button type="submit" class="btn btn-success">Actualizar</button>
-      <a href="/youtube" class="btn btn-warning">Volver</a>
+      <button type="submit" class="btn btn-success">Guardar Cambios</button>
+      <a href="/youtube" class="btn btn-warning">Cancelar</a>
     </div>
   </form>
 </div>

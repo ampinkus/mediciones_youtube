@@ -20,8 +20,10 @@
           <th class="text-center">ID Canal</th>
           <th class="text-center">Fecha Inicial Medición</th>
           <th class="text-center">Fecha Final Medición</th>
-          <th class="text-center">Hora Comienzo</th>
-          <th class="text-center">Hora Fin</th>
+          <th class="text-center">Hora Comienzo Medición</th>
+          <th class="text-center">Hora Fin Medición</th>
+          <th class="text-center">Hora Inicio Stream</th>
+          <th class="text-center">Hora Finalización Stream</th>
           <th class="text-center">Intervalo Minutos</th>
           <th class="text-center">Acción</th>
         </tr>
@@ -45,16 +47,18 @@
               <%= stream.ConfiguracionYouTube?.hora_fin_medicion || 'Sin medición' %>
             </td>
             <td class="text-center">
+              <%= stream.ConfiguracionYouTube?.actual_start_time_formateada || 'No disponible' %>
+            </td>
+            <td class="text-center">
+              <%= stream.ConfiguracionYouTube?.actual_end_time_formateada || 'No disponible' %>
+            </td>
+            <td class="text-center">
               <%= stream.ConfiguracionYouTube?.intervalo_medicion || 'Sin medición' %>
             </td>
-            <td>
+            <td class="text-center">
               <a href="/youtube/ver/<%= stream.id %>" class="btn btn-info btn-sm">Ver</a>
               <a href="/youtube/editar/<%= stream.id %>" class="btn btn-warning btn-sm">Editar</a>
-
-              <!-- Botón de borrado con confirmación SweetAlert -->
               <button type="button" class="btn btn-danger btn-sm" onclick="confirmarBorrado(<%= stream.id %>)">Borrar</button>
-
-              <!-- Botón de Iniciar/Detener -->
               <form action="/youtube/toggle/<%= stream.id %>" method="POST" style="display: inline">
                 <% if (stream.ConfiguracionYouTube?.activo) { %>
                   <button type="submit" class="btn btn-danger btn-sm">Detener</button>
@@ -71,14 +75,10 @@
 </div>
 
 <script src="/public/scriptStreamYoutube.js"></script>
-
 <%- include('../partials/foot.ejs') %>
 <script src="../../public/scriptYoutube.js"></script>
-
-<!-- CDN de SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- Confirmación de borrado con SweetAlert2 -->
 <script>
   function confirmarBorrado(streamId) {
     Swal.fire({

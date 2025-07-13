@@ -1,3 +1,4 @@
+// Medicion Youtube Job
 import fetch from "node-fetch";
 import sequelize from "../database/database.js";
 import StreamYouTube from "../models/streams_youtube.js";
@@ -22,30 +23,19 @@ async function obtenerDatosYouTube(stream) {
 
     const channel = channelResponse.items?.[0];
     const video = videoResponse.items?.[0];
+    const lsd = video?.liveStreamingDetails;
     const now = new Date();
     const hora_medicion = now.toTimeString().split(" ")[0];
 
-    const viewCount = video?.statistics?.viewCount || 0;
-    const concurrentViewers =
-      video?.liveStreamingDetails?.concurrentViewers || null;
-
-    const lsd = video?.liveStreamingDetails;
-    if (lsd) {
-      console.log("🎥 Este video ES un stream en vivo o lo fue:");
-      const formatDateTime = (iso) => {
-        if (!iso) return "undefined";
-        const [fecha, hora] = iso.split("T");
-        return `📅 ${fecha} 🕒 ${hora.replace("Z", "")}`;
-      };
-      console.log("▶️ actualStartTime:", formatDateTime(lsd.actualStartTime));
-      console.log("⏹ actualEndTime:", formatDateTime(lsd.actualEndTime));
-      console.log(
-        "🕓 scheduledStartTime:",
-        formatDateTime(lsd.scheduledStartTime)
+    // 🟡 Actualizar actual_start_time y actual_end_time en configuracion_youtube
+    if (lsd && stream.ConfiguracionYouTube) {
+      await ConfiguracionYouTube.update(
+        {
+          actual_start_time: lsd.actualStartTime || null,
+          actual_end_time: lsd.actualEndTime || null,
+        },
+        { where: { streamId: stream.id } }
       );
-      console.log("🕘 scheduledEndTime:", formatDateTime(lsd.scheduledEndTime));
-    } else {
-      console.log("❌ Este video NO es un stream en vivo.");
     }
 
     await MedicionYouTube.create({
@@ -55,8 +45,8 @@ async function obtenerDatosYouTube(stream) {
       suscriptores_canal: channel?.statistics?.subscriberCount || 0,
       cantidad_videos_canal: channel?.statistics?.videoCount || 0,
       vistas_canal: channel?.statistics?.viewCount || 0,
-      view_count: viewCount,
-      concurrent_viewers: concurrentViewers,
+      view_count: video?.statistics?.viewCount || 0,
+      concurrent_viewers: lsd?.concurrentViewers || null,
       likes_video: video?.statistics?.likeCount || 0,
       comentarios_video: video?.statistics?.commentCount || 0,
     });
@@ -160,8 +150,9 @@ async function medirStreamConTimeout(stream) {
 
       const [inicioHoras, inicioMinutos, inicioSegundos = 0] =
         hora_comienzo_medicion.split(":").map(Number);
-      const [finHoras, finMinutos, finSegundos = 0] =
-        hora_fin_medicion.split(":").map(Number);
+      const [finHoras, finMinutos, finSegundos = 0] = hora_fin_medicion
+        .split(":")
+        .map(Number);
 
       inicio = new Date(
         ahora.getFullYear(),

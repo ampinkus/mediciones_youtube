@@ -1,47 +1,41 @@
-<%- include('../partials/head.ejs') %> <%- include('../partials/homeNav.ejs') %>
+<%- include('../partials/head.ejs') %> 
+<%- include('../partials/homeNav.ejs') %>
 
 <div class="container mt-4">
-  <h2>Ver Detalle del Stream</h2>
+  <h2>Detalles del Stream de YouTube</h2>
 
-  <table class="table table-bordered mt-4">
-    <thead>
-      <tr>
-        <th class="text-center">Nombre</th>
-        <th class="text-center">URL</th>
-        <th class="text-center">ID Canal</th>
-        <th class="text-center">Fecha Inicial</th>
-        <th class="text-center">Fecha Final</th>
-        <th class="text-center">Hora Comienzo</th>
-        <th class="text-center">Hora Fin</th>
-        <th class="text-center">Intervalo minutos</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="text-center"><%= stream.nombre_stream %></td>
-        <td class="text-center"><%= stream.url_stream %></td>
-        <td class="text-center"><%= stream.id_canal %></td>
-        <td class="text-center">
-          <%= stream.ConfiguracionYouTube.fecha_formateada %>
-        </td>
-        <td class="text-center">
-          <%= stream.ConfiguracionYouTube.fecha_final_formateada %>
-        </td>
+  <div class="card mt-4">
+    <div class="card-body">
+      <h5 class="card-title"><strong>Nombre:</strong> <%= stream.nombre_stream %></h5>
+      <p class="card-text"><strong>URL:</strong> <a href="<%= stream.url_stream %>" target="_blank"><%= stream.url_stream %></a></p>
+      <p class="card-text"><strong>ID del Canal:</strong> <%= stream.id_canal %></p>
+    </div>
+  </div>
 
-        <td class="text-center">
-          <%= stream.ConfiguracionYouTube.hora_comienzo_medicion %>
-        </td>
-        <td class="text-center">
-          <%= stream.ConfiguracionYouTube.hora_fin_medicion %>
-        </td>
-        <td class="text-center">
-          <%= stream.ConfiguracionYouTube.intervalo_medicion %>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <% if (stream.ConfiguracionYouTube) { %>
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Configuración de la Medición</h5>
+        <p class="card-text"><strong>Fecha Inicial:</strong> <%= stream.ConfiguracionYouTube.fecha_formateada %></p>
+        <p class="card-text"><strong>Fecha Final:</strong> <%= stream.ConfiguracionYouTube.fecha_final_formateada || "—" %></p>
+        <p class="card-text"><strong>Hora Comienzo:</strong> <%= stream.ConfiguracionYouTube.hora_comienzo_medicion || "—" %></p>
+        <p class="card-text"><strong>Hora Fin:</strong> <%= stream.ConfiguracionYouTube.hora_fin_medicion || "—" %></p>
+        <p class="card-text"><strong>Intervalo de Medición (minutos):</strong> <%= stream.ConfiguracionYouTube.intervalo_medicion %></p>
+        <p class="card-text"><strong>Estado:</strong>
+          <% if (stream.ConfiguracionYouTube.activo) { %>
+            <span class="badge bg-success">Activo</span>
+          <% } else { %>
+            <span class="badge bg-secondary">Inactivo</span>
+          <% } %>
+        </p>
+      </div>
+    </div>
+  <% } %>
 
-  <a href="/youtube" class="btn btn-secondary mt-3">Volver</a>
+  <div class="mt-4 d-flex gap-2">
+    <a href="/youtube" class="btn btn-warning">Volver</a>
+    <a href="/youtube/editar/<%= stream.id %>" class="btn btn-primary">Modificar</a>
+  </div>
 </div>
 
 <%- include('../partials/foot.ejs') %>
