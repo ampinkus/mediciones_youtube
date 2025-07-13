@@ -67,7 +67,14 @@ export const formularioAgregar = (req, res) => {
   const anio = hoy.getFullYear();
   const fechaHoy = `${dia}/${mes}/${anio}`;
 
-  res.render("youtube/agregarStreamYoutube", { fechaHoy });
+  const horaComienzo = "";
+  const horaFin = "";
+
+  res.render("youtube/agregarStreamYoutube", {
+    fechaHoy,
+    horaComienzo,
+    horaFin,
+  });
 };
 
 export const guardarStream = async (req, res) => {
@@ -103,10 +110,11 @@ export const guardarStream = async (req, res) => {
       id_canal,
     });
 
-    // Obtener actualStartTime y actualEndTime desde la API
     const videoID = extraerVideoID(url_stream);
     let actualStart = null;
     let actualEnd = null;
+    let horaInicioMedicion = hora_comienzo_medicion?.trim() || null;
+    let horaFinMedicion = hora_fin_medicion?.trim() || null;
 
     if (videoID) {
       const apiKey =
@@ -118,10 +126,23 @@ export const guardarStream = async (req, res) => {
         const response = await fetch(videoUrl);
         const data = await response.json();
         const lsd = data?.items?.[0]?.liveStreamingDetails;
+
         actualStart = lsd?.actualStartTime || null;
         actualEnd = lsd?.actualEndTime || null;
+
+        // 🪵 LOG para ver qué devuelve la API
+        console.log("📡 Respuesta de YouTube API:");
+        console.log("🔹 actualStartTime:", actualStart);
+        console.log("🔹 actualEndTime:", actualEnd);
+
+        if (actualStart) horaInicioMedicion = actualStart.substring(11, 16);
+        if (actualEnd) horaFinMedicion = actualEnd.substring(11, 16);
+
+        if (actualStart?.length > 0)
+          actualStart = actualStart.substring(11, 19);
+        if (actualEnd?.length > 0) actualEnd = actualEnd.substring(11, 19);
       } catch (err) {
-        console.warn("⚠️ No se pudo obtener actualStartTime:", err);
+        console.warn("⚠️ No se pudo obtener actualStartTime/EndTime:", err);
       }
     }
 
@@ -129,10 +150,8 @@ export const guardarStream = async (req, res) => {
       streamId: nuevoStream.id,
       fecha: fechaInicioISO,
       fecha_final: fechaFinalISO,
-      hora_comienzo_medicion:
-        actualStart?.substring(11, 16) || hora_comienzo_medicion || null,
-      hora_fin_medicion:
-        actualEnd?.substring(11, 16) || hora_fin_medicion || null,
+      hora_comienzo_medicion: horaInicioMedicion,
+      hora_fin_medicion: horaFinMedicion,
       intervalo_medicion,
       activo: true,
       actual_start_time: actualStart,

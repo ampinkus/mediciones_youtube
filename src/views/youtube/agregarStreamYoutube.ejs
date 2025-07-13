@@ -68,6 +68,7 @@
           name="hora_comienzo_medicion"
           id="hora_comienzo_medicion"
           class="form-control timepicker"
+          value="<%= horaComienzo %>"
         />
       </div>
       <div class="col">
@@ -77,6 +78,7 @@
           name="hora_fin_medicion"
           id="hora_fin_medicion"
           class="form-control timepicker"
+          value="<%= horaFin %>"
         />
       </div>
       <div class="col">
@@ -125,40 +127,68 @@
     return match ? match[1] : null;
   }
 
-  async function obtenerIDCanal(videoID) {
+  async function obtenerInfoDesdeYoutube(videoID) {
     const apiKey =
       "<%= process.env.YOUTUBE_API_KEY || 'AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0' %>";
-    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoID}&key=${apiKey}`;
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails&id=${videoID}&key=${apiKey}`;
 
     try {
       const response = await fetch(url);
       const data = await response.json();
       if (data.items && data.items.length > 0) {
-        return data.items[0].snippet.channelId;
+        const item = data.items[0];
+        return {
+          idCanal: item.snippet.channelId,
+          actualStartTime: item.liveStreamingDetails?.actualStartTime || null,
+          actualEndTime: item.liveStreamingDetails?.actualEndTime || null,
+        };
       }
     } catch (error) {
-      console.error("Error al obtener ID del canal:", error);
+      console.error("Error al obtener datos desde la API de YouTube:", error);
     }
 
     return null;
   }
 
+  function extraerHoraDeISO(iso) {
+    if (!iso) return "";
+    const hora = new Date(iso).toTimeString().split(":");
+    return `${hora[0]}:${hora[1]}`; // HH:mm
+  }
+
   document.getElementById("url_stream").addEventListener("change", async function () {
     const url = this.value;
     const videoID = extraerVideoID(url);
-    if (videoID) {
-      const canalID = await obtenerIDCanal(videoID);
-      if (canalID) {
-        document.getElementById("id_canal").value = canalID;
+
+    if (!videoID) {
+      alert("⚠️ URL de video inválida.");
+      document.getElementById("id_canal").removeAttribute("readonly");
+      document.getElementById("id_canal").value = "";
+      return;
+    }
+
+    const info = await obtenerInfoDesdeYoutube(videoID);
+
+    if (info) {
+      // ID canal
+      if (info.idCanal) {
+        document.getElementById("id_canal").value = info.idCanal;
       } else {
         alert("⚠️ No se pudo obtener el ID del canal. Ingréselo manualmente.");
         document.getElementById("id_canal").removeAttribute("readonly");
         document.getElementById("id_canal").value = "";
       }
-    } else {
-      alert("⚠️ URL de video inválida.");
-      document.getElementById("id_canal").removeAttribute("readonly");
-      document.getElementById("id_canal").value = "";
+
+      // Horarios automáticos
+      if (info.actualStartTime) {
+        document.getElementById("hora_comienzo_medicion").value =
+          extraerHoraDeISO(info.actualStartTime);
+      }
+
+      if (info.actualEndTime) {
+        document.getElementById("hora_fin_medicion").value =
+          extraerHoraDeISO(info.actualEndTime);
+      }
     }
   });
 </script>

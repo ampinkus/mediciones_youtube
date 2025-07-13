@@ -30,6 +30,14 @@ const ConfiguracionYouTube = sequelize.define(
       type: DataTypes.TIME,
       allowNull: true,
     },
+    actual_start_time: {
+      type: DataTypes.TIME,
+      allowNull: true,
+    },
+    actual_end_time: {
+      type: DataTypes.TIME,
+      allowNull: true,
+    },
     intervalo_medicion: {
       type: DataTypes.INTEGER,
       allowNull: false,
