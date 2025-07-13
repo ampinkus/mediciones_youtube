@@ -1,4 +1,3 @@
-// src/controllers/youtube.controller.js
 import sequelize from "../database/database.js";
 import StreamYouTube from "../models/streams_youtube.js";
 import ConfiguracionYouTube from "../models/configuracion_youtube.js";
@@ -91,8 +90,10 @@ export const guardarStream = async (req, res) => {
       streamId: nuevoStream.id,
       fecha: fechaInicioISO,
       fecha_final: fechaFinalISO,
-      hora_comienzo_medicion: hora_comienzo_medicion || null,
-      hora_fin_medicion: hora_fin_medicion || null,
+      hora_comienzo_medicion:
+        usar_hora_stream === "true" || !hora_comienzo_medicion ? null : hora_comienzo_medicion,
+      hora_fin_medicion:
+        usar_hora_stream === "true" || !hora_fin_medicion ? null : hora_fin_medicion,
       intervalo_medicion,
       activo: true,
       usar_hora_stream: usar_hora_stream === "true",
@@ -105,9 +106,26 @@ export const guardarStream = async (req, res) => {
   }
 };
 
+
 // Ver stream individual
 export const verStream = async (req, res) => {
   const { id } = req.params;
+
+  // 🔧 Asegurarse de tener las funciones auxiliares disponibles
+  function formatearFecha(fechaISO) {
+    if (!fechaISO) return null;
+    const fecha = new Date(fechaISO);
+    const dia = String(fecha.getUTCDate()).padStart(2, "0");
+    const mes = String(fecha.getUTCMonth() + 1).padStart(2, "0");
+    const anio = fecha.getUTCFullYear();
+    return `${dia}/${mes}/${anio}`;
+  }
+
+  function formatearHora(horaCompleta) {
+    if (!horaCompleta) return "";
+    const [hh, mm] = horaCompleta.split(":");
+    return `${hh}:${mm}`;
+  }
 
   try {
     const stream = await StreamYouTube.findByPk(id, {
@@ -118,6 +136,7 @@ export const verStream = async (req, res) => {
       return res.status(404).send("Stream no encontrado");
     }
 
+    // Formatear fechas y horas
     if (stream.ConfiguracionYouTube) {
       stream.ConfiguracionYouTube.fecha_formateada = formatearFecha(
         stream.ConfiguracionYouTube.fecha
@@ -133,12 +152,14 @@ export const verStream = async (req, res) => {
       );
     }
 
+    // 🔧 Asegurarse de que exista la vista verStreamYoutube.ejs
     res.render("youtube/verStreamYoutube", { stream });
   } catch (error) {
     console.error("Error al buscar el stream:", error);
     res.status(500).send("Error interno del servidor");
   }
 };
+
 
 export const formularioEditar = async (req, res) => {
   try {
@@ -177,6 +198,7 @@ export const formularioEditar = async (req, res) => {
   }
 };
 
+
 export const actualizarStream = async (req, res) => {
   try {
     const { id } = req.params;
@@ -192,7 +214,7 @@ export const actualizarStream = async (req, res) => {
       usar_hora_stream,
     } = req.body;
 
-    console.log("📥 Body recibido:", req.body);
+    console.log("📥 Body recibido:", req.body); // Debug: confirmar checkbox
 
     await StreamYouTube.update(
       { nombre_stream: nombre, url_stream: url, id_canal: id_canal },
@@ -219,8 +241,8 @@ export const actualizarStream = async (req, res) => {
       {
         fecha: fechaInicialDate,
         fecha_final: fechaFinalDate,
-        hora_comienzo_medicion: hora_comienzo_medicion?.trim() || null,
-        hora_fin_medicion: hora_fin_medicion?.trim() || null,
+        hora_comienzo_medicion: usarHoraStream ? null : (hora_comienzo_medicion?.trim() || null),
+        hora_fin_medicion: usarHoraStream ? null : (hora_fin_medicion?.trim() || null),
         intervalo_medicion: intervalo_medicion ? parseInt(intervalo_medicion) : null,
         usar_hora_stream: usarHoraStream,
       },
