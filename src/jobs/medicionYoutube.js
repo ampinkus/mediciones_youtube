@@ -4,16 +4,11 @@ import sequelize from "../database/database.js";
 import StreamYouTube from "../models/streams_youtube.js";
 import ConfiguracionYouTube from "../models/configuracion_youtube.js";
 import MedicionYouTube from "../models/mediciones_youtube.js";
+import { extraerVideoID } from "../controllers/utils.controller.js";
 
-const apiKey = "AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0";
+
+import { apiKey } from "../config/youtube.config.js";
 const medicionesActivas = new Map();
-
-function extraerVideoID(url) {
-  const regex =
-    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  const match = url.match(regex);
-  return match && match[1] ? match[1] : url.trim();
-}
 
 function convertirAHoraArgentina(utcString) {
   if (!utcString) return null;
