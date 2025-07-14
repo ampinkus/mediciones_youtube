@@ -20,7 +20,6 @@ export const generarGrafico = async (req, res) => {
 
   let condiciones = {};
 
-  // ✅ CORREGIDO: usar formato "DD/MM/YYYY"
   const fechaInicioDate = fechaInicio ? moment(fechaInicio, 'DD/MM/YYYY').toDate() : null;
   const fechaFinDate = fechaFin ? moment(fechaFin, 'DD/MM/YYYY').toDate() : null;
 
@@ -50,7 +49,16 @@ export const generarGrafico = async (req, res) => {
     order: [['fecha', 'ASC'], ['hora_medicion', 'ASC']]
   });
 
-  // Preparar datos por stream
+  // console.log("🧪 Cantidad de mediciones:", mediciones.length);
+
+  mediciones.forEach((m, i) => {
+    /* console.log(`📌 Medición ${i + 1}:`);
+    console.log("   streamId:", m.streamId);
+    console.log("   fecha:", m.fecha);
+    console.log("   hora_medicion:", m.hora_medicion, "- tipo:", typeof m.hora_medicion);
+    console.log("   vistas_video:", m.vistas_video); */
+  });
+
   const datosPorStream = [];
   const streamsUnicos = [...new Set(mediciones.map(m => m.streamId))];
 
@@ -63,8 +71,12 @@ export const generarGrafico = async (req, res) => {
       return new Date(yyyy, mm1 - 1, dd, hh, mm);
     });
 
-    const data = datosFiltrados.map(m => m.vistas_video);
+    const data = datosFiltrados.map(m => m.view_count);
     const nombreStream = datosFiltrados.length > 0 ? datosFiltrados[0].StreamYouTube.nombre_stream : 'Sin datos';
+
+    // console.log(`🎯 Stream ID ${id} - ${nombreStream}`);
+    // console.log("   Labels:", labels.map(d => d.toString()));
+    // console.log("   Data:", data);
 
     datosPorStream.push({ labels, data, nombreStream, streamId: id });
   }
