@@ -4,6 +4,9 @@ import ConfiguracionYouTube from "../models/configuracion_youtube.js";
 import MedicionYouTube from "../models/mediciones_youtube.js";
 import moment from "moment";
 import fetch from "node-fetch";
+import { extraerVideoID } from "./utils.controller.js";
+import { apiKey } from "../config/youtube.config.js";
+
 
 function formatearFecha(fechaISO) {
   if (!fechaISO) return null;
@@ -18,13 +21,6 @@ function formatearHora(horaCompleta) {
   if (!horaCompleta) return "";
   const [hh, mm] = horaCompleta.split(":");
   return `${hh}:${mm}`;
-}
-
-function extraerVideoID(url) {
-  const regex =
-    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
 }
 
 export const verStreams = async (req, res) => {
@@ -118,11 +114,7 @@ export const guardarStream = async (req, res) => {
     let horaFinMedicion = hora_fin_medicion?.trim() || null;
 
     if (videoID) {
-      const apiKey =
-        process.env.YOUTUBE_API_KEY ||
-        "AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0";
       const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoID}&key=${apiKey}`;
-
       try {
         const response = await fetch(videoUrl);
         const data = await response.json();
@@ -338,5 +330,45 @@ export const toggleStream = async (req, res) => {
   } catch (error) {
     console.error("Error al alternar el estado del stream:", error);
     res.status(500).send("Error al cambiar el estado del stream.");
+  }
+};
+
+// 📥 Obtener channelTitle - title desde la API de YouTube
+export const obtenerNombreDesdeURL = async (req, res) => {
+  try {
+    const { url } = req.query;
+
+    if (!url) {
+      return res.status(400).json({ error: "Falta la URL" });
+    }
+
+    const videoId = extraerVideoID(url);
+    console.log("📺 Video ID extraído:", videoId);
+
+    if (!videoId || videoId.length !== 11) {
+      return res.status(400).json({ error: "URL inválida de YouTube" });
+    }
+
+    const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`;
+    console.log("🔗 URL final API:", apiUrl);
+
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+
+    console.log("📦 Respuesta cruda de la API:", data);
+
+    const video = data.items?.[0];
+    if (!video) {
+      return res.status(404).json({ error: "Video no encontrado en la API" });
+    }
+
+    const channelTitle = video.snippet.channelTitle;
+    const title = video.snippet.title;
+
+    const nombre = `${channelTitle} - ${title}`;
+    return res.json({ nombre });
+  } catch (error) {
+    console.error("❌ Error al obtener nombre del video:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 };

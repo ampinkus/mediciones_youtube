@@ -1,8 +1,9 @@
-// src/controllers/youtube.controller.js
 import sequelize from "../database/database.js";
 import StreamYouTube from "../models/streams_youtube.js";
 import ConfiguracionYouTube from "../models/configuracion_youtube.js";
+import MedicionYouTube from "../models/mediciones_youtube.js";
 import moment from "moment";
+import fetch from "node-fetch";
 
 function formatearFecha(fechaISO) {
   if (!fechaISO) return null;
@@ -19,6 +20,13 @@ function formatearHora(horaCompleta) {
   return `${hh}:${mm}`;
 }
 
+function extraerVideoID(url) {
+  const regex =
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
+
 export const verStreams = async (req, res) => {
   try {
     const streams = await StreamYouTube.findAll({
@@ -31,8 +39,18 @@ export const verStreams = async (req, res) => {
       if (config) {
         config.fecha_formateada = formatearFecha(config.fecha);
         config.fecha_final_formateada = formatearFecha(config.fecha_final);
-        config.hora_comienzo_medicion = formatearHora(config.hora_comienzo_medicion);
+        config.hora_comienzo_medicion = formatearHora(
+          config.hora_comienzo_medicion
+        );
         config.hora_fin_medicion = formatearHora(config.hora_fin_medicion);
+        config.actual_start_time_formateada = formatearHora(
+          config.actual_start_time
+        );
+        config.actual_end_time_formateada = formatearHora(
+          config.actual_end_time
+        );
+        config.actual_start_time = config.actual_start_time || "";
+        config.actual_end_time = config.actual_end_time || "";
       }
     });
 
@@ -50,7 +68,14 @@ export const formularioAgregar = (req, res) => {
   const anio = hoy.getFullYear();
   const fechaHoy = `${dia}/${mes}/${anio}`;
 
-  res.render("youtube/agregarStreamYoutube", { fechaHoy });
+  const horaComienzo = "";
+  const horaFin = "";
+
+  res.render("youtube/agregarStreamYoutube", {
+    fechaHoy,
+    horaComienzo,
+    horaFin,
+  });
 };
 
 export const guardarStream = async (req, res) => {
@@ -64,7 +89,6 @@ export const guardarStream = async (req, res) => {
       hora_comienzo_medicion,
       hora_fin_medicion,
       intervalo_medicion,
-      usar_hora_stream,
     } = req.body;
 
     const fechaInicioISO = moment(fecha, "DD/MM/YYYY", true).isValid()
@@ -87,15 +111,52 @@ export const guardarStream = async (req, res) => {
       id_canal,
     });
 
+    const videoID = extraerVideoID(url_stream);
+    let actualStart = null;
+    let actualEnd = null;
+    let horaInicioMedicion = hora_comienzo_medicion?.trim() || null;
+    let horaFinMedicion = hora_fin_medicion?.trim() || null;
+
+    if (videoID) {
+      const apiKey =
+        process.env.YOUTUBE_API_KEY ||
+        "AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0";
+      const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoID}&key=${apiKey}`;
+
+      try {
+        const response = await fetch(videoUrl);
+        const data = await response.json();
+        const lsd = data?.items?.[0]?.liveStreamingDetails;
+
+        actualStart = lsd?.actualStartTime || null;
+        actualEnd = lsd?.actualEndTime || null;
+
+        // 🪵 LOG para ver qué devuelve la API
+        console.log("📡 Respuesta de YouTube API:");
+        console.log("🔹 actualStartTime:", actualStart);
+        console.log("🔹 actualEndTime:", actualEnd);
+
+        if (actualStart) horaInicioMedicion = actualStart.substring(11, 16);
+        if (actualEnd) horaFinMedicion = actualEnd.substring(11, 16);
+
+        if (actualStart?.length > 0)
+          actualStart = actualStart.substring(11, 19);
+        if (actualEnd?.length > 0) actualEnd = actualEnd.substring(11, 19);
+      } catch (err) {
+        console.warn("⚠️ No se pudo obtener actualStartTime/EndTime:", err);
+      }
+    }
+
     await ConfiguracionYouTube.create({
       streamId: nuevoStream.id,
       fecha: fechaInicioISO,
       fecha_final: fechaFinalISO,
-      hora_comienzo_medicion: hora_comienzo_medicion || null,
-      hora_fin_medicion: hora_fin_medicion || null,
+      hora_comienzo_medicion: horaInicioMedicion,
+      hora_fin_medicion: horaFinMedicion,
       intervalo_medicion,
       activo: true,
-      usar_hora_stream: usar_hora_stream === "true",
+      actual_start_time: actualStart,
+      actual_end_time: actualEnd,
     });
 
     res.redirect("/youtube");
@@ -105,7 +166,6 @@ export const guardarStream = async (req, res) => {
   }
 };
 
-// Ver stream individual
 export const verStream = async (req, res) => {
   const { id } = req.params;
 
@@ -130,6 +190,13 @@ export const verStream = async (req, res) => {
       );
       stream.ConfiguracionYouTube.hora_fin_medicion = formatearHora(
         stream.ConfiguracionYouTube.hora_fin_medicion
+      );
+      // 🔧 Agregar estas dos líneas:
+      stream.ConfiguracionYouTube.actual_start_time_formateada = formatearHora(
+        stream.ConfiguracionYouTube.actual_start_time
+      );
+      stream.ConfiguracionYouTube.actual_end_time_formateada = formatearHora(
+        stream.ConfiguracionYouTube.actual_end_time
       );
     }
 
@@ -189,10 +256,7 @@ export const actualizarStream = async (req, res) => {
       hora_comienzo_medicion,
       hora_fin_medicion,
       intervalo_medicion,
-      usar_hora_stream,
     } = req.body;
-
-    console.log("📥 Body recibido:", req.body);
 
     await StreamYouTube.update(
       { nombre_stream: nombre, url_stream: url, id_canal: id_canal },
@@ -213,16 +277,15 @@ export const actualizarStream = async (req, res) => {
       return res.status(400).send("Formato de fecha inválido");
     }
 
-    const usarHoraStream = usar_hora_stream === "true";
-
     await ConfiguracionYouTube.update(
       {
         fecha: fechaInicialDate,
         fecha_final: fechaFinalDate,
         hora_comienzo_medicion: hora_comienzo_medicion?.trim() || null,
         hora_fin_medicion: hora_fin_medicion?.trim() || null,
-        intervalo_medicion: intervalo_medicion ? parseInt(intervalo_medicion) : null,
-        usar_hora_stream: usarHoraStream,
+        intervalo_medicion: intervalo_medicion
+          ? parseInt(intervalo_medicion)
+          : null,
       },
       { where: { streamId: id } }
     );
@@ -234,11 +297,18 @@ export const actualizarStream = async (req, res) => {
   }
 };
 
+// Elimina un stream y su configuración asociada
 export const eliminarStream = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Eliminar mediciones primero
+    await MedicionYouTube.destroy({ where: { streamId: id } });
+
+    // Luego configuración
     await ConfiguracionYouTube.destroy({ where: { streamId: id } });
+
+    // Finalmente el stream
     await StreamYouTube.destroy({ where: { id } });
 
     res.redirect("/youtube");
@@ -247,6 +317,7 @@ export const eliminarStream = async (req, res) => {
     res.status(500).send("Error al eliminar el stream.");
   }
 };
+
 
 export const toggleStream = async (req, res) => {
   const { id } = req.params;

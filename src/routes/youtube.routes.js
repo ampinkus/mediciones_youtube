@@ -24,5 +24,8 @@ router.post('/youtube/borrar/:id', youtubeController.eliminarStream);
 // ✅ Ruta para iniciar/detener stream
 router.post('/youtube/toggle/:id', youtubeController.toggleStream);
 
+// Obtener nombre del stream desde la URL (channelTitle - title)
+router.get('/youtube/obtener-nombre', youtubeController.obtenerNombreDesdeURL);
+
 
 export default router;
