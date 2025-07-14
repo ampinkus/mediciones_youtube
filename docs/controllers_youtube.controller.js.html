@@ -1,10 +1,47 @@
-import sequelize from "../database/database.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/youtube.controller.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/youtube.controller.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import sequelize from "../database/database.js";
 import StreamYouTube from "../models/streams_youtube.js";
 import ConfiguracionYouTube from "../models/configuracion_youtube.js";
 import MedicionYouTube from "../models/mediciones_youtube.js";
 import moment from "moment";
 import fetch from "node-fetch";
+import { extraerVideoID } from "./utils.controller.js";
+import { apiKey } from "../config/youtube.config.js";
 
+
+/**
+ * Convierte una fecha en formato ISO (YYYY-MM-DD o completo con hora) a formato DD/MM/YYYY.
+ *
+ * @param {string|null|undefined} fechaISO - Fecha en formato ISO (por ejemplo: "2025-07-13T10:00:00Z").
+ * @returns {string|null} Fecha formateada como "DD/MM/YYYY", o `null` si no se proporciona una fecha válida.
+ */
 function formatearFecha(fechaISO) {
   if (!fechaISO) return null;
   const fecha = new Date(fechaISO);
@@ -14,17 +51,11 @@ function formatearFecha(fechaISO) {
   return `${dia}/${mes}/${anio}`;
 }
 
+
 function formatearHora(horaCompleta) {
   if (!horaCompleta) return "";
   const [hh, mm] = horaCompleta.split(":");
   return `${hh}:${mm}`;
-}
-
-function extraerVideoID(url) {
-  const regex =
-    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
 }
 
 export const verStreams = async (req, res) => {
@@ -96,7 +127,7 @@ export const guardarStream = async (req, res) => {
       : null;
 
     const fechaFinalISO =
-      fecha_final && moment(fecha_final, "DD/MM/YYYY", true).isValid()
+      fecha_final &amp;&amp; moment(fecha_final, "DD/MM/YYYY", true).isValid()
         ? moment(fecha_final, "DD/MM/YYYY").format("YYYY-MM-DD")
         : null;
 
@@ -118,11 +149,7 @@ export const guardarStream = async (req, res) => {
     let horaFinMedicion = hora_fin_medicion?.trim() || null;
 
     if (videoID) {
-      const apiKey =
-        process.env.YOUTUBE_API_KEY ||
-        "AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0";
-      const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoID}&key=${apiKey}`;
-
+      const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&amp;id=${videoID}&amp;key=${apiKey}`;
       try {
         const response = await fetch(videoUrl);
         const data = await response.json();
@@ -268,7 +295,7 @@ export const actualizarStream = async (req, res) => {
       : null;
 
     const fechaFinalDate =
-      fecha_final && moment(fecha_final, "DD/MM/YYYY", true).isValid()
+      fecha_final &amp;&amp; moment(fecha_final, "DD/MM/YYYY", true).isValid()
         ? moment(fecha_final, "DD/MM/YYYY").toDate()
         : null;
 
@@ -340,3 +367,66 @@ export const toggleStream = async (req, res) => {
     res.status(500).send("Error al cambiar el estado del stream.");
   }
 };
+
+// 📥 Obtener channelTitle - title desde la API de YouTube
+export const obtenerNombreDesdeURL = async (req, res) => {
+  try {
+    const { url } = req.query;
+
+    if (!url) {
+      return res.status(400).json({ error: "Falta la URL" });
+    }
+
+    const videoId = extraerVideoID(url);
+    console.log("📺 Video ID extraído:", videoId);
+
+    if (!videoId || videoId.length !== 11) {
+      return res.status(400).json({ error: "URL inválida de YouTube" });
+    }
+
+    const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&amp;id=${videoId}&amp;key=${apiKey}`;
+    console.log("🔗 URL final API:", apiUrl);
+
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+
+    console.log("📦 Respuesta cruda de la API:", data);
+
+    const video = data.items?.[0];
+    if (!video) {
+      return res.status(404).json({ error: "Video no encontrado en la API" });
+    }
+
+    const channelTitle = video.snippet.channelTitle;
+    const title = video.snippet.title;
+
+    const nombre = `${channelTitle} - ${title}`;
+    return res.json({ nombre });
+  } catch (error) {
+    console.error("❌ Error al obtener nombre del video:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#canalEstaEnVivo">canalEstaEnVivo</a></li><li><a href="global.html#formatearFecha">formatearFecha</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Jul 14 2025 12:40:06 GMT-0300 (Argentina Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

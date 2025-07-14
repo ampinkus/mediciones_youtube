@@ -8,6 +8,12 @@ import { extraerVideoID } from "./utils.controller.js";
 import { apiKey } from "../config/youtube.config.js";
 
 
+/**
+ * Convierte una fecha en formato ISO (YYYY-MM-DD o completo con hora) a formato DD/MM/YYYY.
+ *
+ * @param {string|null|undefined} fechaISO - Fecha en formato ISO (por ejemplo: "2025-07-13T10:00:00Z").
+ * @returns {string|null} Fecha formateada como "DD/MM/YYYY", o `null` si no se proporciona una fecha válida.
+ */
 function formatearFecha(fechaISO) {
   if (!fechaISO) return null;
   const fecha = new Date(fechaISO);
@@ -16,6 +22,7 @@ function formatearFecha(fechaISO) {
   const anio = fecha.getUTCFullYear();
   return `${dia}/${mes}/${anio}`;
 }
+
 
 function formatearHora(horaCompleta) {
   if (!horaCompleta) return "";
