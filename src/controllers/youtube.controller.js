@@ -1,6 +1,7 @@
 import sequelize from "../database/database.js";
 import StreamYouTube from "../models/streams_youtube.js";
 import ConfiguracionYouTube from "../models/configuracion_youtube.js";
+import MedicionYouTube from "../models/mediciones_youtube.js";
 import moment from "moment";
 import fetch from "node-fetch";
 
@@ -296,11 +297,18 @@ export const actualizarStream = async (req, res) => {
   }
 };
 
+// Elimina un stream y su configuración asociada
 export const eliminarStream = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Eliminar mediciones primero
+    await MedicionYouTube.destroy({ where: { streamId: id } });
+
+    // Luego configuración
     await ConfiguracionYouTube.destroy({ where: { streamId: id } });
+
+    // Finalmente el stream
     await StreamYouTube.destroy({ where: { id } });
 
     res.redirect("/youtube");
@@ -309,6 +317,7 @@ export const eliminarStream = async (req, res) => {
     res.status(500).send("Error al eliminar el stream.");
   }
 };
+
 
 export const toggleStream = async (req, res) => {
   const { id } = req.params;
