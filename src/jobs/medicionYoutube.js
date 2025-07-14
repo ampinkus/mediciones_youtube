@@ -124,14 +124,14 @@ async function medirStreamConTimeout(stream) {
       include: ConfiguracionYouTube,
     });
 
-    const config = streamActualizado.ConfiguracionYouTube;
-
-    if (!config) {
+    if (!streamActualizado || !streamActualizado.ConfiguracionYouTube) {
       console.warn(
-        `⚠️ El stream "${streamActualizado.nombre_stream}" no tiene configuración asociada`
+        `⚠️ El stream con ID ${stream.id} no tiene configuración asociada o no existe`
       );
       return;
     }
+
+    const config = streamActualizado.ConfiguracionYouTube;
 
     const {
       hora_comienzo_medicion,
@@ -159,7 +159,7 @@ async function medirStreamConTimeout(stream) {
         `🔄 Próxima medición en 120 segundos para ${streamActualizado.nombre_stream}`
       );
       return setTimeout(
-        () => medirStreamConTimeout(streamActualizado),
+        () => medirStreamConTimeout({ id: streamActualizado.id }),
         120 * 1000
       );
     }
@@ -172,7 +172,7 @@ async function medirStreamConTimeout(stream) {
           `⚠️ Horarios manuales no definidos correctamente para ${streamActualizado.nombre_stream}. Se pospone.`
         );
         return setTimeout(
-          () => medirStreamConTimeout(streamActualizado),
+          () => medirStreamConTimeout({ id: streamActualizado.id }),
           120 * 1000
         );
       }
@@ -219,7 +219,7 @@ async function medirStreamConTimeout(stream) {
           `❌ No se pudo obtener actualStartTime o actualEndTime para ${streamActualizado.nombre_stream}. Se pospone.`
         );
         return setTimeout(
-          () => medirStreamConTimeout(streamActualizado),
+          () => medirStreamConTimeout({ id: streamActualizado.id }),
           120 * 1000
         );
       }
@@ -254,7 +254,7 @@ async function medirStreamConTimeout(stream) {
       }`
     );
     setTimeout(
-      () => medirStreamConTimeout(streamActualizado),
+      () => medirStreamConTimeout({ id: streamActualizado.id }),
       proximoIntervalo
     );
   } catch (error) {
