@@ -15,6 +15,14 @@ function extraerVideoID(url) {
   return match && match[1] ? match[1] : url.trim();
 }
 
+function convertirAHoraArgentina(utcString) {
+  if (!utcString) return null;
+  const dateUTC = new Date(utcString);
+  const dateArgentina = new Date(dateUTC.getTime() - 3 * 60 * 60 * 1000); // GMT-3
+  return dateArgentina.toTimeString().split(" ")[0];
+}
+
+
 async function obtenerDatosYouTube(stream) {
   try {
     const videoID = extraerVideoID(stream.url_stream);
@@ -46,8 +54,8 @@ async function obtenerDatosYouTube(stream) {
     console.log(`🔹 actualEndTime: ${actualEndTime}`);
 
     if (lsd && config) {
-      const horaStart = lsd.actualStartTime?.substring(11, 19) || null;
-      const horaEnd = lsd.actualEndTime?.substring(11, 19) || null;
+      const horaStart = convertirAHoraArgentina(lsd.actualStartTime);
+      const horaEnd = convertirAHoraArgentina(lsd.actualEndTime);
 
       await ConfiguracionYouTube.update(
         {
