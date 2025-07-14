@@ -10,7 +10,7 @@ let dataTableOptions = {
   colReorder: true,
   fixedHeader: true,
   // Agrupar las filas por un criterio, está deshabilitado en este caso
- /*  rowGroup: {
+  /*  rowGroup: {
     dataSrc: 1, // Cambia 1 por el índice de la columna por la cual deseas agrupar
     emptyDataGroup: "Sin Descripción",
     enable: groupingEnabled, // Activa o desactiva agrupación basada en la variable
@@ -30,7 +30,7 @@ let dataTableOptions = {
       title: "Tabla de Streamings de YouTube",
       className: "btn btn-success",
       exportOptions: {
-        columns: [0, 1, 2, 3, 4, 5,  6, 7, 8, 9],
+        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         rows: ":visible",
       },
     },
@@ -65,14 +65,17 @@ let dataTableOptions = {
     { targets: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], className: "dt-center" },
     { orderable: false, targets: [8] },
     { searchable: false, targets: [8] },
-    { width: "8%", targets: [3] },
-    { width: "8%", targets: [4] },
-    { width: "8%", targets: [5] },
-    { width: "8%", targets: [6] },
-    { width: "8%", targets: [7] },
-    { width: "8%", targets: [8] },
+    { width: "20%", targets: [0] },
+    { width: "10%", targets: [1] },
+    { width: "10%", targets: [2] },
+    { width: "5%", targets: [3] },
+    { width: "5%", targets: [4] },
+    { width: "5%", targets: [5] },
+    { width: "5%", targets: [6] },
+    { width: "5%", targets: [7] },
+    { width: "5%", targets: [8] },
     { width: "5%", targets: [9] },
-    { width: "15%", targets: [10] },
+    { width: "12%", targets: [10] },
   ],
   pageLength: 10,
   destroy: true,
@@ -336,6 +339,6 @@ $(document).ready(() => {
 });
 
 $(document).ready(() => {
-    dataTable = $("#youtube").DataTable(dataTableOptions);
-    dataTableIsInitialized = true;
+  dataTable = $("#youtube").DataTable(dataTableOptions);
+  dataTableIsInitialized = true;
 });
