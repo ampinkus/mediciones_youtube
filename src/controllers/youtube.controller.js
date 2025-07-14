@@ -190,6 +190,13 @@ export const verStream = async (req, res) => {
       stream.ConfiguracionYouTube.hora_fin_medicion = formatearHora(
         stream.ConfiguracionYouTube.hora_fin_medicion
       );
+      // 🔧 Agregar estas dos líneas:
+      stream.ConfiguracionYouTube.actual_start_time_formateada = formatearHora(
+        stream.ConfiguracionYouTube.actual_start_time
+      );
+      stream.ConfiguracionYouTube.actual_end_time_formateada = formatearHora(
+        stream.ConfiguracionYouTube.actual_end_time
+      );
     }
 
     res.render("youtube/verStreamYoutube", { stream });

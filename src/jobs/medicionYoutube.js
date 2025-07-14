@@ -34,25 +34,37 @@ async function obtenerDatosYouTube(stream) {
     const now = new Date();
     const hora_medicion = now.toTimeString().split(" ")[0];
 
-    // 🔄 Cargar configuración actualizada de la DB
     const config = await ConfiguracionYouTube.findOne({
       where: { streamId: stream.id },
     });
 
-    // ✅ Actualizar actual_start_time y actual_end_time si existe config
+    const actualStartTime = lsd?.actualStartTime || null;
+    const actualEndTime = lsd?.actualEndTime || null;
+
+    console.log("📡 Respuesta de YouTube API:");
+    console.log(`🔹 actualStartTime: ${actualStartTime}`);
+    console.log(`🔹 actualEndTime: ${actualEndTime}`);
+
     if (lsd && config) {
+      const horaStart = lsd.actualStartTime?.substring(11, 19) || null;
+      const horaEnd = lsd.actualEndTime?.substring(11, 19) || null;
+
       await ConfiguracionYouTube.update(
         {
-          actual_start_time: lsd.actualStartTime || null,
-          actual_end_time: lsd.actualEndTime || null,
+          actual_start_time: horaStart,
+          actual_end_time: horaEnd,
         },
         { where: { streamId: stream.id } }
+      );
+    } else {
+      console.warn(
+        `⚠️ No se encontró configuración para el stream ${stream.nombre_stream}, no se actualizan horas reales`
       );
     }
 
     await MedicionYouTube.create({
       streamId: stream.id,
-      fecha: config?.fecha || new Date(), // fallback para evitar error
+      fecha: config?.fecha || new Date(),
       hora_medicion,
       suscriptores_canal: channel?.statistics?.subscriberCount || 0,
       cantidad_videos_canal: channel?.statistics?.videoCount || 0,
@@ -81,7 +93,12 @@ async function supervisor() {
     });
 
     streams.forEach((stream) => {
-      if (!stream.ConfiguracionYouTube) return;
+      if (!stream.ConfiguracionYouTube) {
+        console.warn(
+          `⚠️ Stream ${stream.nombre_stream} no tiene configuración`
+        );
+        return;
+      }
 
       if (
         stream.ConfiguracionYouTube.activo &&
@@ -108,9 +125,10 @@ async function medirStreamConTimeout(stream) {
     });
 
     const config = streamActualizado.ConfiguracionYouTube;
+
     if (!config) {
-      console.log(
-        `⚠️ No hay configuración para ${streamActualizado.nombre_stream}.`
+      console.warn(
+        `⚠️ El stream "${streamActualizado.nombre_stream}" no tiene configuración asociada`
       );
       return;
     }
@@ -191,6 +209,10 @@ async function medirStreamConTimeout(stream) {
 
       const startTime = video?.liveStreamingDetails?.actualStartTime;
       const endTime = video?.liveStreamingDetails?.actualEndTime;
+
+      console.log("📡 Respuesta de YouTube API:");
+      console.log(`🔹 actualStartTime: ${startTime}`);
+      console.log(`🔹 actualEndTime: ${endTime}`);
 
       if (!startTime || !endTime) {
         console.log(
