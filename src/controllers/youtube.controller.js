@@ -1,3 +1,15 @@
+/**
+ * youtube.controller.js
+ *
+ * Controlador principal del módulo de YouTube.
+ * Gestiona:
+ * - Alta, modificación, visualización y eliminación de streams.
+ * - Consulta de datos desde la API de YouTube.
+ * - Generación automática de nombres de streams.
+ * - Activación/desactivación de streams.
+ * - Conversión de formatos de fecha y hora.
+ */
+
 import sequelize from "../database/database.js";
 import StreamYouTube from "../models/streams_youtube.js";
 import ConfiguracionYouTube from "../models/configuracion_youtube.js";
@@ -7,12 +19,10 @@ import fetch from "node-fetch";
 import { extraerVideoID } from "./utils.controller.js";
 import { apiKey } from "../config/youtube.config.js";
 
-
 /**
- * Convierte una fecha en formato ISO (YYYY-MM-DD o completo con hora) a formato DD/MM/YYYY.
- *
- * @param {string|null|undefined} fechaISO - Fecha en formato ISO (por ejemplo: "2025-07-13T10:00:00Z").
- * @returns {string|null} Fecha formateada como "DD/MM/YYYY", o `null` si no se proporciona una fecha válida.
+ * Convierte una fecha en formato ISO (YYYY-MM-DD o completo) a DD/MM/YYYY.
+ * @param {string|null|undefined} fechaISO
+ * @returns {string|null}
  */
 function formatearFecha(fechaISO) {
   if (!fechaISO) return null;
@@ -23,13 +33,21 @@ function formatearFecha(fechaISO) {
   return `${dia}/${mes}/${anio}`;
 }
 
-
+/**
+ * Formatea la hora quitando los segundos (HH:mm).
+ * @param {string|null|undefined} horaCompleta
+ * @returns {string}
+ */
 function formatearHora(horaCompleta) {
   if (!horaCompleta) return "";
   const [hh, mm] = horaCompleta.split(":");
   return `${hh}:${mm}`;
 }
 
+/**
+ * Muestra todos los streams con sus configuraciones asociadas.
+ * @route GET /youtube
+ */
 export const verStreams = async (req, res) => {
   try {
     const streams = await StreamYouTube.findAll({
@@ -42,16 +60,10 @@ export const verStreams = async (req, res) => {
       if (config) {
         config.fecha_formateada = formatearFecha(config.fecha);
         config.fecha_final_formateada = formatearFecha(config.fecha_final);
-        config.hora_comienzo_medicion = formatearHora(
-          config.hora_comienzo_medicion
-        );
+        config.hora_comienzo_medicion = formatearHora(config.hora_comienzo_medicion);
         config.hora_fin_medicion = formatearHora(config.hora_fin_medicion);
-        config.actual_start_time_formateada = formatearHora(
-          config.actual_start_time
-        );
-        config.actual_end_time_formateada = formatearHora(
-          config.actual_end_time
-        );
+        config.actual_start_time_formateada = formatearHora(config.actual_start_time);
+        config.actual_end_time_formateada = formatearHora(config.actual_end_time);
         config.actual_start_time = config.actual_start_time || "";
         config.actual_end_time = config.actual_end_time || "";
       }
@@ -64,6 +76,10 @@ export const verStreams = async (req, res) => {
   }
 };
 
+/**
+ * Muestra el formulario para agregar un nuevo stream.
+ * @route GET /youtube/agregar
+ */
 export const formularioAgregar = (req, res) => {
   const hoy = new Date();
   const dia = String(hoy.getDate()).padStart(2, "0");
@@ -71,16 +87,17 @@ export const formularioAgregar = (req, res) => {
   const anio = hoy.getFullYear();
   const fechaHoy = `${dia}/${mes}/${anio}`;
 
-  const horaComienzo = "";
-  const horaFin = "";
-
   res.render("youtube/agregarStreamYoutube", {
     fechaHoy,
-    horaComienzo,
-    horaFin,
+    horaComienzo: "",
+    horaFin: "",
   });
 };
 
+/**
+ * Guarda un nuevo stream junto con su configuración. Extrae horas desde la API si es posible.
+ * @route POST /youtube/guardar
+ */
 export const guardarStream = async (req, res) => {
   try {
     const {
@@ -98,10 +115,9 @@ export const guardarStream = async (req, res) => {
       ? moment(fecha, "DD/MM/YYYY").format("YYYY-MM-DD")
       : null;
 
-    const fechaFinalISO =
-      fecha_final && moment(fecha_final, "DD/MM/YYYY", true).isValid()
-        ? moment(fecha_final, "DD/MM/YYYY").format("YYYY-MM-DD")
-        : null;
+    const fechaFinalISO = fecha_final && moment(fecha_final, "DD/MM/YYYY", true).isValid()
+      ? moment(fecha_final, "DD/MM/YYYY").format("YYYY-MM-DD")
+      : null;
 
     if (!fechaInicioISO) {
       console.error("❌ Error: formato de fecha inicial inválido");
@@ -130,16 +146,10 @@ export const guardarStream = async (req, res) => {
         actualStart = lsd?.actualStartTime || null;
         actualEnd = lsd?.actualEndTime || null;
 
-        // 🪵 LOG para ver qué devuelve la API
-        console.log("📡 Respuesta de YouTube API:");
-        console.log("🔹 actualStartTime:", actualStart);
-        console.log("🔹 actualEndTime:", actualEnd);
-
         if (actualStart) horaInicioMedicion = actualStart.substring(11, 16);
         if (actualEnd) horaFinMedicion = actualEnd.substring(11, 16);
 
-        if (actualStart?.length > 0)
-          actualStart = actualStart.substring(11, 19);
+        if (actualStart?.length > 0) actualStart = actualStart.substring(11, 19);
         if (actualEnd?.length > 0) actualEnd = actualEnd.substring(11, 19);
       } catch (err) {
         console.warn("⚠️ No se pudo obtener actualStartTime/EndTime:", err);
@@ -165,6 +175,10 @@ export const guardarStream = async (req, res) => {
   }
 };
 
+/**
+ * Muestra los datos detallados de un stream individual.
+ * @route GET /youtube/ver/:id
+ */
 export const verStream = async (req, res) => {
   const { id } = req.params;
 
@@ -173,30 +187,16 @@ export const verStream = async (req, res) => {
       include: ConfiguracionYouTube,
     });
 
-    if (!stream) {
-      return res.status(404).send("Stream no encontrado");
-    }
+    if (!stream) return res.status(404).send("Stream no encontrado");
 
     if (stream.ConfiguracionYouTube) {
-      stream.ConfiguracionYouTube.fecha_formateada = formatearFecha(
-        stream.ConfiguracionYouTube.fecha
-      );
-      stream.ConfiguracionYouTube.fecha_final_formateada = formatearFecha(
-        stream.ConfiguracionYouTube.fecha_final
-      );
-      stream.ConfiguracionYouTube.hora_comienzo_medicion = formatearHora(
-        stream.ConfiguracionYouTube.hora_comienzo_medicion
-      );
-      stream.ConfiguracionYouTube.hora_fin_medicion = formatearHora(
-        stream.ConfiguracionYouTube.hora_fin_medicion
-      );
-      // 🔧 Agregar estas dos líneas:
-      stream.ConfiguracionYouTube.actual_start_time_formateada = formatearHora(
-        stream.ConfiguracionYouTube.actual_start_time
-      );
-      stream.ConfiguracionYouTube.actual_end_time_formateada = formatearHora(
-        stream.ConfiguracionYouTube.actual_end_time
-      );
+      const c = stream.ConfiguracionYouTube;
+      c.fecha_formateada = formatearFecha(c.fecha);
+      c.fecha_final_formateada = formatearFecha(c.fecha_final);
+      c.hora_comienzo_medicion = formatearHora(c.hora_comienzo_medicion);
+      c.hora_fin_medicion = formatearHora(c.hora_fin_medicion);
+      c.actual_start_time_formateada = formatearHora(c.actual_start_time);
+      c.actual_end_time_formateada = formatearHora(c.actual_end_time);
     }
 
     res.render("youtube/verStreamYoutube", { stream });
@@ -206,6 +206,10 @@ export const verStream = async (req, res) => {
   }
 };
 
+/**
+ * Muestra el formulario para editar un stream existente.
+ * @route GET /youtube/editar/:id
+ */
 export const formularioEditar = async (req, res) => {
   try {
     const { id } = req.params;
@@ -214,23 +218,14 @@ export const formularioEditar = async (req, res) => {
       include: ConfiguracionYouTube,
     });
 
-    if (!stream) {
-      return res.status(404).send("Stream no encontrado.");
-    }
+    if (!stream) return res.status(404).send("Stream no encontrado.");
 
     if (stream.ConfiguracionYouTube) {
-      stream.ConfiguracionYouTube.fecha_formateada = formatearFecha(
-        stream.ConfiguracionYouTube.fecha
-      );
-      stream.ConfiguracionYouTube.fecha_final_formateada = formatearFecha(
-        stream.ConfiguracionYouTube.fecha_final
-      );
-      stream.ConfiguracionYouTube.hora_comienzo_medicion = formatearHora(
-        stream.ConfiguracionYouTube.hora_comienzo_medicion
-      );
-      stream.ConfiguracionYouTube.hora_fin_medicion = formatearHora(
-        stream.ConfiguracionYouTube.hora_fin_medicion
-      );
+      const c = stream.ConfiguracionYouTube;
+      c.fecha_formateada = formatearFecha(c.fecha);
+      c.fecha_final_formateada = formatearFecha(c.fecha_final);
+      c.hora_comienzo_medicion = formatearHora(c.hora_comienzo_medicion);
+      c.hora_fin_medicion = formatearHora(c.hora_fin_medicion);
     }
 
     res.render("youtube/modificarStreamYoutube", {
@@ -243,6 +238,10 @@ export const formularioEditar = async (req, res) => {
   }
 };
 
+/**
+ * Actualiza los datos de un stream.
+ * @route POST /youtube/editar/:id
+ */
 export const actualizarStream = async (req, res) => {
   try {
     const { id } = req.params;
@@ -258,7 +257,7 @@ export const actualizarStream = async (req, res) => {
     } = req.body;
 
     await StreamYouTube.update(
-      { nombre_stream: nombre, url_stream: url, id_canal: id_canal },
+      { nombre_stream: nombre, url_stream: url, id_canal },
       { where: { id } }
     );
 
@@ -266,10 +265,9 @@ export const actualizarStream = async (req, res) => {
       ? moment(fecha_inicial, "DD/MM/YYYY").toDate()
       : null;
 
-    const fechaFinalDate =
-      fecha_final && moment(fecha_final, "DD/MM/YYYY", true).isValid()
-        ? moment(fecha_final, "DD/MM/YYYY").toDate()
-        : null;
+    const fechaFinalDate = fecha_final && moment(fecha_final, "DD/MM/YYYY", true).isValid()
+      ? moment(fecha_final, "DD/MM/YYYY").toDate()
+      : null;
 
     if (!fechaInicialDate) {
       console.error("❌ Fecha inicial inválida");
@@ -282,9 +280,7 @@ export const actualizarStream = async (req, res) => {
         fecha_final: fechaFinalDate,
         hora_comienzo_medicion: hora_comienzo_medicion?.trim() || null,
         hora_fin_medicion: hora_fin_medicion?.trim() || null,
-        intervalo_medicion: intervalo_medicion
-          ? parseInt(intervalo_medicion)
-          : null,
+        intervalo_medicion: intervalo_medicion ? parseInt(intervalo_medicion) : null,
       },
       { where: { streamId: id } }
     );
@@ -296,18 +292,16 @@ export const actualizarStream = async (req, res) => {
   }
 };
 
-// Elimina un stream y su configuración asociada
+/**
+ * Elimina un stream y toda su información relacionada.
+ * @route POST /youtube/eliminar/:id
+ */
 export const eliminarStream = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Eliminar mediciones primero
     await MedicionYouTube.destroy({ where: { streamId: id } });
-
-    // Luego configuración
     await ConfiguracionYouTube.destroy({ where: { streamId: id } });
-
-    // Finalmente el stream
     await StreamYouTube.destroy({ where: { id } });
 
     res.redirect("/youtube");
@@ -317,14 +311,15 @@ export const eliminarStream = async (req, res) => {
   }
 };
 
-
+/**
+ * Cambia el estado de activo/inactivo de un stream.
+ * @route POST /youtube/toggle/:id
+ */
 export const toggleStream = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const configuracion = await ConfiguracionYouTube.findOne({
-      where: { streamId: id },
-    });
+    const configuracion = await ConfiguracionYouTube.findOne({ where: { streamId: id } });
 
     if (!configuracion) {
       return res.status(404).send("Configuración no encontrada");
@@ -340,34 +335,28 @@ export const toggleStream = async (req, res) => {
   }
 };
 
-// 📥 Obtener channelTitle - title desde la API de YouTube
+/**
+ * Consulta a la API de YouTube para obtener el título del canal y título del video.
+ * @route GET /youtube/api/nombreDesdeUrl
+ */
 export const obtenerNombreDesdeURL = async (req, res) => {
   try {
     const { url } = req.query;
 
-    if (!url) {
-      return res.status(400).json({ error: "Falta la URL" });
-    }
+    if (!url) return res.status(400).json({ error: "Falta la URL" });
 
     const videoId = extraerVideoID(url);
-    console.log("📺 Video ID extraído:", videoId);
 
     if (!videoId || videoId.length !== 11) {
       return res.status(400).json({ error: "URL inválida de YouTube" });
     }
 
     const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`;
-    console.log("🔗 URL final API:", apiUrl);
-
     const response = await fetch(apiUrl);
     const data = await response.json();
 
-    console.log("📦 Respuesta cruda de la API:", data);
-
     const video = data.items?.[0];
-    if (!video) {
-      return res.status(404).json({ error: "Video no encontrado en la API" });
-    }
+    if (!video) return res.status(404).json({ error: "Video no encontrado en la API" });
 
     const channelTitle = video.snippet.channelTitle;
     const title = video.snippet.title;
