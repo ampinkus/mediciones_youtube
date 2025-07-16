@@ -69,6 +69,12 @@ let dataTableOptions = {
     { width: "10%", targets: [3] },
     { width: "10%", targets: [4] },
     { width: "10%", targets: [5] },
+
+    // ✅ Formatear columnas 3 y 4 como números con puntos de miles
+    {
+      targets: [3, 4, 5],
+      render: $.fn.dataTable.render.number('.', ',', 0)
+    }
   ],
   pageLength: 10,
   destroy: true,
