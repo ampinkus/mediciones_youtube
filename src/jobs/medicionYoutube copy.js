@@ -41,14 +41,10 @@ async function obtenerDatosYouTube(stream) {
 
     const actualStartTime = lsd?.actualStartTime || null;
     const actualEndTime = lsd?.actualEndTime || null;
-    const concurrentViewers = lsd?.concurrentViewers
-      ? parseInt(lsd.concurrentViewers)
-      : 0;
 
     console.log("📡 Respuesta de YouTube API:");
     console.log(`🔹 actualStartTime: ${actualStartTime}`);
     console.log(`🔹 actualEndTime: ${actualEndTime}`);
-    console.log(`👁️ Espectadores concurrentes: ${concurrentViewers}`);
 
     if (lsd && config) {
       const horaStart = convertirAHoraArgentina(lsd.actualStartTime);
@@ -70,13 +66,24 @@ async function obtenerDatosYouTube(stream) {
     function obtenerFechaLocalFormatoISO() {
       const ahora = new Date();
       const año = ahora.getFullYear();
-      const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+      const mes = String(ahora.getMonth() + 1).padStart(2, "0"); // Mes empieza en 0
       const dia = String(ahora.getDate()).padStart(2, "0");
       return `${año}-${mes}-${dia}`;
     }
 
-    const fechaLocal = obtenerFechaLocalFormatoISO();
+    // const fechaLocal = config?.fecha || obtenerFechaLocalFormatoISO();
+    const fechaLocal =  obtenerFechaLocalFormatoISO();
 
+    // const fecha = new Date();
+    // // Log para verificar la fecha que se está utilizando
+    // console.log(
+    //   `📅 Medición tomada para la fecha con solo new Date(): ${fecha}`
+    // );
+
+    // Log para verificar la fecha que se está utilizando
+    // console.log(`📅 Medición tomada para la fecha: ${fechaLocal}`);
+
+    // Hora actual en formato 24 horas (HH:mm:ss)
     const horaActual = new Date().toLocaleTimeString("es-AR", {
       hour12: false,
       hour: "2-digit",
@@ -96,7 +103,6 @@ async function obtenerDatosYouTube(stream) {
       comentarios_video: parseInt(video.statistics.commentCount || 0),
       actual_start_time: stream.ConfiguracionYouTube?.actual_start_time || null,
       actual_end_time: stream.ConfiguracionYouTube?.actual_end_time || null,
-      concurrent_viewers: concurrentViewers, // 👈 nuevo campo agregado
     });
 
     console.log(
