@@ -1,63 +1,75 @@
-<!-- Formmulario de ingreso de datos para gráficos formularioGráficosYoutube.ejs -->
-<%- include('../partials/head.ejs') %>
-<%- include('../partials/homeNav.ejs') %>
+<!-- Formulario de ingreso de datos para gráficos formularioGráficosYoutube.ejs -->
+<%- include('../partials/head.ejs') %> <!-- Inclusión del encabezado común (CSS, meta, etc.) -->
+<%- include('../partials/homeNav.ejs') %> <!-- Inclusión de la barra de navegación -->
 
 <div class="container mt-4" style="max-width: 1400px;">
   <h2>Formulario de Generación de Gráficos</h2>
+
+  <!-- Formulario que envía una solicitud GET al endpoint /graficosYouTube/generar -->
   <form action="/graficosYouTube/generar" method="GET">
+    
+    <!-- Fila para selección de streams -->
     <div class="row mb-3">
       <div class="col">
         <label>Stream (selección múltiple con CTRL)</label>
+        <!-- Select con opción de seleccionar múltiples streams (usando CTRL) -->
         <select name="streamId" class="form-select" multiple required size="10">
-          <% streams.forEach(stream => { %>
+          <% streams.forEach(stream => { %> <!-- Itera sobre la lista de streams -->
             <option value="<%= stream.id %>"><%= stream.nombre_stream %></option>
           <% }); %>
         </select>
       </div>
-
     </div>
+
+    <!-- Fila con campos de fecha y hora -->
     <div class="row mb-3">
-      
       <div class="col">
         <label>Fecha Inicio</label>
+        <!-- Campo de fecha inicial -->
         <input type="text" name="fechaInicio" class="form-control datepicker" />
       </div>
       <div class="col">
         <label>Fecha Fin</label>
+        <!-- Campo de fecha final -->
         <input type="text" name="fechaFin" class="form-control datepicker" />
       </div>
       <div class="col">
         <label>Hora Inicial</label>
+        <!-- Campo de hora inicial -->
         <input type="text" name="horaInicio" class="form-control timepicker" />
       </div>
       <div class="col">
         <label>Hora Final</label>
+        <!-- Campo de hora final -->
         <input type="text" name="horaFin" class="form-control timepicker" />
       </div>
     </div>
 
+    <!-- Botones de acción -->
     <button type="submit" class="btn btn-success me-2">Generar</button>
     <a href="/" class="btn btn-primary">Volver</a>
   </form>
 </div>
 
-<%- include('../partials/foot.ejs') %>
+<%- include('../partials/foot.ejs') %> <!-- Inclusión del pie de página -->
 
-<!-- Flatpickr -->
+<!-- Flatpickr: librería de selección de fecha y hora -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 <script>
+  // Inicializa los campos con clase .datepicker como selectores de fecha
   flatpickr(".datepicker", {
-    dateFormat: "d/m/Y",
-    locale: "es"
+    dateFormat: "d/m/Y", // Formato día/mes/año
+    locale: "es" // Localización en español
   });
 
+  // Inicializa los campos con clase .timepicker como selectores de hora
   flatpickr(".timepicker", {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "H:i",
-    time_24hr: true,
-    locale: "es"
+    enableTime: true, // Habilita el selector de tiempo
+    noCalendar: true, // Oculta el calendario
+    dateFormat: "H:i", // Formato 24hs sin segundos
+    time_24hr: true, // Usa reloj de 24 horas
+    locale: "es" // Localización en español
   });
 </script>

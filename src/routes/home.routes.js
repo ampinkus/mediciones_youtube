@@ -1,10 +1,18 @@
 // src/routes/home.routes.js
+
+/**
+ * Rutas correspondientes a la página principal del sistema.
+ * Este módulo define la ruta para acceder al Home del sistema.
+ */
+
 import { Router } from 'express';
 import * as homeController from '../controllers/home.controller.js';
 
+// Crea una instancia del router de Express
 const router = Router();
 
-// Ruta para la página inicial
+// Ruta GET para la página inicial del sistema (Home)
 router.get('/', homeController.mostrarHome);
 
+// Exporta el router para que pueda ser utilizado en el archivo principal
 export default router;

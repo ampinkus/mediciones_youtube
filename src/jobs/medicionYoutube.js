@@ -6,7 +6,6 @@ import ConfiguracionYouTube from "../models/configuracion_youtube.js";
 import MedicionYouTube from "../models/mediciones_youtube.js";
 import { extraerVideoID } from "../controllers/utils.controller.js";
 
-
 import { apiKey } from "../config/youtube.config.js";
 const medicionesActivas = new Map();
 
@@ -16,7 +15,6 @@ function convertirAHoraArgentina(utcString) {
   const dateArgentina = new Date(dateUTC.getTime() - 3 * 60 * 60 * 1000); // GMT-3
   return dateArgentina.toTimeString().split(" ")[0];
 }
-
 
 async function obtenerDatosYouTube(stream) {
   try {
@@ -65,17 +63,46 @@ async function obtenerDatosYouTube(stream) {
       );
     }
 
+    function obtenerFechaLocalFormatoISO() {
+      const ahora = new Date();
+      const año = ahora.getFullYear();
+      const mes = String(ahora.getMonth() + 1).padStart(2, "0"); // Mes empieza en 0
+      const dia = String(ahora.getDate()).padStart(2, "0");
+      return `${año}-${mes}-${dia}`;
+    }
+
+    // const fechaLocal = config?.fecha || obtenerFechaLocalFormatoISO();
+    const fechaLocal =  obtenerFechaLocalFormatoISO();
+
+    // const fecha = new Date();
+    // // Log para verificar la fecha que se está utilizando
+    // console.log(
+    //   `📅 Medición tomada para la fecha con solo new Date(): ${fecha}`
+    // );
+
+    // Log para verificar la fecha que se está utilizando
+    // console.log(`📅 Medición tomada para la fecha: ${fechaLocal}`);
+
+    // Hora actual en formato 24 horas (HH:mm:ss)
+    const horaActual = new Date().toLocaleTimeString("es-AR", {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
     await MedicionYouTube.create({
       streamId: stream.id,
-      fecha: config?.fecha || new Date(),
-      hora_medicion,
-      suscriptores_canal: channel?.statistics?.subscriberCount || 0,
-      cantidad_videos_canal: channel?.statistics?.videoCount || 0,
-      vistas_canal: channel?.statistics?.viewCount || 0,
-      view_count: video?.statistics?.viewCount || 0,
-      concurrent_viewers: lsd?.concurrentViewers || null,
-      likes_video: video?.statistics?.likeCount || 0,
-      comentarios_video: video?.statistics?.commentCount || 0,
+      fecha: fechaLocal,
+      hora_medicion: horaActual,
+      suscriptores_canal: parseInt(channel.statistics.subscriberCount || 0),
+      cantidad_videos_canal: parseInt(channel.statistics.videoCount || 0),
+      vistas_canal: parseInt(channel.statistics.viewCount || 0),
+      view_count: parseInt(video.statistics.viewCount || 0),
+      likes_video: parseInt(video.statistics.likeCount || 0),
+      comentarios_video: parseInt(video.statistics.commentCount || 0),
+      actual_start_time: stream.ConfiguracionYouTube?.actual_start_time || null,
+      actual_end_time: stream.ConfiguracionYouTube?.actual_end_time || null,
     });
 
     console.log(

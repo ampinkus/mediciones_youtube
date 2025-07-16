@@ -1,7 +1,17 @@
-<!--  La plantilla de la barra de navegación para la página de inicio-->
+<!-- views/partials/homeNav.ejs -->
+
+<!-- 
+  La plantilla de la barra de navegación para la página de inicio.
+  Esta barra permite navegar entre las secciones de administración de redes sociales,
+  informes de YouTube, ayuda y un enlace al portfolio del desarrollador.
+-->
+
 <nav class="navbar bg-primary navbar-expand-lg" data-bs-theme="dark">
   <div class="container-fluid  d-flex align-items-center">
+    <!-- Título principal en la barra -->
     <h2 class="mb-0">Redes Sociales &nbsp</h2>
+
+    <!-- Botón colapsable para vista móvil -->
     <button
       class="navbar-toggler"
       type="button"
@@ -13,8 +23,12 @@
     >
       <span class="navbar-toggler-icon"></span>
     </button>
+
+    <!-- Contenido colapsable de la barra -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <!-- Menú de administración de redes sociales -->
         <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle"
@@ -26,59 +40,14 @@
             Administracion Redes Sociales
           </a>
           <ul class="dropdown-menu">     
-            <!-- <li>
-              <a class="dropdown-item" href="/instagram">Instagram</a>
-            </li> -->
-            <!-- <li><a class="dropdown-item" href="/facebook">Facebook</a></li>
-            <li> -->
+              <!-- Enlace a la sección de YouTube -->
               <a class="dropdown-item" href="/youtube">Youtube</a>
             </li>
           </ul>
         </li>
 
-       
-        
-        <!-- <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Informes Instagram
-          </a>
-          <ul class="dropdown-menu">
-            <li>
-              <a class="dropdown-item" href="/datatablesInstagram">Ver Tablas</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="/graficosInstagram">Ver Gráficos</a>
-            </li>
-          </ul>
-        </li> -->
-      
-        <!-- <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Informes Facebook
-          </a>
-          <ul class="dropdown-menu">
-            <li>
-              <a class="dropdown-item" href="/datatablesFacebook">Ver Tablas</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="/graficosFacebook">Ver Gráficos</a>
-            </li>
-          </ul>
-        </li> -->
-
-         <li class="nav-item dropdown">
+        <!-- Menú de informes de YouTube -->
+        <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle"
             href="#"
@@ -90,14 +59,17 @@
           </a>
           <ul class="dropdown-menu">
             <li>
+              <!-- Enlace a la vista de tablas -->
               <a class="dropdown-item" href="/datatablesYouTube">Ver Tablas</a>
             </li>
             <li>
+              <!-- Enlace a la vista de gráficos -->
               <a class="dropdown-item" href="/graficosYouTube">Ver Gráficos</a>
             </li>
           </ul>
         </li>
 
+        <!-- Espacios reservados y enlaces adicionales -->
         <li class="nav-item me-5">
           <a
             class="nav-link active"
@@ -107,6 +79,7 @@
           ></a>
         </li>
 
+        <!-- Enlace de ayuda -->
         <li class="nav-item me-5">
           <a
             class="nav-link active"
@@ -126,6 +99,7 @@
           ></a>
         </li>
 
+        <!-- Enlace al portfolio del desarrollador -->
         <li class="nav-item" style="margin-left: 275px">
           <a
             class="nav-link active"
@@ -139,4 +113,5 @@
     </div>
   </div>
 </nav>
-<!-- Fin de la plantilla de la barra de navegación  -->
+
+<!-- Fin de la plantilla de la barra de navegación -->
