@@ -20,7 +20,8 @@
           <th class="text-center">Nombre</th>
           <th class="text-center">Fecha</th>
           <th class="text-center">Hora Medición</th>
-          <th class="text-center">Vistas</th>
+          <th class="text-center">Vistas concurrentes</th>
+          <th class="text-center">Vistas totales</th>
           <th class="text-center">Likes</th>
           <th class="text-center">Comentarios</th>
         </tr>
@@ -31,6 +32,7 @@
           <td class="text-center"><%= medicion.nombre_stream %></td>
           <td class="text-center"><%= medicion.fecha %></td>
           <td class="text-center"><%= medicion.hora %></td>
+          <td class="text-center"><%= medicion.concurrent_viewers %></td>
           <td class="text-center"><%= medicion.view_count %></td>
           <td class="text-center"><%= medicion.likes_video %></td>
           <td class="text-center"><%= medicion.comentarios_video %></td>

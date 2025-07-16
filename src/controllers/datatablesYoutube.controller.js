@@ -92,7 +92,7 @@ export const generarTabla = async (req, res) => {
       fecha: moment(medicion.fecha).format("DD/MM/YYYY"),
       hora: moment(medicion.hora_medicion, "HH:mm:ss").format("HH:mm"),
       view_count: medicion.view_count,
-      // concurrent_viewers: medicion.concurrent_viewers ?? "—",
+      concurrent_viewers: medicion.concurrent_viewers ?? "—", // ✅ Añadido aquí
       likes_video: medicion.likes_video,
       comentarios_video: medicion.comentarios_video,
     }));

@@ -21,7 +21,7 @@ let dataTableOptions = {
       extend: "colvis",
       text: "Mostrar/Ocultar Columnas",
       className: "btn btn-secondary",
-      columns: [0, 1, 2, 3, 4, 5],
+      columns: [0, 1, 2, 3, 4, 5, 6],
     },
     {
       extend: "excel",
@@ -30,7 +30,7 @@ let dataTableOptions = {
       title: "Tabla de Streamings de YouTube",
       className: "btn btn-success",
       exportOptions: {
-        columns: [0, 1, 2, 3, 4, 5],
+        columns: [0, 1, 2, 3, 4, 5, 6],
         rows: ":visible",
       },
     },
@@ -41,7 +41,7 @@ let dataTableOptions = {
       title: "Tabla de Streamings de YouTube",
       className: "btn btn-danger",
       exportOptions: {
-        columns: [0, 1, 2, 3, 4, 5],
+        columns: [0, 1, 2, 3, 4, 5, 6],
         rows: ":visible",
       },
     },
@@ -52,7 +52,7 @@ let dataTableOptions = {
       title: "Tabla de Streamings de YouTube",
       className: "btn btn-info",
       exportOptions: {
-        columns: [0, 1, 2, 3, 4, 5],
+        columns: [0, 1, 2, 3, 4, 5, 6],
         rows: ":visible",
       },
     },
@@ -62,17 +62,18 @@ let dataTableOptions = {
     [5, 10, 20, 50, "Todos"],
   ],
   columnDefs: [
-    { targets: [0, 1, 2, 3, 4, 5], className: "dt-center" }, 
-    { width: "30%", targets: [0] },
-    { width: "10%", targets: [1] },
+    { targets: [0, 1, 2, 3, 4, 5, 6], className: "dt-center" }, 
+    // { width: "40%", targets: [0] },
+    /* { width: "10%", targets: [1] },
     { width: "10%", targets: [2] },
     { width: "10%", targets: [3] },
     { width: "10%", targets: [4] },
     { width: "10%", targets: [5] },
+    { width: "10%", targets: [6] }, */
 
-    // ✅ Formatear columnas 3 y 4 como números con puntos de miles
+    // ✅ Formatear columnas 3, 4, 5 y 6  como números con puntos de miles
     {
-      targets: [3, 4, 5],
+      targets: [3, 4, 5, 6],
       render: $.fn.dataTable.render.number('.', ',', 0)
     }
   ],
