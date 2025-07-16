@@ -26,13 +26,14 @@
 
   <!-- Radio buttons para elegir métrica -->
   <div class="mt-4 text-center">
-    <label class="form-check-label me-3">
-      <input type="radio" name="tipoVista" value="view_count" checked class="form-check-input me-1">
-      Vistas totales
-    </label>
+   
     <label class="form-check-label">
-      <input type="radio" name="tipoVista" value="concurrent_viewers" class="form-check-input me-1">
+      <input type="radio" name="tipoVista" value="concurrent_viewers" checked class="form-check-input me-1">
       Vistas concurrentes
+    </label>
+     <label class="form-check-label me-3">
+      <input type="radio" name="tipoVista" value="view_count" class="form-check-input me-1">
+      Vistas totales
     </label>
   </div>
 </div>
@@ -80,7 +81,7 @@
     }));
   }
 
-  let tipoActual = "view_count";
+  let tipoActual = "concurrent_viewers"; // Cambio aquí: valor inicial
   let datasets = generarDatasets(tipoActual);
 
   const labels = datosPorStream.length > 0 ? datosPorStream[0].labels : [];
@@ -126,7 +127,7 @@
           grid: { color: '#cccccc' },
           title: {
             display: true,
-            text: 'Vistas del Stream',
+            text: 'Vistas concurrentes del Stream', // Cambio aquí: título inicial
             color: 'black',
             font: { size: 16 }
           }
