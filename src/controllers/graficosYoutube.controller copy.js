@@ -92,15 +92,14 @@ export const generarGrafico = async (req, res) => {
       return new Date(yyyy, mm1 - 1, dd, hh, mm);
     });
 
-    // Extrae los datos de view_count (vistas totales) y concurrent_viewers
+    // Extrae los datos de view_count (vistas)
     const data = datosFiltrados.map(m => m.view_count);
-    const concurrent_viewers = datosFiltrados.map(m => m.concurrent_viewers);
 
     // Obtiene el nombre del stream
     const nombreStream = datosFiltrados.length > 0 ? datosFiltrados[0].StreamYouTube.nombre_stream : 'Sin datos';
 
     // Agrega los datos organizados al array final
-    datosPorStream.push({ labels, data, concurrent_viewers, nombreStream, streamId: id });
+    datosPorStream.push({ labels, data, nombreStream, streamId: id });
   }
 
   // Renderiza la vista con los datos de los gráficos

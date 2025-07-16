@@ -1,5 +1,5 @@
-<%- include('../partials/head.ejs') %> 
-<%- include('../partials/homeNav.ejs') %>
+<!-- graficosYoutube.ejs -->
+<%- include('../partials/head.ejs') %> <%- include('../partials/homeNav.ejs') %>
 
 <!-- CDN de Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,25 +15,43 @@
       <button class="btn btn-secondary me-2" id="moveRightBtn">→</button>
       <button class="btn btn-secondary me-2" id="zoomInBtn">Zoom +</button>
       <button class="btn btn-secondary me-2" id="zoomOutBtn">Zoom -</button>
-      <button class="btn btn-secondary me-2" id="resetZoomBtn">Vista Original</button>
+      <button class="btn btn-secondary me-2" id="resetZoomBtn">
+        Vista Original
+      </button>
       <a href="/graficosYouTube" class="btn btn-primary">Volver</a>
     </div>
   </div>
 
-  <div class="chart-container" id="chartContainer" style="overflow-x: auto; min-height: 650px;">
-    <canvas id="graficoYoutube" style="min-width: 800px; height: 650px;"></canvas>
-  </div>
-
-  <!-- Radio buttons para elegir métrica -->
-  <div class="mt-4 text-center">
-    <label class="form-check-label me-3">
-      <input type="radio" name="tipoVista" value="view_count" checked class="form-check-input me-1">
-      Vistas totales
-    </label>
-    <label class="form-check-label">
-      <input type="radio" name="tipoVista" value="concurrent_viewers" class="form-check-input me-1">
-      Vistas concurrentes
-    </label>
+  <div
+    class="chart-container"
+    id="chartContainer"
+    style="overflow-x: auto; min-height: 650px"
+  >
+    <canvas
+      id="graficoYoutube"
+      style="min-width: 800px; height: 650px"
+    ></canvas>
+    <div class="mt-4 text-center">
+      <label class="form-check-label me-3">
+        <input
+          type="radio"
+          name="tipoVista"
+          value="view_count"
+          checked
+          class="form-check-input me-1"
+        />
+        Vistas totales
+      </label>
+      <label class="form-check-label">
+        <input
+          type="radio"
+          name="tipoVista"
+          value="concurrent_viewers"
+          class="form-check-input me-1"
+        />
+        Vistas concurrentes
+      </label>
+    </div>
   </div>
 </div>
 
@@ -47,43 +65,22 @@
 
   const colores = ['blue', 'red', 'green', 'purple', 'orange'];
 
-  // Datos separados por métrica
-  const datosPorTipo = {
-    view_count: datosPorStream.map(stream => ({
-      nombre: stream.nombreStream,
-      streamId: stream.streamId,
-      labels: stream.labels,
-      data: stream.data
+  const datasets = datosPorStream.map((stream, index) => ({
+    label: `Vistas del Stream - ${stream.nombreStream}`,
+    data: stream.labels.map((label, i) => ({
+      x: label,
+      y: stream.data[i]
     })),
-    concurrent_viewers: datosPorStream.map(stream => ({
-      nombre: stream.nombreStream,
-      streamId: stream.streamId,
-      labels: stream.labels,
-      data: stream.concurrent_viewers || stream.data.map(() => null)
-    }))
-  };
-
-  // Función para generar datasets
-  function generarDatasets(tipo) {
-    return datosPorTipo[tipo].map((stream, index) => ({
-      label: `${tipo === "view_count" ? "Vistas totales" : "Vistas concurrentes"} - ${stream.nombre}`,
-      data: stream.labels.map((label, i) => ({
-        x: label,
-        y: stream.data[i]
-      })),
-      borderColor: colores[index % colores.length],
-      backgroundColor: colores[index % colores.length] + '33',
-      fill: false,
-      tension: 0.1,
-      pointRadius: 5,
-      pointHoverRadius: 7
-    }));
-  }
-
-  let tipoActual = "view_count";
-  let datasets = generarDatasets(tipoActual);
+    borderColor: colores[index % colores.length],
+    backgroundColor: colores[index % colores.length] + '33',
+    fill: false,
+    tension: 0.1,
+    pointRadius: 5,
+    pointHoverRadius: 7
+  }));
 
   const labels = datosPorStream.length > 0 ? datosPorStream[0].labels : [];
+
   let originalMin = labels[0];
   let originalMax = labels[labels.length - 1];
   let currentMin = originalMin;
@@ -133,16 +130,6 @@
         }
       }
     }
-  });
-
-  // Cambio entre vistas (radio buttons)
-  document.querySelectorAll('input[name="tipoVista"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-      tipoActual = e.target.value;
-      chart.data.datasets = generarDatasets(tipoActual);
-      chart.options.scales.y.title.text = tipoActual === "view_count" ? "Vistas totales del Stream" : "Vistas concurrentes del Stream";
-      chart.update();
-    });
   });
 
   // Controles de zoom y desplazamiento
