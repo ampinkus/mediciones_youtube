@@ -1,4 +1,5 @@
 // src/database/sync.js
+
 import sequelize from './database.js';
 
 // Importar todos los modelos
@@ -6,6 +7,18 @@ import StreamYouTube from '../models/streams_youtube.js';
 import MedicionYouTube from '../models/mediciones_youtube.js';
 import ConfiguracionYouTube from '../models/configuracion_youtube.js'; // ✅ Asegurate de agregar esto
 
+/**
+ * Sincroniza todos los modelos Sequelize con la base de datos.
+ *
+ * - Verifica la conexión con `sequelize.authenticate()`.
+ * - Ejecuta `sequelize.sync({ alter: true })` para sincronizar los modelos existentes
+ *   y realizar ajustes si hay cambios en las definiciones.
+ * - Cierra la conexión con la base de datos al finalizar el proceso.
+ *
+ * @async
+ * @function syncDatabase
+ * @returns {Promise<void>}
+ */
 async function syncDatabase() {
     try {
         await sequelize.authenticate();

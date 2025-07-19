@@ -8,14 +8,8 @@ import { extraerVideoID } from "../controllers/utils.controller.js";
 import { DateTime } from "luxon";
 
 import { apiKey } from "../config/youtube.config.js";
-
 const medicionesActivas = new Map();
 
-/**
- * Convierte una hora en formato UTC a la hora local de Argentina (HH:mm:ss).
- * @param {string|null} utcString - Hora en formato ISO UTC.
- * @returns {string|null} - Hora convertida a la zona 'America/Argentina/Buenos_Aires'.
- */
 function convertirAHoraArgentina(utcString) {
   if (!utcString) return null;
   return DateTime.fromISO(utcString, { zone: 'utc' })
@@ -23,10 +17,7 @@ function convertirAHoraArgentina(utcString) {
     .toFormat('HH:mm:ss');
 }
 
-/**
- * Obtiene y guarda los datos de un stream de YouTube.
- * @param {object} stream - Objeto del stream con datos y configuración.
- */
+
 async function obtenerDatosYouTube(stream) {
   try {
     const videoID = extraerVideoID(stream.url_stream);
@@ -76,9 +67,12 @@ async function obtenerDatosYouTube(stream) {
       );
     }
 
+    // ✅ Usar Luxon para obtener fecha y hora local (Argentina)
     const ahoraArgentina = DateTime.now().setZone("America/Argentina/Buenos_Aires");
-    const fechaLocal = ahoraArgentina.toISODate();
-    const horaActual = ahoraArgentina.toFormat("HH:mm:ss");
+    const fechaLocal = ahoraArgentina.toISODate();           // "2025-07-18"
+    const horaActual = ahoraArgentina.toFormat("HH:mm:ss");  // "22:13:41"
+
+    // ✅ Diagnóstico
     const fechaHoraArgentina = ahoraArgentina.toFormat("yyyy-MM-dd HH:mm:ss");
     console.log("→ Fecha/hora local (Argentina):", fechaHoraArgentina);
 
@@ -108,9 +102,6 @@ async function obtenerDatosYouTube(stream) {
   }
 }
 
-/**
- * Supervisa e inicia las mediciones para todos los streams activos.
- */
 async function supervisor() {
   try {
     const streams = await StreamYouTube.findAll({
@@ -143,10 +134,6 @@ async function supervisor() {
   setTimeout(supervisor, 60 * 1000);
 }
 
-/**
- * Ejecuta una medición programada para un stream en base a su configuración.
- * @param {object} stream - Stream a medir (puede ser parcial, solo requiere `id`).
- */
 async function medirStreamConTimeout(stream) {
   try {
     const streamActualizado = await StreamYouTube.findByPk(stream.id, {
@@ -176,7 +163,7 @@ async function medirStreamConTimeout(stream) {
     const ahora = new Date();
     const hoy = DateTime.now()
       .setZone("America/Argentina/Buenos_Aires")
-      .toISODate();
+      .toISODate(); // YYYY-MM-DD según hora Argentina
 
     if (hoy < fecha || (fecha_final && hoy > fecha_final)) {
       console.log(
@@ -293,9 +280,6 @@ async function medirStreamConTimeout(stream) {
   }
 }
 
-/**
- * Inicia el proceso de mediciones luego de verificar la conexión a la base de datos.
- */
 async function iniciarMediciones() {
   try {
     await sequelize.authenticate();

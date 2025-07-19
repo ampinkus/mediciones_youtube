@@ -77,7 +77,7 @@ let dataTableOptions = {
     { width: "5%", targets: [9] }, */
     { width: "15%", targets: [10] },
   ],
-  pageLength: 10,
+  pageLength: 20,
   destroy: true,
 
   // Elegimos el lenguaje de interface.

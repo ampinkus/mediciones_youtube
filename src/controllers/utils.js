@@ -1,3 +1,14 @@
+/**
+ * @module utils/pathHelper
+ * @description
+ * Utilidad para obtener `__filename` y `__dirname` en módulos ES (ECMAScript modules).
+ * Este módulo proporciona dos constantes que representan la ruta absoluta del archivo actual
+ * y del directorio contenedor, similares a las variables `__filename` y `__dirname` de CommonJS.
+ * 
+ * @exports __filename - Ruta absoluta del archivo actual.
+ * @exports __dirname - Ruta absoluta del directorio del archivo actual.
+ */
+
 // we use this file to get the path of the current directory and avoid to clutter the code in the app.js
 /*
 1. Importing Modules:

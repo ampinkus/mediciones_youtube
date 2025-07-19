@@ -1,7 +1,7 @@
 // src/jobs/verificarStreamActivo.js
-import fetch from 'node-fetch';
 
-const apiKey = 'YOUR_API_KEY'; // 🔑 Cambiar por tu API Key válida
+import fetch from 'node-fetch';
+import { apiKey } from "../config/youtube.config.js"; // ✅ Importa la API Key correctamente
 
 /**
  * Verifica si un canal de YouTube tiene un stream en vivo activo.

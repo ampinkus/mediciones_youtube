@@ -1,4 +1,5 @@
 // public/js/autocompletarNombre.js
+// se usa en agregarStreamYoutube.ejs
 
 /**
  * Script que autocompleta el campo `nombre_stream` en el formulario
