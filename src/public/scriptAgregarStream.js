@@ -1,4 +1,5 @@
 // public/scriptAgregarStream.js
+//  No se usa actualmente, pero se deja como referencia para futuras implementaciones
 
 // Clave de la API de YouTube, necesaria para hacer llamadas a la API.
 // ⚠️ Reemplazar por una clave válida antes de producción.

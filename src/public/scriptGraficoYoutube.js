@@ -1,3 +1,5 @@
+// src/public/scriptGraficoYoutube.js
+// No se usa actualmente, pero se deja como referencia para futuras implementaciones
 const ctx = document.getElementById("graficoYoutube").getContext("2d");
 
 const chart = new Chart(ctx, {

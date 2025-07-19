@@ -1,4 +1,5 @@
 // obtenerCanal.js
+// No esta en uso por ahora, pero se deja como referencia para futuras implementaciones
 
 /**
  * Script que detecta automáticamente el ID de canal de YouTube a partir de un enlace con un `handle`.

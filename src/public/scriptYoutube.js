@@ -1,4 +1,19 @@
+/**
+ * script Youtube.js
+ * 
+ * ✅ Este script se utiliza en la vista `Youtube.ejs`.
+ * 
+ * 🎯 Objetivo: Inicializar y configurar una tabla DataTable con opciones avanzadas:
+ * - Botones de exportación (Excel, PDF, imprimir)
+ * - Mostrar/Ocultar columnas
+ * - Paginación, ordenamiento y búsqueda
+ * - Idioma configurado en español
+ * 
+ * 💡 Nota: Hay una opción comentada para habilitar agrupación de filas (`rowGroup`).
+ */
+
 // Configuración para presentar la tabla de youtube.ejs
+// 
 let dataTable;
 let dataTableIsInitialized = false;
 
