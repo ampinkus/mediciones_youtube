@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/graficosYoutube.controller.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/graficosYoutube.controller.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * graficosYoutube.controller.js
+ *
+ * Este controlador maneja:
+ * - La visualización del formulario para generar gráficos.
+ * - El procesamiento de filtros de fecha, hora y stream para consultas.
+ * - La organización de los datos de medición para ser enviados al gráfico.
+ * - La renderización de gráficos usando los datos agrupados por stream.
+ */
+
+import sequelize from '../database/database.js';
+import StreamYouTube from '../models/streams_youtube.js';
+import MedicionYouTube from '../models/mediciones_youtube.js';
+import { Op } from 'sequelize';
+import moment from 'moment';
+
+/**
+ * Muestra el formulario para seleccionar streams, fechas y horas para generar gráficos.
+ *
+ * @function mostrarFormulario
+ * @async
+ * @param {object} req - Objeto de solicitud de Express.
+ * @param {object} res - Objeto de respuesta de Express.
+ */
+export const mostrarFormulario = async (req, res) => {
+  const streams = await StreamYouTube.findAll({
+    order: [['nombre_stream', 'ASC']]
+  });
+
+  // Renderiza el formulario con la lista de streams ordenados alfabéticamente
+  res.render('youtube/formularioGraficosYoutube', { streams });
+};
+
+/**
+ * Procesa la solicitud del formulario y genera los datos necesarios para los gráficos.
+ *
+ * @function generarGrafico
+ * @async
+ * @param {object} req - Objeto de solicitud de Express.
+ * @param {object} res - Objeto de respuesta de Express.
+ */
+export const generarGrafico = async (req, res) => {
+  const { streamId, fechaInicio, fechaFin, horaInicio, horaFin } = req.query;
+
+  let condiciones = {};
+
+  // Convierte las fechas desde formato DD/MM/YYYY a objetos Date
+  const fechaInicioDate = fechaInicio ? moment(fechaInicio, 'DD/MM/YYYY').toDate() : null;
+  const fechaFinDate = fechaFin ? moment(fechaFin, 'DD/MM/YYYY').toDate() : null;
+
+  // Condición: uno o varios streams
+  if (streamId) {
+    condiciones.streamId = { [Op.in]: Array.isArray(streamId) ? streamId : [streamId] };
+  }
+
+  // Condición: por fecha
+  if (fechaInicioDate &amp;&amp; fechaFinDate) {
+    condiciones.fecha = { [Op.between]: [fechaInicioDate, fechaFinDate] };
+  } else if (fechaInicioDate) {
+    condiciones.fecha = { [Op.gte]: fechaInicioDate };
+  } else if (fechaFinDate) {
+    condiciones.fecha = { [Op.lte]: fechaFinDate };
+  }
+
+  // Condición: por hora
+  if (horaInicio &amp;&amp; horaFin) {
+    condiciones.hora_medicion = { [Op.between]: [horaInicio, horaFin] };
+  } else if (horaInicio) {
+    condiciones.hora_medicion = { [Op.gte]: horaInicio };
+  } else if (horaFin) {
+    condiciones.hora_medicion = { [Op.lte]: horaFin };
+  }
+
+  // Busca las mediciones en base a las condiciones definidas
+  const mediciones = await MedicionYouTube.findAll({
+    where: condiciones,
+    include: { model: StreamYouTube },
+    order: [['fecha', 'ASC'], ['hora_medicion', 'ASC']]
+  });
+
+  const datosPorStream = [];
+  const streamsUnicos = [...new Set(mediciones.map(m => m.streamId))];
+
+  for (const id of streamsUnicos) {
+    // Filtra las mediciones correspondientes a cada stream
+    const datosFiltrados = mediciones.filter(m => m.streamId === id);
+
+    // Construye las etiquetas para el eje X a partir de fecha y hora
+    const labels = datosFiltrados.map(m => {
+      const [hh, mm] = m.hora_medicion.split(':');
+      const [yyyy, mm1, dd] = m.fecha.split('-');
+      return new Date(yyyy, mm1 - 1, dd, hh, mm);
+    });
+
+    // Extrae los datos de view_count (vistas totales) y concurrent_viewers
+    const data = datosFiltrados.map(m => m.view_count);
+    const concurrent_viewers = datosFiltrados.map(m => m.concurrent_viewers);
+
+    // Obtiene el nombre del stream
+    const nombreStream = datosFiltrados.length > 0 ? datosFiltrados[0].StreamYouTube.nombre_stream : 'Sin datos';
+
+    // Agrega los datos organizados al array final
+    datosPorStream.push({ labels, data, concurrent_viewers, nombreStream, streamId: id });
+  }
+
+  // Renderiza la vista con los datos de los gráficos
+  res.render('youtube/graficosYoutube', { datosPorStream });
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="controllers_home.controller%250A%250AEste%2520m%25C3%25B3dulo%2520define%2520el%2520controlador%2520de%2520la%2520p%25C3%25A1gina%2520principal%2520del%2520sistema.%250ASe%2520encarga%2520de%2520renderizar%2520la%2520vista%2520de%2520inicio%2520(_home_index_).module_.html">controllers/home.controller
+
+Este módulo define el controlador de la página principal del sistema.
+Se encarga de renderizar la vista de inicio ('home/index').</a></li><li><a href="module-app.html">app</a></li><li><a href="module-server.html">server</a></li><li><a href="module-utils.html">utils</a></li><li><a href="module-utils_pathHelper.html">utils/pathHelper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#actualizarStream">actualizarStream</a></li><li><a href="global.html#apiKey">apiKey</a></li><li><a href="global.html#autocompletarIdCanal">autocompletarIdCanal</a></li><li><a href="global.html#canalEstaEnVivo">canalEstaEnVivo</a></li><li><a href="global.html#convertirAHoraArgentina">convertirAHoraArgentina</a></li><li><a href="global.html#dataTable">dataTable</a></li><li><a href="global.html#eliminarStream">eliminarStream</a></li><li><a href="global.html#extractHandle">extractHandle</a></li><li><a href="global.html#extraerVideoID">extraerVideoID</a></li><li><a href="global.html#formatearFecha">formatearFecha</a></li><li><a href="global.html#formatearHora">formatearHora</a></li><li><a href="global.html#formularioAgregar">formularioAgregar</a></li><li><a href="global.html#formularioEditar">formularioEditar</a></li><li><a href="global.html#generarGrafico">generarGrafico</a></li><li><a href="global.html#generarTabla">generarTabla</a></li><li><a href="global.html#guardarStream">guardarStream</a></li><li><a href="global.html#iniciarMediciones">iniciarMediciones</a></li><li><a href="global.html#medirStreamConTimeout">medirStreamConTimeout</a></li><li><a href="global.html#mostrarAlertaManual">mostrarAlertaManual</a></li><li><a href="global.html#mostrarFormulario">mostrarFormulario</a></li><li><a href="global.html#obtenerChannelIdDesdeURL">obtenerChannelIdDesdeURL</a></li><li><a href="global.html#obtenerDatosYouTube">obtenerDatosYouTube</a></li><li><a href="global.html#obtenerIdCanal">obtenerIdCanal</a></li><li><a href="global.html#obtenerIdDesdeHandle">obtenerIdDesdeHandle</a></li><li><a href="global.html#obtenerIdDesdeUsername">obtenerIdDesdeUsername</a></li><li><a href="global.html#obtenerNombreDesdeURL">obtenerNombreDesdeURL</a></li><li><a href="global.html#sequelize">sequelize</a></li><li><a href="global.html#supervisor">supervisor</a></li><li><a href="global.html#syncDatabase">syncDatabase</a></li><li><a href="global.html#toggleStream">toggleStream</a></li><li><a href="global.html#verStream">verStream</a></li><li><a href="global.html#verStreams">verStreams</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Jul 19 2025 13:59:57 GMT-0300 (Argentina Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -11,27 +11,67 @@ import * as youtubeController from '../controllers/youtube.controller.js';
 // Crea una instancia del router de Express
 const router = Router();
 
-// ✅ Ruta para listar todos los streams
+/**
+ * @route GET /youtube
+ * @description Lista todos los streams de YouTube
+ * @access Público
+ */
 router.get('/youtube', youtubeController.verStreams);
 
-// ✅ Rutas para mostrar y procesar el formulario de agregar un nuevo stream
+/**
+ * @route GET /youtube/agregar
+ * @description Muestra el formulario para agregar un nuevo stream
+ * @access Público
+ */
 router.get('/youtube/agregar', youtubeController.formularioAgregar);
+
+/**
+ * @route POST /youtube/agregar
+ * @description Procesa la creación de un nuevo stream
+ * @access Público
+ */
 router.post('/youtube/agregar', youtubeController.guardarStream);
 
-// ✅ Ruta para ver el detalle de un stream específico
+/**
+ * @route GET /youtube/ver/:id
+ * @description Muestra el detalle de un stream específico
+ * @access Público
+ */
 router.get('/youtube/ver/:id', youtubeController.verStream);
 
-// ✅ Rutas para mostrar y procesar el formulario de edición de un stream
+/**
+ * @route GET /youtube/editar/:id
+ * @description Muestra el formulario para editar un stream
+ * @access Público
+ */
 router.get('/youtube/editar/:id', youtubeController.formularioEditar);
+
+/**
+ * @route POST /youtube/editar/:id
+ * @description Procesa la actualización de un stream
+ * @access Público
+ */
 router.post('/youtube/editar/:id', youtubeController.actualizarStream);
 
-// ✅ Ruta para eliminar un stream por su ID
+/**
+ * @route POST /youtube/borrar/:id
+ * @description Elimina un stream por su ID
+ * @access Público
+ */
 router.post('/youtube/borrar/:id', youtubeController.eliminarStream);
 
-// ✅ Ruta para activar o desactivar la medición de un stream
+/**
+ * @route POST /youtube/toggle/:id
+ * @description Activa o desactiva la medición del stream
+ * @access Público
+ */
 router.post('/youtube/toggle/:id', youtubeController.toggleStream);
 
-// ✅ Ruta para autocompletar el nombre del stream a partir de la URL del video
+/**
+ * @route GET /youtube/obtener-nombre
+ * @description Obtiene automáticamente el nombre del stream a partir de la URL
+ * @access Público
+ */
 router.get('/youtube/obtener-nombre', youtubeController.obtenerNombreDesdeURL);
 
 // Exporta el router para ser usado en la aplicación principal

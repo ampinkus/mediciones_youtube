@@ -18,6 +18,19 @@ This is a common pattern used in Node.js when you need the current file's path f
 resolving relative paths or working with file system operations.
 */
 
+/**
+ * @file utils.js
+ * @module utils
+ * @description 
+ * Utilidad para obtener la ruta del archivo actual (`__filename`) y su directorio (`__dirname`)
+ * usando `import.meta.url`, útil para evitar lógica repetida en `app.js`.
+ *
+ * Este patrón es común en aplicaciones ES Modules para resolver rutas relativas.
+ *
+ * @requires path
+ * @requires url
+ */
+
 import path from "path";
 import { fileURLToPath } from "url";
 

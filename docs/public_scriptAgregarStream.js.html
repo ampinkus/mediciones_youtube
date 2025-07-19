@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: jobs/verificarStreamActivo.js</title>
+    <title>JSDoc: Source: public/scriptAgregarStream.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: jobs/verificarStreamActivo.js</h1>
+    <h1 class="page-title">Source: public/scriptAgregarStream.js</h1>
 
     
 
@@ -26,33 +26,92 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>// src/jobs/verificarStreamActivo.js
+            <pre class="prettyprint source linenums"><code>// public/scriptAgregarStream.js
+//  No se usa actualmente, pero se deja como referencia para futuras implementaciones
 
-import fetch from 'node-fetch';
-import { apiKey } from "../config/youtube.config.js"; // ✅ Importa la API Key correctamente
+// Clave de la API de YouTube, necesaria para hacer llamadas a la API.
+// ⚠️ Reemplazar por una clave válida antes de producción.
+const apiKey = 'AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0'; // Reemplazalo por tu API KEY real
 
 /**
- * Verifica si un canal de YouTube tiene un stream en vivo activo.
- * @param {string} channelId - ID del canal de YouTube.
- * @returns {Promise&lt;boolean>} - Devuelve true si el canal está en vivo, false si no.
+ * Función que intenta autocompletar el campo "id_canal" al ingresar una URL de YouTube.
+ * Se invoca generalmente al perder el foco del campo de URL.
  */
-export async function canalEstaEnVivo(channelId) {
+async function autocompletarIdCanal() {
+    const urlInput = document.getElementById('url_stream').value.trim(); // Obtiene el valor ingresado en el campo de URL
+    const idInput = document.getElementById('id_canal'); // Campo donde se colocará el ID del canal
+
     try {
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&amp;channelId=${channelId}&amp;eventType=live&amp;type=video&amp;key=${apiKey}`;
-
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data.items &amp;&amp; data.items.length > 0) {
-            console.log(`✅ El canal con ID ${channelId} está transmitiendo en vivo.`);
-            return true;
-        } else {
-            console.log(`⏹️ El canal con ID ${channelId} no tiene transmisiones en vivo.`);
-            return false;
-        }
+        const channelId = await obtenerChannelIdDesdeURL(urlInput); // Intenta extraer el ID desde la URL
+        idInput.value = channelId; // Completa el input con el ID del canal
     } catch (error) {
-        console.error('❌ Error al verificar stream en vivo:', error);
-        return false;
+        alert('No se pudo obtener el ID del canal: ' + error.message); // Muestra error si no se puede obtener
+    }
+}
+
+/**
+ * Dado un enlace de YouTube, intenta extraer el ID del canal mediante distintos patrones posibles:
+ * - /channel/ID
+ * - /user/username
+ * - /@handle
+ * @param {string} url - La URL de YouTube ingresada por el usuario
+ * @returns {Promise&lt;string>} - Devuelve el ID del canal o lanza un error si no se reconoce el formato
+ */
+async function obtenerChannelIdDesdeURL(url) {
+    // Caso 1: URL del tipo /channel/ID
+    let match = url.match(/youtube\.com\/channel\/([a-zA-Z0-9_-]+)/);
+    if (match &amp;&amp; match[1]) {
+        return match[1];
+    }
+
+    // Caso 2: URL del tipo /user/username
+    match = url.match(/youtube\.com\/user\/([a-zA-Z0-9_-]+)/);
+    if (match &amp;&amp; match[1]) {
+        return await obtenerIdDesdeUsername(match[1]); // Consulta la API con el username
+    }
+
+    // Caso 3: URL del tipo /@handle
+    match = url.match(/youtube\.com\/@([a-zA-Z0-9._-]+)/);
+    if (match &amp;&amp; match[1]) {
+        return await obtenerIdDesdeHandle('@' + match[1]); // Consulta la API con el handle
+    }
+
+    // Si ningún patrón coincide, lanza error
+    throw new Error('Formato de URL no reconocido.');
+}
+
+/**
+ * Obtiene el ID de un canal de YouTube utilizando su username (antiguo formato de canales).
+ * @param {string} username - Username público del canal
+ * @returns {Promise&lt;string>} - ID del canal
+ */
+async function obtenerIdDesdeUsername(username) {
+    const url = `https://www.googleapis.com/youtube/v3/channels?part=id&amp;forUsername=${username}&amp;key=${apiKey}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.items &amp;&amp; data.items.length > 0) {
+        return data.items[0].id;
+    } else {
+        throw new Error('No se encontró canal para ese username.');
+    }
+}
+
+/**
+ * Obtiene el ID del canal utilizando un "handle" (nuevo formato de identificador en URLs de YouTube).
+ * @param {string} handle - Handle precedido por @ (ej: @nombreCanal)
+ * @returns {Promise&lt;string>} - ID del canal
+ */
+async function obtenerIdDesdeHandle(handle) {
+    // ✅ Búsqueda por nombre de canal (handle) usando la API de búsqueda
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&amp;type=channel&amp;q=${handle}&amp;key=${apiKey}`;
+    const response = await fetch(searchUrl);
+    const data = await response.json();
+
+    if (data.items &amp;&amp; data.items.length > 0) {
+        return data.items[0].snippet.channelId;
+    } else {
+        throw new Error('No se encontró canal para ese handle.');
     }
 }
 </code></pre>

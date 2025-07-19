@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: database/sync.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,55 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: database/sync.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// src/database/sync.js
 
+import sequelize from './database.js';
 
-    <h3> </h3>
+// Importar todos los modelos
+import StreamYouTube from '../models/streams_youtube.js';
+import MedicionYouTube from '../models/mediciones_youtube.js';
+import ConfiguracionYouTube from '../models/configuracion_youtube.js'; // ✅ Asegurate de agregar esto
 
+/**
+ * Sincroniza todos los modelos Sequelize con la base de datos.
+ *
+ * - Verifica la conexión con `sequelize.authenticate()`.
+ * - Ejecuta `sequelize.sync({ alter: true })` para sincronizar los modelos existentes
+ *   y realizar ajustes si hay cambios en las definiciones.
+ * - Cierra la conexión con la base de datos al finalizar el proceso.
+ *
+ * @async
+ * @function syncDatabase
+ * @returns {Promise&lt;void>}
+ */
+async function syncDatabase() {
+    try {
+        await sequelize.authenticate();
+        console.log('✅ Conexión a la base de datos exitosa.');
 
+        // Sincronizar todos los modelos
+        await sequelize.sync({ alter: true });
+        console.log('✅ Tablas sincronizadas correctamente.');
+    } catch (error) {
+        console.error('❌ Error al sincronizar la base de datos:', error);
+    } finally {
+        await sequelize.close();
+    }
+}
 
-
-
-
-
-
-
-
-    
-
-
-
-
-
+syncDatabase();
+</code></pre>
+        </article>
+    </section>
 
 
 

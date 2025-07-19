@@ -8,11 +8,18 @@ import { mostrarFormulario, generarTabla } from '../controllers/datatablesYoutub
 // Crea una nueva instancia del enrutador
 const router = Router();
 
-// Ruta GET que muestra el formulario principal de DataTables para YouTube
+/**
+ * @route GET /datatablesYouTube
+ * @description Muestra el formulario principal de DataTables para YouTube
+ * @access Público
+ */
 router.get('/datatablesYouTube', mostrarFormulario);
 
-// Ruta GET que genera y devuelve la tabla de datos de YouTube en formato JSON
-// Esta ruta es usada por DataTables para hacer la carga dinámica de datos
+/**
+ * @route GET /datatablesYouTube/tabla
+ * @description Devuelve los datos en formato JSON para poblar la tabla de YouTube
+ * @access Público (usado por DataTables)
+ */
 router.get('/datatablesYouTube/tabla', generarTabla);
 
 // Exporta el enrutador para que pueda ser usado en app.js

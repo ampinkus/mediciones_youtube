@@ -1,15 +1,15 @@
 /**
- * index.js
- * 
- * Archivo principal para levantar el servidor.
+ * @file index.js
+ * @module server
+ * @description Archivo principal para levantar el servidor.
+ *
  * - Conecta con la base de datos usando Sequelize.
  * - Inicia el servidor Express.
  * - Inicia las tareas programadas (como mediciones periódicas de YouTube).
- * 
- * Dependencias:
- * - app.js: configuración principal de la aplicación Express.
- * - sequelize: instancia de conexión con la base de datos PostgreSQL.
- * - medicionYoutube.js: script encargado de lanzar las mediciones automatizadas.
+ *
+ * @requires ./app.js
+ * @requires ./database/database.js
+ * @requires ./jobs/medicionYoutube.js
  */
 
 import app from './app.js';

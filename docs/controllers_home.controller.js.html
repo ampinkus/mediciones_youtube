@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: controllers/home.controller.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,38 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: controllers/home.controller.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module controllers/home.controller
+ * 
+ * Este módulo define el controlador de la página principal del sistema.
+ * Se encarga de renderizar la vista de inicio ('home/index').
+ */
 
+/**
+ * Renderiza la página de inicio.
+ * 
+ * @function
+ * @name mostrarHome
+ * @param {import('express').Request} req - Objeto de solicitud HTTP de Express.
+ * @param {import('express').Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {void}
+ */
+export const mostrarHome = (req, res) => {
+    res.render('home/index');
+};
 
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+</code></pre>
+        </article>
+    </section>
 
 
 

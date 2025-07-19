@@ -1,25 +1,23 @@
 /**
- * app.js
- * 
- * Punto de entrada principal de la aplicación Express.
+ * @file app.js
+ * @module app
+ * @description Punto de entrada principal de la aplicación Express.
  * Configura middlewares, motor de plantillas y rutas.
- * 
+ *
  * Este módulo sirve como bootstrap de todo el sistema:
  * - Carga rutas principales del sistema.
  * - Configura el motor de vistas con EJS.
  * - Sirve archivos estáticos como scripts y estilos desde /public y /modulos.
- * 
- * Dependencias:
- * - express: Framework web principal
- * - path: Módulo para manejar rutas del sistema de archivos
- * - __dirname, __filename: Variables auxiliares importadas desde utils.js
- * 
- * Rutas registradas:
- * - home.routes.js (página principal)
- * - youtube.routes.js (gestión de streams de YouTube)
- * - datatablesYoutube.routes.js (tablas dinámicas)
- * - graficosYoutube.routes.js (gráficos de estadísticas)
+ *
+ * @requires express
+ * @requires path
+ * @requires ./utils.js
+ * @requires ./routes/home.routes.js
+ * @requires ./routes/youtube.routes.js
+ * @requires ./routes/datatablesYoutube.routes.js
+ * @requires ./routes/graficosYoutube.routes.js
  */
+
 
 import express from 'express';
 import path from 'path';
@@ -49,4 +47,5 @@ app.use(youtubeRoutes); // Gestión de streams de YouTube
 app.use(datatablesYoutubeRoutes); // Tablas dinámicas
 app.use(graficosYoutubeRoutes); // Gráficos con estadísticas
 
+// Exporta la instancia principal de la app Express
 export default app;

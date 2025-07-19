@@ -1,3 +1,14 @@
+/** @typedef {import('express')} Express */
+
+/**
+ * Muestra el formulario para seleccionar un stream y fechas/horas para generar una tabla.
+ *
+ * @function mostrarFormulario
+ * @async
+ * @param {Express.Request} req - Objeto de solicitud de Express.
+ * @param {Express.Response} res - Objeto de respuesta de Express.
+ */
+
 /**
  * datatablesYoutube.controller.js
  *
@@ -14,14 +25,7 @@ import StreamYouTube from "../models/streams_youtube.js";
 import MedicionYouTube from "../models/mediciones_youtube.js";
 import { Op } from "sequelize";
 
-/**
- * Muestra el formulario para seleccionar un stream y fechas/horas para generar una tabla.
- *
- * @function mostrarFormulario
- * @async
- * @param {object} req - Objeto de solicitud de Express.
- * @param {object} res - Objeto de respuesta de Express.
- */
+
 export const mostrarFormulario = async (req, res) => {
   const streams = await StreamYouTube.findAll({
     order: [["nombre_stream", "ASC"]],

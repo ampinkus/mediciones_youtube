@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: controllers/utils.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,58 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: controllers/utils.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module utils/pathHelper
+ * @description
+ * Utilidad para obtener `__filename` y `__dirname` en módulos ES (ECMAScript modules).
+ * Este módulo proporciona dos constantes que representan la ruta absoluta del archivo actual
+ * y del directorio contenedor, similares a las variables `__filename` y `__dirname` de CommonJS.
+ * 
+ * @exports __filename - Ruta absoluta del archivo actual.
+ * @exports __dirname - Ruta absoluta del directorio del archivo actual.
+ */
 
+// we use this file to get the path of the current directory and avoid to clutter the code in the app.js
+/*
+1. Importing Modules:
+import path from "path";
+import { fileURLToPath } from "url";
+These lines import two modules: path and fileURLToPath.
 
-    <h3> </h3>
+The path module provides utilities for working with file and directory paths.
+The fileURLToPath function is from the url module and is used to convert a file URL to a file path.
 
+2. Getting the Current File's URL and Converting it to a Path:
+const __filename = fileURLToPath(import.meta.url);
+  - import.meta.url returns the URL of the current module. In this case, it's the URL of the JavaScript file
+    where this code resides.
+  - fileURLToPath is then used to convert the file URL to a file path and assign it to the variable __filename.
+So, after this code is executed, __filename will contain the absolute path of the current JavaScript file. 
+This is a common pattern used in Node.js when you need the current file's path for various purposes such as 
+resolving relative paths or working with file system operations.
+*/
 
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+// console.log(__filename); // la ruta completa del archivo utils 
+const __dirname = path.dirname(__filename);
+// console.log(__dirname);  // el directorio donde está el archivo utils
 
-
-
-
-
-
-
-    
-
-
-
-
-
+export { __filename, __dirname };
+</code></pre>
+        </article>
+    </section>
 
 
 
