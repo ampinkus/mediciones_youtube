@@ -5,16 +5,18 @@ import StreamYouTube from "../models/streams_youtube.js";
 import ConfiguracionYouTube from "../models/configuracion_youtube.js";
 import MedicionYouTube from "../models/mediciones_youtube.js";
 import { extraerVideoID } from "../controllers/utils.controller.js";
+import { DateTime } from "luxon";
 
 import { apiKey } from "../config/youtube.config.js";
 const medicionesActivas = new Map();
 
 function convertirAHoraArgentina(utcString) {
   if (!utcString) return null;
-  const dateUTC = new Date(utcString);
-  const dateArgentina = new Date(dateUTC.getTime() - 3 * 60 * 60 * 1000); // GMT-3
-  return dateArgentina.toTimeString().split(" ")[0];
+  return DateTime.fromISO(utcString, { zone: 'utc' })
+    .setZone('America/Argentina/Buenos_Aires')
+    .toFormat('HH:mm:ss');
 }
+
 
 async function obtenerDatosYouTube(stream) {
   try {
@@ -32,8 +34,6 @@ async function obtenerDatosYouTube(stream) {
     const channel = channelResponse.items?.[0];
     const video = videoResponse.items?.[0];
     const lsd = video?.liveStreamingDetails;
-    const now = new Date();
-    const hora_medicion = now.toTimeString().split(" ")[0];
 
     const config = await ConfiguracionYouTube.findOne({
       where: { streamId: stream.id },
@@ -67,22 +67,14 @@ async function obtenerDatosYouTube(stream) {
       );
     }
 
-    function obtenerFechaLocalFormatoISO() {
-      const ahora = new Date();
-      const año = ahora.getFullYear();
-      const mes = String(ahora.getMonth() + 1).padStart(2, "0");
-      const dia = String(ahora.getDate()).padStart(2, "0");
-      return `${año}-${mes}-${dia}`;
-    }
+    // ✅ Usar Luxon para obtener fecha y hora local (Argentina)
+    const ahoraArgentina = DateTime.now().setZone("America/Argentina/Buenos_Aires");
+    const fechaLocal = ahoraArgentina.toISODate();           // "2025-07-18"
+    const horaActual = ahoraArgentina.toFormat("HH:mm:ss");  // "22:13:41"
 
-    const fechaLocal = obtenerFechaLocalFormatoISO();
-
-    const horaActual = new Date().toLocaleTimeString("es-AR", {
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+    // ✅ Diagnóstico
+    const fechaHoraArgentina = ahoraArgentina.toFormat("yyyy-MM-dd HH:mm:ss");
+    console.log("→ Fecha/hora local (Argentina):", fechaHoraArgentina);
 
     await MedicionYouTube.create({
       streamId: stream.id,
@@ -96,7 +88,7 @@ async function obtenerDatosYouTube(stream) {
       comentarios_video: parseInt(video.statistics.commentCount || 0),
       actual_start_time: stream.ConfiguracionYouTube?.actual_start_time || null,
       actual_end_time: stream.ConfiguracionYouTube?.actual_end_time || null,
-      concurrent_viewers: concurrentViewers, // 👈 nuevo campo agregado
+      concurrent_viewers: concurrentViewers,
     });
 
     console.log(
@@ -169,7 +161,9 @@ async function medirStreamConTimeout(stream) {
     const usarHoraStream = config.usar_hora_stream === true;
 
     const ahora = new Date();
-    const hoy = ahora.toISOString().split("T")[0];
+    const hoy = DateTime.now()
+      .setZone("America/Argentina/Buenos_Aires")
+      .toISODate(); // YYYY-MM-DD según hora Argentina
 
     if (hoy < fecha || (fecha_final && hoy > fecha_final)) {
       console.log(
