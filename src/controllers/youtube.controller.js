@@ -20,7 +20,7 @@ import { apiKey } from "../config/youtube.config.js";
 
 /**
  * Convierte una fecha en formato ISO (YYYY-MM-DD o completo) a formato DD/MM/YYYY.
- * 
+ *
  * @param {string|null|undefined} fechaISO - Fecha en formato ISO.
  * @returns {string|null} Fecha formateada en formato DD/MM/YYYY o null si es inválida.
  */
@@ -35,7 +35,7 @@ function formatearFecha(fechaISO) {
 
 /**
  * Formatea una hora quitando los segundos, dejando solo HH:mm.
- * 
+ *
  * @param {string|null|undefined} horaCompleta - Hora en formato HH:mm:ss.
  * @returns {string} Hora en formato HH:mm, o cadena vacía si es inválida.
  */
@@ -47,11 +47,22 @@ function formatearHora(horaCompleta) {
 
 /**
  * Muestra todos los streams con sus configuraciones asociadas.
- * 
+ *
+ * @function verStreams
  * @async
- * @function
- * @param {Object} req - Objeto de solicitud HTTP.
- * @param {Object} res - Objeto de respuesta HTTP.
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ *
+ *   Esta ruta **no** recibe parámetros:
+ *     - `req.params`  → vacío
+ *     - `req.query`   → vacío
+ *     - `req.body`    → vacío
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ *   Renderiza la vista **`youtube/youtube`** enviando:
+ *     - `streams` (Array\<StreamYouTube>): listado de streams con sus configuraciones
+ *       ya formateadas (fechas y horas legibles).
+ *
  * @returns {Promise<void>}
  */
 export const verStreams = async (req, res) => {
@@ -66,10 +77,16 @@ export const verStreams = async (req, res) => {
       if (config) {
         config.fecha_formateada = formatearFecha(config.fecha);
         config.fecha_final_formateada = formatearFecha(config.fecha_final);
-        config.hora_comienzo_medicion = formatearHora(config.hora_comienzo_medicion);
+        config.hora_comienzo_medicion = formatearHora(
+          config.hora_comienzo_medicion
+        );
         config.hora_fin_medicion = formatearHora(config.hora_fin_medicion);
-        config.actual_start_time_formateada = formatearHora(config.actual_start_time);
-        config.actual_end_time_formateada = formatearHora(config.actual_end_time);
+        config.actual_start_time_formateada = formatearHora(
+          config.actual_start_time
+        );
+        config.actual_end_time_formateada = formatearHora(
+          config.actual_end_time
+        );
         config.actual_start_time = config.actual_start_time || "";
         config.actual_end_time = config.actual_end_time || "";
       }
@@ -83,12 +100,26 @@ export const verStreams = async (req, res) => {
 };
 
 /**
- * Muestra el formulario para agregar un nuevo stream.
- * 
- * @function
- * @param {Object} req - Objeto de solicitud HTTP.
- * @param {Object} res - Objeto de respuesta HTTP.
+ * Muestra el formulario para agregar un nuevo stream de YouTube.
+ *
+ * @function formularioAgregar
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ *
+ *   Esta ruta **no** recibe parámetros:
+ *     - `req.params` → vacío
+ *     - `req.query`  → vacío
+ *     - `req.body`   → vacío
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ *   Renderiza la vista **`youtube/agregarStreamYoutube`** enviando:
+ *     - `fechaHoy` (string): Fecha actual en formato DD/MM/YYYY.
+ *     - `horaComienzo` (string): Hora manual de inicio (campo vacío por defecto).
+ *     - `horaFin` (string): Hora manual de fin  (campo vacío por defecto).
+ *
+ * @returns {void}
  */
+
 export const formularioAgregar = (req, res) => {
   const hoy = new Date();
   const dia = String(hoy.getDate()).padStart(2, "0");
@@ -104,14 +135,36 @@ export const formularioAgregar = (req, res) => {
 };
 
 /**
- * Guarda un nuevo stream junto con su configuración.
- * 
+ * Guarda un nuevo stream de YouTube junto con su configuración en la base de datos.
+ *
+ * @function guardarStream
  * @async
- * @function
- * @param {Object} req - Objeto de solicitud HTTP.
- * @param {Object} res - Objeto de respuesta HTTP.
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ *
+ *   Contiene los siguientes campos en **`req.body`** (provenientes del formulario):
+ *     - `nombre_stream` (string): Nombre descriptivo del stream.
+ *     - `url_stream`   (string): URL completa del video/stream de YouTube.
+ *     - `id_canal`     (string): ID del canal de YouTube.
+ *     - `fecha`        (string): Fecha de inicio en formato **DD/MM/YYYY**.
+ *     - `fecha_final`  (string | null): Fecha de fin en formato **DD/MM/YYYY** (opcional).
+ *     - `hora_comienzo_medicion` (string | null): Hora manual de comienzo **HH:mm** (opcional).
+ *     - `hora_fin_medicion`      (string | null): Hora manual de fin **HH:mm** (opcional).
+ *     - `intervalo_medicion`     (number): Intervalo entre mediciones, en minutos.
+ *
+ *   ➡ Durante la lógica:
+ *     - Se extrae `videoID` para consultar **YouTube Data API** y, si existe,
+ *       obtener `actualStartTime` y `actualEndTime` para autocompletar horas.
+ *     - Las fechas se validan y convierten a ISO (**YYYY-MM-DD**).
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ *   - En caso exitoso **redirige** a **`/youtube`** (lista de streams).
+ *   - Si ocurre un error, responde con `500 Internal Server Error`
+ *     y el mensaje **"Error al guardar el stream"**.
+ *
  * @returns {Promise<void>}
  */
+
 export const guardarStream = async (req, res) => {
   try {
     const {
@@ -129,9 +182,10 @@ export const guardarStream = async (req, res) => {
       ? moment(fecha, "DD/MM/YYYY").format("YYYY-MM-DD")
       : null;
 
-    const fechaFinalISO = fecha_final && moment(fecha_final, "DD/MM/YYYY", true).isValid()
-      ? moment(fecha_final, "DD/MM/YYYY").format("YYYY-MM-DD")
-      : null;
+    const fechaFinalISO =
+      fecha_final && moment(fecha_final, "DD/MM/YYYY", true).isValid()
+        ? moment(fecha_final, "DD/MM/YYYY").format("YYYY-MM-DD")
+        : null;
 
     if (!fechaInicioISO) {
       console.error("❌ Error: formato de fecha inicial inválido");
@@ -163,7 +217,8 @@ export const guardarStream = async (req, res) => {
         if (actualStart) horaInicioMedicion = actualStart.substring(11, 16);
         if (actualEnd) horaFinMedicion = actualEnd.substring(11, 16);
 
-        if (actualStart?.length > 0) actualStart = actualStart.substring(11, 19);
+        if (actualStart?.length > 0)
+          actualStart = actualStart.substring(11, 19);
         if (actualEnd?.length > 0) actualEnd = actualEnd.substring(11, 19);
       } catch (err) {
         console.warn("⚠️ No se pudo obtener actualStartTime/EndTime:", err);
@@ -191,13 +246,25 @@ export const guardarStream = async (req, res) => {
 
 /**
  * Muestra los datos detallados de un stream individual.
- * 
+ *
+ * @function verStream
  * @async
- * @function
- * @param {Object} req - Objeto de solicitud HTTP.
- * @param {Object} res - Objeto de respuesta HTTP.
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ *
+ *   Contiene los siguientes parámetros en **`req.params`**:
+ *     - `id` (string): ID del stream a buscar.
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ *   - **Éxito**: renderiza la vista **`youtube/verStreamYoutube`**
+ *     pasando el objeto `{ stream }`.
+ *   - **404**: si no existe el stream, responde con *"Stream no encontrado"*.
+ *   - **500**: ante cualquier error inesperado, responde con
+ *     *"Error interno del servidor"*.
+ *
  * @returns {Promise<void>}
  */
+
 export const verStream = async (req, res) => {
   const { id } = req.params;
 
@@ -227,13 +294,31 @@ export const verStream = async (req, res) => {
 
 /**
  * Muestra el formulario para editar un stream existente.
- * 
+ *
+ * @function formularioEditar
  * @async
- * @function
- * @param {Object} req - Objeto de solicitud HTTP.
- * @param {Object} res - Objeto de respuesta HTTP.
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ *
+ *   Contiene los siguientes parámetros en **`req.params`**:
+ *     - `id` (string): ID del stream que se desea editar.
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ *   - **Éxito**: renderiza la vista **`youtube/modificarStreamYoutube`**
+ *     con el objeto de contexto:
+ *       ```js
+ *       {
+ *         stream,        // Datos del stream + configuración formateada
+ *         errorIdCanal: null
+ *       }
+ *       ```
+ *   - **404**: si el stream no existe, responde con *"Stream no encontrado."*.
+ *   - **500**: ante un error de base de datos u otro imprevisto,
+ *     responde con *"Error al obtener el stream."*.
+ *
  * @returns {Promise<void>}
  */
+
 export const formularioEditar = async (req, res) => {
   try {
     const { id } = req.params;
@@ -262,16 +347,35 @@ export const formularioEditar = async (req, res) => {
   }
 };
 
-
 /**
  * Actualiza los datos de un stream existente y su configuración.
- * 
+ *
+ * @function actualizarStream
  * @async
- * @function
- * @param {Object} req - Objeto de solicitud HTTP.
- * @param {Object} res - Objeto de respuesta HTTP.
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ *
+ *   Contiene los siguientes parámetros en **`req.params`**:
+ *     - `id` (string): ID del stream a actualizar.
+ *
+ *   Contiene los siguientes campos en **`req.body`**:
+ *     - `nombre_stream` (string): Nombre descriptivo del stream.
+ *     - `url_stream` (string): URL del video de YouTube.
+ *     - `id_canal` (string): ID del canal de YouTube.
+ *     - `fecha` (string): Fecha de inicio en formato **DD/MM/YYYY**.
+ *     - `fecha_final` (string): Fecha final en formato **DD/MM/YYYY** (opcional).
+ *     - `hora_comienzo_medicion` (string): Hora de comienzo en formato **HH:mm** (opcional).
+ *     - `hora_fin_medicion` (string): Hora de fin en formato **HH:mm** (opcional).
+ *     - `intervalo_medicion` (string | number): Intervalo entre mediciones en minutos.
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ *   - **Éxito (302)**: redirige a **`/youtube`** después de guardar los cambios.
+ *   - **404**: si el stream no existe, responde con *“Stream no encontrado.”*.
+ *   - **500**: ante un error inesperado, responde con *“Error al actualizar el stream.”*.
+ *
  * @returns {Promise<void>}
  */
+
 export const actualizarStream = async (req, res) => {
   try {
     const { id } = req.params;
@@ -290,9 +394,10 @@ export const actualizarStream = async (req, res) => {
       ? moment(fecha, "DD/MM/YYYY").format("YYYY-MM-DD")
       : null;
 
-    const fechaFinalISO = fecha_final && moment(fecha_final, "DD/MM/YYYY").isValid()
-      ? moment(fecha_final, "DD/MM/YYYY").format("YYYY-MM-DD")
-      : null;
+    const fechaFinalISO =
+      fecha_final && moment(fecha_final, "DD/MM/YYYY").isValid()
+        ? moment(fecha_final, "DD/MM/YYYY").format("YYYY-MM-DD")
+        : null;
 
     const stream = await StreamYouTube.findByPk(id, {
       include: ConfiguracionYouTube,
@@ -318,14 +423,30 @@ export const actualizarStream = async (req, res) => {
 };
 
 /**
- * Elimina un stream y su configuración asociada.
- * 
+ * Elimina un stream y toda la información relacionada (mediciones y configuración).
+ *
+ * @function eliminarStream
  * @async
- * @function
- * @param {Object} req - Objeto de solicitud HTTP.
- * @param {Object} res - Objeto de respuesta HTTP.
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ *
+ *   Contiene los siguientes parámetros en **`req.params`**  
+ *   (provenientes de la ruta `DELETE /youtube/:id` o similar):
+ *     - `id` (string): ID numérico del stream que se desea eliminar.
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ *   - **Éxito (302)**: redirige a **`/youtube`** después de eliminar el stream.  
+ *   - **404**: si el stream no existe, responde con *“Stream no encontrado.”*.  
+ *   - **500**: ante un error inesperado, responde con *“Error al eliminar el stream.”*.
+ *
  * @returns {Promise<void>}
+ *
+ * @example
+ * // Llamada desde el cliente con fetch
+ * fetch('/youtube/123', { method: 'DELETE' })
+ *   .then(() => window.location.reload());
  */
+
 export const eliminarStream = async (req, res) => {
   const { id } = req.params;
 
@@ -350,14 +471,32 @@ export const eliminarStream = async (req, res) => {
 };
 
 /**
- * Activa o desactiva un stream.
- * 
+ * Activa o desactiva (toggle) el estado **`activo`** de un stream de YouTube.
+ *
+ * @function toggleStream
  * @async
- * @function
- * @param {Object} req - Objeto de solicitud HTTP.
- * @param {Object} res - Objeto de respuesta HTTP.
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ *
+ *   Contiene los siguientes parámetros en **`req.params`**  
+ *   (llegan desde la ruta `POST /youtube/:id/toggle`, `PUT`, o `PATCH`, según tu router):
+ *     - `id` (string): ID numérico del stream cuyo estado se quiere alternar.
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ *   - **Éxito (302)**: redirige a **`/youtube`** después de cambiar el estado.  
+ *   - **404**: si no se encuentra el stream o su configuración, responde  
+ *     *“Stream o configuración no encontrada.”*.  
+ *   - **500**: ante un error inesperado, responde  
+ *     *“Error al cambiar el estado del stream.”*.
+ *
  * @returns {Promise<void>}
+ *
+ * @example
+ * // Ejemplo de uso desde el cliente con fetch:
+ * fetch('/youtube/42/toggle', { method: 'POST' })
+ *   .then(() => window.location.href = '/youtube');
  */
+
 export const toggleStream = async (req, res) => {
   const { id } = req.params;
 
@@ -381,14 +520,40 @@ export const toggleStream = async (req, res) => {
 };
 
 /**
- * Obtiene automáticamente el ID del canal y el título del video desde la API de YouTube.
- * 
+ * Obtiene automáticamente el ID de canal y el nombre completo del video a partir de una URL
+ * de YouTube, consultando la **YouTube Data API v3**.
+ *
+ * @function obtenerNombreDesdeURL
  * @async
- * @function
- * @param {Object} req - Objeto de solicitud HTTP.
- * @param {Object} res - Objeto de respuesta HTTP.
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ *
+ *   Contiene los siguientes campos en **`req.body`**  
+ *   (llega desde la vista “Agregar Stream YouTube”):
+ *     - `url_stream` (string): URL completa del video de YouTube del cual se
+ *       desea extraer el ID y los metadatos.
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ *   | Estado | Devuelve                                                                            |
+ *   | ------ | ----------------------------------------------------------------------------------- |
+ *   | **200**| `{ nombre_stream, id_canal }` –&nbsp;JSON con:<br>• `nombre_stream` (string) = «\<channelTitle\> – \<videoTitle\>»<br>• `id_canal` (string) = ID del canal |
+ *   | **400**| `{ error: "No se pudo extraer el ID del video" }`                                   |
+ *   | **404**| `{ error: "Video no encontrado" }`                                                  |
+ *   | **500**| `{ error: "Error interno del servidor" }`                                           |
+ *
  * @returns {Promise<void>}
+ *
+ * @example
+ * // Ejemplo de uso desde el navegador:
+ * fetch('/youtube/obtener-nombre', {
+ *   method: 'POST',
+ *   headers: { 'Content-Type': 'application/json' },
+ *   body: JSON.stringify({ url_stream: 'https://youtu.be/abc123XYZ' })
+ * })
+ *   .then(res => res.json())
+ *   .then(data => console.log(data.nombre_stream, data.id_canal));
  */
+
 export const obtenerNombreDesdeURL = async (req, res) => {
   const { url_stream } = req.body;
 
@@ -396,7 +561,9 @@ export const obtenerNombreDesdeURL = async (req, res) => {
     const videoID = extraerVideoID(url_stream);
 
     if (!videoID) {
-      return res.status(400).json({ error: "No se pudo extraer el ID del video" });
+      return res
+        .status(400)
+        .json({ error: "No se pudo extraer el ID del video" });
     }
 
     const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoID}&key=${apiKey}`;
