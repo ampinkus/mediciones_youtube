@@ -350,12 +350,24 @@ export const formularioEditar = async (req, res) => {
 
 
 
+/**
+ * Convierte una fecha ingresada por el usuario a formato ISO `YYYY-MM-DD`.
+ *
+ * @function toISO
+ * @param {string} [raw=''] - Cadena con la fecha en uno de los formatos aceptados.
+ *   - `'DD/MM/YYYY'`
+ *   - `'YYYY-MM-DD'`
+ *
+ * @returns {(string|undefined)}  
+ *   - `string` con la fecha formateada si es válida.  
+ *   - `undefined` si el campo viene vacío o no pasa la validación (el controlador lo interpretará como "no tocar").
+ *
+ * @example
+ * toISO('27/07/2025'); // '2025-07-27'
+ * toISO('2025-07-27'); // '2025-07-27'
+ * toISO('');           // undefined
+ */
 
-
-// ---------------------------------------------------------
-// Convierte a 'YYYY-MM-DD' si la fecha es válida.
-// Devuelve undefined si el campo está vacío o no pasa la validación.
-// ---------------------------------------------------------
 const toISO = (raw = '') => {
   const limpio = raw.trim();
   if (!limpio) return undefined;                        // usuario lo dejó vacío
@@ -364,6 +376,46 @@ const toISO = (raw = '') => {
   return m.isValid() ? m.format('YYYY-MM-DD') : undefined;      // undefined ⇒ no tocar
 };
 
+
+/**
+ * Actualiza los datos principales de un stream de YouTube y su configuración de medición.
+ *
+ * @function actualizarStream
+ * @async
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ *   
+ *   **`req.params`**  
+ *   - `id` (string): ID del stream que se desea actualizar.
+ *   
+ *   **`req.body`**  
+ *   - `nombre_stream` (string): Nombre descriptivo del stream.  
+ *   - `url_stream` (string): URL del video en YouTube.  
+ *   - `id_canal` (string): ID del canal de YouTube.  
+ *   - `fecha` (string): Fecha inicial de medición en formato `DD/MM/YYYY`.  
+ *   - `fecha_final` (string): Fecha final de medición en formato `DD/MM/YYYY` (opcional).  
+ *   - `hora_comienzo_medicion` (string): Hora HH:mm de inicio diario (opcional).  
+ *   - `hora_fin_medicion` (string): Hora HH:mm de fin diario (opcional).  
+ *   - `intervalo_medicion` (number|string): Frecuencia en minutos.
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *   
+ *   - **Éxito (302)**: redirige a `/youtube` después de guardar los cambios.  
+ *   - **404**: si no existe el stream, responde "Stream no encontrado.".  
+ *   - **500**: ante error inesperado, responde "Error al actualizar el stream.".
+ *
+ * @returns {Promise<void>}
+ *
+ * @example
+ * fetch('/youtube/editar/42', {
+ *   method: 'POST',
+ *   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+ *   body: new URLSearchParams({
+ *     nombre_stream: 'Mi nuevo título',
+ *     fecha: '27/07/2025',
+ *     intervalo_medicion: 15
+ *   })
+ * });
+ */
 export const actualizarStream = async (req, res) => {
   try {
     const { id } = req.params;
