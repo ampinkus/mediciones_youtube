@@ -1,24 +1,29 @@
 /**
  * @module controllers/utilscontroller
- * @description Controlador que maneja:
- * Este módulo se utiliza para extraer el ID de un video de YouTube.
- * Es usado por los controladores `youtube.controller.js` y `medicionYoutube.js`.
+ * @description
+ * Utilidades generales para controladores relacionados con YouTube.
+ * En particular, este módulo expone la función {@link extraerVideoID}, que es
+ * utilizada por `youtube.controller.js`, `medicionYoutube.js` y otros
+ * controladores para obtener el ID limpio de un video de YouTube a partir de
+ * distintos formatos de URL.
  */
 
 /**
- * Extrae el ID de un video de YouTube a partir de una URL completa.
+ * Extrae el ID de un video de YouTube a partir de una URL.
  *
- * Esta función soporta distintos formatos de URLs de YouTube, incluyendo:
- * - https://www.youtube.com/watch?v=VIDEO_ID
- * - https://youtu.be/VIDEO_ID
- * - https://www.youtube.com/embed/VIDEO_ID
- * - https://www.youtube.com/shorts/VIDEO_ID
+ * Esta función reconoce los siguientes formatos de enlace (entre otros):
+ *   - `https://www.youtube.com/watch?v=VIDEO_ID`
+ *   - `https://youtu.be/VIDEO_ID`
+ *   - `https://www.youtube.com/embed/VIDEO_ID`
+ *   - `https://www.youtube.com/shorts/VIDEO_ID`
  *
- * Si no encuentra un ID válido, devuelve la URL original sin espacios.
+ * Si no encuentra un ID válido devuelve la **URL recortada** (sin espacios),
+ * permitiendo al llamador detectar que no se pudo extraer.
  *
  * @function extraerVideoID
- * @param {string} url - La URL del video de YouTube.
- * @returns {string} El ID del video (11 caracteres) o la URL limpia si no se puede extraer.
+ * @param {string} url - URL completa del video de YouTube.
+ * @returns {string} ID de 11 caracteres del video **o** la URL original
+ *          recortada si no se pudo extraer.
  */
 export function extraerVideoID(url) {
   const regex =

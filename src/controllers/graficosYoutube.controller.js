@@ -15,12 +15,23 @@ import { Op } from 'sequelize';
 import moment from 'moment';
 
 /**
- * Muestra el formulario para seleccionar streams, fechas y horas para generar gráficos.
+ * Muestra el formulario donde el usuario elige un stream y un rango temporal
+ * para generar **gráficos** de vistas.
  *
  * @function mostrarFormulario
  * @async
- * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
- * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ * @param {Express.Request}  req - Objeto de solicitud HTTP de Express.  
+ *   - **No incluye parámetros específicos** (`req.query`, `req.body` y `req.params`
+ *     están vacíos). El controlador sólo lo usa para verificar que la ruta se llamó.
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.  
+ *   - **Renderiza**: `'youtube/formularioGraficosYoutube'`.  
+ *   - **Contexto enviado a la vista** (`locals`):  
+ *     - `streams` (Array\<StreamYouTube>): lista de streams ordenada
+ *       alfabéticamente por `nombre_stream`, utilizada para poblar el
+ *       `<select>` del formulario.
+ *
  * @returns {Promise<void>}
  */
 export const mostrarFormulario = async (req, res) => {
@@ -33,12 +44,26 @@ export const mostrarFormulario = async (req, res) => {
 };
 
 /**
- * Procesa la solicitud del formulario y genera los datos necesarios para los gráficos.
+ * Procesa la solicitud proveniente del formulario de gráficos y arma los
+ * **datasets** que usará la vista para dibujar los chart.js / ApexCharts.
  *
  * @function generarGrafico
  * @async
- * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
- * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ * @param {Express.Request}  req - Objeto de solicitud HTTP de Express.  
+ *   Parámetros recibidos en **`req.query`**:  
+ *   - `streamId`    {string|string[]} ID o array de IDs de los streams a consultar.  
+ *   - `fechaInicio` {string} Fecha de inicio del período (formato DD/MM/YYYY).  
+ *   - `fechaFin`    {string} Fecha de fin del período (formato DD/MM/YYYY).  
+ *   - `horaInicio`  {string} Hora de inicio (HH:mm).  
+ *   - `horaFin`     {string} Hora de fin (HH:mm).
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.  
+ *   **Renderiza** la vista `'youtube/graficosYoutube'` con el contexto:  
+ *   - `datosPorStream` (Array\<object>): lista de objetos  
+ *     `{ labels, data, concurrent_viewers, nombreStream, streamId }`
+ *     lista que la plantilla usa para generar los diferentes gráficos.
+ *
  * @returns {Promise<void>}
  */
 export const generarGrafico = async (req, res) => {
