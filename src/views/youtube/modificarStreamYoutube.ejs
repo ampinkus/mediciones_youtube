@@ -1,5 +1,5 @@
-<%- include('../partials/head.ejs') %> 
-<%- include('../partials/homeNav.ejs') %>
+<!-- modificarStreamYoutube.ejs -->
+<%- include('../partials/head.ejs') %> <%- include('../partials/homeNav.ejs') %>
 
 <div class="container mt-4">
   <h2>Modificar Stream de YouTube</h2>
@@ -7,22 +7,22 @@
   <form action="/youtube/editar/<%= stream.id %>" method="POST" class="mt-4">
     <div class="row mb-3">
       <div class="col">
-        <label for="nombre" class="form-label">Nombre</label>
+        <label for="nombre_stream" class="form-label">Nombre</label>
         <input
           type="text"
-          name="nombre"
-          id="nombre"
+          name="nombre_stream"
+          id="nombre_stream"
           class="form-control"
           value="<%= stream.nombre_stream %>"
           required
         />
       </div>
       <div class="col">
-        <label for="url" class="form-label">URL</label>
+        <label for="url_stream" class="form-label">URL</label>
         <input
           type="text"
-          name="url"
-          id="url"
+          name="url_stream"
+          id="url_stream"
           class="form-control"
           value="<%= stream.url_stream %>"
           required
@@ -40,7 +40,7 @@
           readonly
         />
         <% if (errorIdCanal) { %>
-          <div class="text-danger mt-1"><%= errorIdCanal %></div>
+        <div class="text-danger mt-1"><%= errorIdCanal %></div>
         <% } %>
       </div>
     </div>
@@ -48,14 +48,13 @@
     <h4 class="mt-4">Datos de configuración de la medición</h4>
     <div class="row mb-3">
       <div class="col">
-        <label for="fecha_inicial" class="form-label">Fecha Inicial</label>
+        <label for="fecha" class="form-label">Fecha Inicial</label>
         <input
           type="text"
-          name="fecha_inicial"
-          id="fecha_inicial"
+          name="fecha"
+          id="fecha"
           class="form-control datepicker"
           value="<%= stream.ConfiguracionYouTube.fecha_formateada %>"
-          required
         />
       </div>
       <div class="col">
@@ -69,7 +68,9 @@
         />
       </div>
       <div class="col">
-        <label for="hora_comienzo_medicion" class="form-label">Hora Comienzo</label>
+        <label for="hora_comienzo_medicion" class="form-label"
+          >Hora Comienzo</label
+        >
         <input
           type="text"
           name="hora_comienzo_medicion"
@@ -89,7 +90,9 @@
         />
       </div>
       <div class="col">
-        <label for="intervalo_medicion" class="form-label">Intervalo (minutos)</label>
+        <label for="intervalo_medicion" class="form-label"
+          >Intervalo (minutos)</label
+        >
         <input
           type="number"
           name="intervalo_medicion"
@@ -111,7 +114,10 @@
 <%- include('../partials/foot.ejs') %>
 
 <!-- Flatpickr Date and Time Pickers -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+/>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
   flatpickr(".datepicker", {

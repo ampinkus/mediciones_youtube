@@ -18,6 +18,7 @@ import fetch from "node-fetch";
 import { extraerVideoID } from "./utils.controller.js";
 import { apiKey } from "../config/youtube.config.js";
 
+
 /**
  * Convierte una fecha en formato ISO (YYYY-MM-DD o completo) a formato DD/MM/YYYY.
  *
@@ -347,78 +348,75 @@ export const formularioEditar = async (req, res) => {
   }
 };
 
-/**
- * Actualiza los datos de un stream existente y su configuración.
- *
- * @function actualizarStream
- * @async
- * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
- *
- *   Contiene los siguientes parámetros en **`req.params`**:
- *     - `id` (string): ID del stream a actualizar.
- *
- *   Contiene los siguientes campos en **`req.body`**:
- *     - `nombre_stream` (string): Nombre descriptivo del stream.
- *     - `url_stream` (string): URL del video de YouTube.
- *     - `id_canal` (string): ID del canal de YouTube.
- *     - `fecha` (string): Fecha de inicio en formato **DD/MM/YYYY**.
- *     - `fecha_final` (string): Fecha final en formato **DD/MM/YYYY** (opcional).
- *     - `hora_comienzo_medicion` (string): Hora de comienzo en formato **HH:mm** (opcional).
- *     - `hora_fin_medicion` (string): Hora de fin en formato **HH:mm** (opcional).
- *     - `intervalo_medicion` (string | number): Intervalo entre mediciones en minutos.
- *
- * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
- *
- *   - **Éxito (302)**: redirige a **`/youtube`** después de guardar los cambios.
- *   - **404**: si el stream no existe, responde con *“Stream no encontrado.”*.
- *   - **500**: ante un error inesperado, responde con *“Error al actualizar el stream.”*.
- *
- * @returns {Promise<void>}
- */
+
+
+
+
+// ---------------------------------------------------------
+// Convierte a 'YYYY-MM-DD' si la fecha es válida.
+// Devuelve undefined si el campo está vacío o no pasa la validación.
+// ---------------------------------------------------------
+const toISO = (raw = '') => {
+  const limpio = raw.trim();
+  if (!limpio) return undefined;                        // usuario lo dejó vacío
+
+  const m = moment(limpio, ['DD/MM/YYYY', 'YYYY-MM-DD'], true); // true ⇒ estricto
+  return m.isValid() ? m.format('YYYY-MM-DD') : undefined;      // undefined ⇒ no tocar
+};
 
 export const actualizarStream = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // ---------------- 1) Entradas ----------------
     const {
-      nombre_stream,
-      url_stream,
-      id_canal,
-      fecha,
-      fecha_final,
-      hora_comienzo_medicion,
-      hora_fin_medicion,
-      intervalo_medicion,
+      nombre_stream            = '',
+      url_stream               = '',
+      id_canal                 = '',
+      fecha                    = '',
+      fecha_final              = '',
+      hora_comienzo_medicion   = '',
+      hora_fin_medicion        = '',
+      intervalo_medicion       = ''
     } = req.body;
 
-    const fechaInicioISO = moment(fecha, "DD/MM/YYYY").isValid()
-      ? moment(fecha, "DD/MM/YYYY").format("YYYY-MM-DD")
-      : null;
+    // ---------------- 2) Formatos ----------------
+    const fechaInicioISO = toISO(fecha);
+    const fechaFinalISO  = toISO(fecha_final);
 
-    const fechaFinalISO =
-      fecha_final && moment(fecha_final, "DD/MM/YYYY").isValid()
-        ? moment(fecha_final, "DD/MM/YYYY").format("YYYY-MM-DD")
-        : null;
+    const intervaloParsed =
+      intervalo_medicion && Number.isFinite(+intervalo_medicion) && +intervalo_medicion > 0
+        ? parseInt(intervalo_medicion, 10)
+        : undefined;
 
-    const stream = await StreamYouTube.findByPk(id, {
-      include: ConfiguracionYouTube,
-    });
+    // ---------------- 3) Cargar modelos ----------------
+    const stream = await StreamYouTube.findByPk(id, { include: ConfiguracionYouTube });
+    if (!stream) return res.status(404).send('Stream no encontrado.');
 
-    if (!stream) return res.status(404).send("Stream no encontrado.");
+    // ---------------- 4) Objetos de actualización ----------------
+    const streamUpdates = {};
+    if (nombre_stream.trim()) streamUpdates.nombre_stream = nombre_stream.trim();
+    if (url_stream.trim())    streamUpdates.url_stream   = url_stream.trim();
+    if (id_canal.trim())      streamUpdates.id_canal     = id_canal.trim();
 
-    await stream.update({ nombre_stream, url_stream, id_canal });
+    const cfgUpdates = {};
+    if (fechaInicioISO !== undefined)   cfgUpdates.fecha        = fechaInicioISO;
+    if (fechaFinalISO  !== undefined)   cfgUpdates.fecha_final  = fechaFinalISO;
+    if (hora_comienzo_medicion.trim())  cfgUpdates.hora_comienzo_medicion = hora_comienzo_medicion.trim();
+    if (hora_fin_medicion.trim())       cfgUpdates.hora_fin_medicion      = hora_fin_medicion.trim();
+    if (intervaloParsed !== undefined)  cfgUpdates.intervalo_medicion     = intervaloParsed;
 
-    await stream.ConfiguracionYouTube.update({
-      fecha: fechaInicioISO,
-      fecha_final: fechaFinalISO,
-      hora_comienzo_medicion,
-      hora_fin_medicion,
-      intervalo_medicion,
-    });
+    // ---------------- 5) Guardar sólo si hay cambios ----------------
+    const tareas = [];
+    if (Object.keys(streamUpdates).length) tareas.push(stream.update(streamUpdates));
+    if (Object.keys(cfgUpdates).length)    tareas.push(stream.ConfiguracionYouTube.update(cfgUpdates));
+    await Promise.all(tareas);
 
-    res.redirect("/youtube");
-  } catch (error) {
-    console.error("Error al actualizar el stream:", error);
-    res.status(500).send("Error al actualizar el stream.");
+    // ---------------- 6) Redirigir ----------------
+    return res.redirect('/youtube');
+  } catch (err) {
+    console.error('Error al actualizar el stream:', err);
+    return res.status(500).send('Error al actualizar el stream.');
   }
 };
 
@@ -471,32 +469,14 @@ export const eliminarStream = async (req, res) => {
 };
 
 /**
- * Activa o desactiva (toggle) el estado **`activo`** de un stream de YouTube.
+ * Activa o desactiva un stream.
  *
- * @function toggleStream
  * @async
- * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
- *
- *   Contiene los siguientes parámetros en **`req.params`**  
- *   (llegan desde la ruta `POST /youtube/:id/toggle`, `PUT`, o `PATCH`, según tu router):
- *     - `id` (string): ID numérico del stream cuyo estado se quiere alternar.
- *
- * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
- *
- *   - **Éxito (302)**: redirige a **`/youtube`** después de cambiar el estado.  
- *   - **404**: si no se encuentra el stream o su configuración, responde  
- *     *“Stream o configuración no encontrada.”*.  
- *   - **500**: ante un error inesperado, responde  
- *     *“Error al cambiar el estado del stream.”*.
- *
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
  * @returns {Promise<void>}
- *
- * @example
- * // Ejemplo de uso desde el cliente con fetch:
- * fetch('/youtube/42/toggle', { method: 'POST' })
- *   .then(() => window.location.href = '/youtube');
  */
-
 export const toggleStream = async (req, res) => {
   const { id } = req.params;
 
@@ -520,70 +500,43 @@ export const toggleStream = async (req, res) => {
 };
 
 /**
- * Obtiene automáticamente el ID de canal y el nombre completo del video a partir de una URL
- * de YouTube, consultando la **YouTube Data API v3**.
+ * Obtiene automáticamente el ID del canal y el título del video desde la API de YouTube.
  *
- * @function obtenerNombreDesdeURL
  * @async
- * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
- *
- *   Contiene los siguientes campos en **`req.body`**  
- *   (llega desde la vista “Agregar Stream YouTube”):
- *     - `url_stream` (string): URL completa del video de YouTube del cual se
- *       desea extraer el ID y los metadatos.
- *
- * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
- *
- *   | Estado | Devuelve                                                                            |
- *   | ------ | ----------------------------------------------------------------------------------- |
- *   | **200**| `{ nombre_stream, id_canal }` –&nbsp;JSON con:<br>• `nombre_stream` (string) = «\<channelTitle\> – \<videoTitle\>»<br>• `id_canal` (string) = ID del canal |
- *   | **400**| `{ error: "No se pudo extraer el ID del video" }`                                   |
- *   | **404**| `{ error: "Video no encontrado" }`                                                  |
- *   | **500**| `{ error: "Error interno del servidor" }`                                           |
- *
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
  * @returns {Promise<void>}
- *
- * @example
- * // Ejemplo de uso desde el navegador:
- * fetch('/youtube/obtener-nombre', {
- *   method: 'POST',
- *   headers: { 'Content-Type': 'application/json' },
- *   body: JSON.stringify({ url_stream: 'https://youtu.be/abc123XYZ' })
- * })
- *   .then(res => res.json())
- *   .then(data => console.log(data.nombre_stream, data.id_canal));
  */
-
 export const obtenerNombreDesdeURL = async (req, res) => {
-  const { url_stream } = req.body;
+  // ① Tomamos la URL desde query o body; así sirve con GET o POST
+  const url = req.query.url || req.body?.url_stream;
+
+  if (!url) {
+    return res.status(400).json({ error: 'URL no proporcionada' });
+  }
 
   try {
-    const videoID = extraerVideoID(url_stream);
-
+    const videoID = extraerVideoID(url);
     if (!videoID) {
-      return res
-        .status(400)
-        .json({ error: "No se pudo extraer el ID del video" });
+      return res.status(400).json({ error: 'No se pudo extraer el ID del video' });
     }
 
-    const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoID}&key=${apiKey}`;
-    const response = await fetch(videoUrl);
-    const data = await response.json();
+    const apiURL = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoID}&key=${apiKey}`;
+    const respuesta = await fetch(apiURL);
+    const datos     = await respuesta.json();
 
-    if (!data.items?.length) {
-      return res.status(404).json({ error: "Video no encontrado" });
+    if (!datos.items?.length) {
+      return res.status(404).json({ error: 'Video no encontrado' });
     }
 
-    const video = data.items[0];
-    const id_canal = video.snippet.channelId;
-    const channelTitle = video.snippet.channelTitle;
-    const title = video.snippet.title;
+    const v = datos.items[0];
+    const nombre_stream = `${v.snippet.channelTitle} - ${v.snippet.title}`;
+    const id_canal      = v.snippet.channelId;
 
-    const nombre_stream = `${channelTitle} - ${title}`;
-
-    res.json({ nombre_stream, id_canal });
-  } catch (error) {
-    console.error("Error al obtener los datos desde la API de YouTube:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    return res.json({ nombre_stream, id_canal });
+  } catch (err) {
+    console.error('Error al consultar YouTube:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 };

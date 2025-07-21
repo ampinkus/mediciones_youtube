@@ -37,7 +37,7 @@ const ConfiguracionYouTube = sequelize.define(
     },
     fecha: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
+      allowNull: true,
     },
     fecha_final: {
       type: DataTypes.DATEONLY,
