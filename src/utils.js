@@ -1,3 +1,26 @@
+/**
+ * @module utils/pathHelper
+ * @description Módulo utilitario que proporciona las constantes `__filename` y `__dirname`
+ * en entornos ESModules, similares a las disponibles en CommonJS.
+ * 
+ * Estas constantes permiten obtener:
+ * - `__filename`: Ruta absoluta del archivo actual.
+ * - `__dirname`: Ruta del directorio que contiene el archivo actual.
+ * 
+ * Útil para construir rutas relativas dentro de módulos ES.
+ */
+
+
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+// console.log(__filename); // la ruta completa del archivo utils 
+const __dirname = path.dirname(__filename);
+// console.log(__dirname);  // el directorio donde está el archivo utils
+
+export { __filename, __dirname };
+
 // we use this file to get the path of the current directory and avoid to clutter the code in the app.js
 /*
 1. Importing Modules:
@@ -17,26 +40,3 @@ So, after this code is executed, __filename will contain the absolute path of th
 This is a common pattern used in Node.js when you need the current file's path for various purposes such as 
 resolving relative paths or working with file system operations.
 */
-
-/**
- * @file utils.js
- * @module utils
- * @description 
- * Utilidad para obtener la ruta del archivo actual (`__filename`) y su directorio (`__dirname`)
- * usando `import.meta.url`, útil para evitar lógica repetida en `app.js`.
- *
- * Este patrón es común en aplicaciones ES Modules para resolver rutas relativas.
- *
- * @requires path
- * @requires url
- */
-
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-// console.log(__filename); // la ruta completa del archivo utils 
-const __dirname = path.dirname(__filename);
-// console.log(__dirname);  // el directorio donde está el archivo utils
-
-export { __filename, __dirname };

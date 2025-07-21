@@ -1,5 +1,9 @@
-// utils.controller.js se usa para extraer el ID de un video de YouTube
-// y se usa en youtube.controller.js y medicionYoutube.js
+/**
+ * @module controllers/utilscontroller
+ * @description Controlador que maneja:
+ * Este módulo se utiliza para extraer el ID de un video de YouTube.
+ * Es usado por los controladores `youtube.controller.js` y `medicionYoutube.js`.
+ */
 
 /**
  * Extrae el ID de un video de YouTube a partir de una URL completa.
@@ -12,9 +16,9 @@
  *
  * Si no encuentra un ID válido, devuelve la URL original sin espacios.
  *
- * @function
+ * @function extraerVideoID
  * @param {string} url - La URL del video de YouTube.
- * @returns {string} - El ID del video (11 caracteres) o la URL limpia si no se puede extraer.
+ * @returns {string} El ID del video (11 caracteres) o la URL limpia si no se puede extraer.
  */
 export function extraerVideoID(url) {
   const regex =
@@ -22,4 +26,3 @@ export function extraerVideoID(url) {
   const match = url.match(regex);
   return match && match[1] ? match[1] : url.trim();
 }
-

@@ -1,12 +1,12 @@
 /**
- * graficosYoutube.controller.js
- *
- * Este controlador maneja:
+ * @module controllers/graficosYoutubeController
+ * @description Controlador que maneja:
  * - La visualización del formulario para generar gráficos.
  * - El procesamiento de filtros de fecha, hora y stream para consultas.
  * - La organización de los datos de medición para ser enviados al gráfico.
  * - La renderización de gráficos usando los datos agrupados por stream.
  */
+
 
 import sequelize from '../database/database.js';
 import StreamYouTube from '../models/streams_youtube.js';
@@ -19,8 +19,9 @@ import moment from 'moment';
  *
  * @function mostrarFormulario
  * @async
- * @param {object} req - Objeto de solicitud de Express.
- * @param {object} res - Objeto de respuesta de Express.
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>}
  */
 export const mostrarFormulario = async (req, res) => {
   const streams = await StreamYouTube.findAll({
@@ -36,8 +37,9 @@ export const mostrarFormulario = async (req, res) => {
  *
  * @function generarGrafico
  * @async
- * @param {object} req - Objeto de solicitud de Express.
- * @param {object} res - Objeto de respuesta de Express.
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>}
  */
 export const generarGrafico = async (req, res) => {
   const { streamId, fechaInicio, fechaFin, horaInicio, horaFin } = req.query;

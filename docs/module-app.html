@@ -1,23 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="utf-8">
-    <title>JSDoc: Module: app</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
+    <title>app - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div id="main">
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
 
-    <h1 class="page-title">Module: app</h1>
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-app.html">app</a></li><li><a href="module-controllers_graficosYoutubeController.html">controllers/graficosYoutubeController</a><ul class='methods'><li data-type='method'><a href="module-controllers_graficosYoutubeController.html#~generarGrafico">generarGrafico</a></li><li data-type='method'><a href="module-controllers_graficosYoutubeController.html#~mostrarFormulario">mostrarFormulario</a></li></ul></li><li><a href="module-controllers_homecontroller.html">controllers/homecontroller</a><ul class='methods'><li data-type='method'><a href="module-controllers_homecontroller.html#~mostrarHome">mostrarHome</a></li></ul></li><li><a href="module-controllers_utilscontroller.html">controllers/utilscontroller</a><ul class='methods'><li data-type='method'><a href="module-controllers_utilscontroller.html#~extraerVideoID">extraerVideoID</a></li></ul></li><li><a href="module-controllers_youtubecontroller.html">controllers/youtubecontroller</a><ul class='methods'><li data-type='method'><a href="module-controllers_youtubecontroller.html#.actualizarStream">actualizarStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.eliminarStream">eliminarStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.formularioAgregar">formularioAgregar</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.formularioEditar">formularioEditar</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.guardarStream">guardarStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.obtenerNombreDesdeURL">obtenerNombreDesdeURL</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.toggleStream">toggleStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.verStream">verStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.verStreams">verStreams</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#~formatearFecha">formatearFecha</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#~formatearHora">formatearHora</a></li></ul></li><li><a href="module-index.html">index</a><ul class='methods'><li data-type='method'><a href="module-index.html#~startServer">startServer</a></li></ul></li><li><a href="module-utils_pathHelper.html">utils/pathHelper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#apiKey">apiKey</a></li><li><a href="global.html#autocompletarIdCanal">autocompletarIdCanal</a></li><li><a href="global.html#canalEstaEnVivo">canalEstaEnVivo</a></li><li><a href="global.html#convertirAHoraArgentina">convertirAHoraArgentina</a></li><li><a href="global.html#dataTable">dataTable</a></li><li><a href="global.html#extractHandle">extractHandle</a></li><li><a href="global.html#generarTabla">generarTabla</a></li><li><a href="global.html#iniciarMediciones">iniciarMediciones</a></li><li><a href="global.html#medirStreamConTimeout">medirStreamConTimeout</a></li><li><a href="global.html#mostrarAlertaManual">mostrarAlertaManual</a></li><li><a href="global.html#mostrarFormulario">mostrarFormulario</a></li><li><a href="global.html#obtenerChannelIdDesdeURL">obtenerChannelIdDesdeURL</a></li><li><a href="global.html#obtenerDatosYouTube">obtenerDatosYouTube</a></li><li><a href="global.html#obtenerIdCanal">obtenerIdCanal</a></li><li><a href="global.html#obtenerIdDesdeHandle">obtenerIdDesdeHandle</a></li><li><a href="global.html#obtenerIdDesdeUsername">obtenerIdDesdeUsername</a></li><li><a href="global.html#sequelize">sequelize</a></li><li><a href="global.html#supervisor">supervisor</a></li><li><a href="global.html#syncDatabase">syncDatabase</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">app</h1>
+    
 
     
 
@@ -35,53 +56,37 @@
 </header>
 
 <article>
-    <div class="container-overview">
     
-        
-            <div class="description">Punto de entrada principal de la aplicación Express.Configura middlewares, motor de plantillas y rutas.Este módulo sirve como bootstrap de todo el sistema:- Carga rutas principales del sistema.- Configura el motor de vistas con EJS.- Sirve archivos estáticos como scripts y estilos desde /public y /modulos.</div>
-        
-
+        <div class="container-overview">
         
             
+                <div class="description usertext"><p>Punto de entrada principal de la aplicación Express.
+Configura middlewares, motor de plantillas y rutas.</p>
+<p>Este módulo sirve como bootstrap de todo el sistema:</p>
+<ul>
+<li>Carga rutas principales del sistema.</li>
+<li>Configura el motor de vistas con EJS.</li>
+<li>Sirve archivos estáticos como scripts y estilos desde /public y /modulos.</li>
+</ul></div>
+            
 
-
-
-
-
-
-
-
-
-
-
+            
+                
 
 
 
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Punto de entrada principal de la aplicación Express.
+Configura middlewares, motor de plantillas y rutas.</p>
+<p>Este módulo sirve como bootstrap de todo el sistema:</p>
+<ul>
+<li>Carga rutas principales del sistema.</li>
+<li>Configura el motor de vistas con EJS.</li>
+<li>Sirve archivos estáticos como scripts y estilos desde /public y /modulos.</li>
+</ul></li></ul></dd>
     
 
     
@@ -89,6 +94,30 @@
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="app.js.html">app.js</a>, <a href="app.js.html#line1">line 1</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -117,9 +146,20 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+            
         
+        </div>
     
-    </div>
 
     
 
@@ -144,10 +184,10 @@
     
 
     
-
+    
     
 
-    
+     
 
     
 
@@ -165,22 +205,27 @@
 
 
 
+    
+    
 </div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="controllers_home.controller%250A%250AEste%2520m%25C3%25B3dulo%2520define%2520el%2520controlador%2520de%2520la%2520p%25C3%25A1gina%2520principal%2520del%2520sistema.%250ASe%2520encarga%2520de%2520renderizar%2520la%2520vista%2520de%2520inicio%2520(_home_index_).module_.html">controllers/home.controller
-
-Este módulo define el controlador de la página principal del sistema.
-Se encarga de renderizar la vista de inicio ('home/index').</a></li><li><a href="module-app.html">app</a></li><li><a href="module-server.html">server</a></li><li><a href="module-utils.html">utils</a></li><li><a href="module-utils_pathHelper.html">utils/pathHelper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#actualizarStream">actualizarStream</a></li><li><a href="global.html#apiKey">apiKey</a></li><li><a href="global.html#autocompletarIdCanal">autocompletarIdCanal</a></li><li><a href="global.html#canalEstaEnVivo">canalEstaEnVivo</a></li><li><a href="global.html#convertirAHoraArgentina">convertirAHoraArgentina</a></li><li><a href="global.html#dataTable">dataTable</a></li><li><a href="global.html#eliminarStream">eliminarStream</a></li><li><a href="global.html#extractHandle">extractHandle</a></li><li><a href="global.html#extraerVideoID">extraerVideoID</a></li><li><a href="global.html#formatearFecha">formatearFecha</a></li><li><a href="global.html#formatearHora">formatearHora</a></li><li><a href="global.html#formularioAgregar">formularioAgregar</a></li><li><a href="global.html#formularioEditar">formularioEditar</a></li><li><a href="global.html#generarGrafico">generarGrafico</a></li><li><a href="global.html#generarTabla">generarTabla</a></li><li><a href="global.html#guardarStream">guardarStream</a></li><li><a href="global.html#iniciarMediciones">iniciarMediciones</a></li><li><a href="global.html#medirStreamConTimeout">medirStreamConTimeout</a></li><li><a href="global.html#mostrarAlertaManual">mostrarAlertaManual</a></li><li><a href="global.html#mostrarFormulario">mostrarFormulario</a></li><li><a href="global.html#obtenerChannelIdDesdeURL">obtenerChannelIdDesdeURL</a></li><li><a href="global.html#obtenerDatosYouTube">obtenerDatosYouTube</a></li><li><a href="global.html#obtenerIdCanal">obtenerIdCanal</a></li><li><a href="global.html#obtenerIdDesdeHandle">obtenerIdDesdeHandle</a></li><li><a href="global.html#obtenerIdDesdeUsername">obtenerIdDesdeUsername</a></li><li><a href="global.html#obtenerNombreDesdeURL">obtenerNombreDesdeURL</a></li><li><a href="global.html#sequelize">sequelize</a></li><li><a href="global.html#supervisor">supervisor</a></li><li><a href="global.html#syncDatabase">syncDatabase</a></li><li><a href="global.html#toggleStream">toggleStream</a></li><li><a href="global.html#verStream">verStream</a></li><li><a href="global.html#verStreams">verStreams</a></li></ul>
-</nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Jul 19 2025 13:59:57 GMT-0300 (Argentina Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> on Sun Jul 20 2025 22:04:30 GMT-0300 (Argentina Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    
+    <script src="docs-init.js"></script>
+    
 </body>
 </html>

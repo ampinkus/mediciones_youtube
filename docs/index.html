@@ -1,68 +1,584 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
+    <title>Home - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div id="main">
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
 
-    <h1 class="page-title">Home</h1>
+<label for="nav-trigger" class="overlay"></label>
 
+<nav >
     
-
-
-
+    <input type="text" id="nav-search" placeholder="Search" />
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
     
-
-
-
-
-
-
-
-
-
-</div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="controllers_home.controller%250A%250AEste%2520m%25C3%25B3dulo%2520define%2520el%2520controlador%2520de%2520la%2520p%25C3%25A1gina%2520principal%2520del%2520sistema.%250ASe%2520encarga%2520de%2520renderizar%2520la%2520vista%2520de%2520inicio%2520(_home_index_).module_.html">controllers/home.controller
-
-Este módulo define el controlador de la página principal del sistema.
-Se encarga de renderizar la vista de inicio ('home/index').</a></li><li><a href="module-app.html">app</a></li><li><a href="module-server.html">server</a></li><li><a href="module-utils.html">utils</a></li><li><a href="module-utils_pathHelper.html">utils/pathHelper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#actualizarStream">actualizarStream</a></li><li><a href="global.html#apiKey">apiKey</a></li><li><a href="global.html#autocompletarIdCanal">autocompletarIdCanal</a></li><li><a href="global.html#canalEstaEnVivo">canalEstaEnVivo</a></li><li><a href="global.html#convertirAHoraArgentina">convertirAHoraArgentina</a></li><li><a href="global.html#dataTable">dataTable</a></li><li><a href="global.html#eliminarStream">eliminarStream</a></li><li><a href="global.html#extractHandle">extractHandle</a></li><li><a href="global.html#extraerVideoID">extraerVideoID</a></li><li><a href="global.html#formatearFecha">formatearFecha</a></li><li><a href="global.html#formatearHora">formatearHora</a></li><li><a href="global.html#formularioAgregar">formularioAgregar</a></li><li><a href="global.html#formularioEditar">formularioEditar</a></li><li><a href="global.html#generarGrafico">generarGrafico</a></li><li><a href="global.html#generarTabla">generarTabla</a></li><li><a href="global.html#guardarStream">guardarStream</a></li><li><a href="global.html#iniciarMediciones">iniciarMediciones</a></li><li><a href="global.html#medirStreamConTimeout">medirStreamConTimeout</a></li><li><a href="global.html#mostrarAlertaManual">mostrarAlertaManual</a></li><li><a href="global.html#mostrarFormulario">mostrarFormulario</a></li><li><a href="global.html#obtenerChannelIdDesdeURL">obtenerChannelIdDesdeURL</a></li><li><a href="global.html#obtenerDatosYouTube">obtenerDatosYouTube</a></li><li><a href="global.html#obtenerIdCanal">obtenerIdCanal</a></li><li><a href="global.html#obtenerIdDesdeHandle">obtenerIdDesdeHandle</a></li><li><a href="global.html#obtenerIdDesdeUsername">obtenerIdDesdeUsername</a></li><li><a href="global.html#obtenerNombreDesdeURL">obtenerNombreDesdeURL</a></li><li><a href="global.html#sequelize">sequelize</a></li><li><a href="global.html#supervisor">supervisor</a></li><li><a href="global.html#syncDatabase">syncDatabase</a></li><li><a href="global.html#toggleStream">toggleStream</a></li><li><a href="global.html#verStream">verStream</a></li><li><a href="global.html#verStreams">verStreams</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-app.html">app</a></li><li><a href="module-controllers_graficosYoutubeController.html">controllers/graficosYoutubeController</a><ul class='methods'><li data-type='method'><a href="module-controllers_graficosYoutubeController.html#~generarGrafico">generarGrafico</a></li><li data-type='method'><a href="module-controllers_graficosYoutubeController.html#~mostrarFormulario">mostrarFormulario</a></li></ul></li><li><a href="module-controllers_homecontroller.html">controllers/homecontroller</a><ul class='methods'><li data-type='method'><a href="module-controllers_homecontroller.html#~mostrarHome">mostrarHome</a></li></ul></li><li><a href="module-controllers_utilscontroller.html">controllers/utilscontroller</a><ul class='methods'><li data-type='method'><a href="module-controllers_utilscontroller.html#~extraerVideoID">extraerVideoID</a></li></ul></li><li><a href="module-controllers_youtubecontroller.html">controllers/youtubecontroller</a><ul class='methods'><li data-type='method'><a href="module-controllers_youtubecontroller.html#.actualizarStream">actualizarStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.eliminarStream">eliminarStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.formularioAgregar">formularioAgregar</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.formularioEditar">formularioEditar</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.guardarStream">guardarStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.obtenerNombreDesdeURL">obtenerNombreDesdeURL</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.toggleStream">toggleStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.verStream">verStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.verStreams">verStreams</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#~formatearFecha">formatearFecha</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#~formatearHora">formatearHora</a></li></ul></li><li><a href="module-index.html">index</a><ul class='methods'><li data-type='method'><a href="module-index.html#~startServer">startServer</a></li></ul></li><li><a href="module-utils_pathHelper.html">utils/pathHelper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#apiKey">apiKey</a></li><li><a href="global.html#autocompletarIdCanal">autocompletarIdCanal</a></li><li><a href="global.html#canalEstaEnVivo">canalEstaEnVivo</a></li><li><a href="global.html#convertirAHoraArgentina">convertirAHoraArgentina</a></li><li><a href="global.html#dataTable">dataTable</a></li><li><a href="global.html#extractHandle">extractHandle</a></li><li><a href="global.html#generarTabla">generarTabla</a></li><li><a href="global.html#iniciarMediciones">iniciarMediciones</a></li><li><a href="global.html#medirStreamConTimeout">medirStreamConTimeout</a></li><li><a href="global.html#mostrarAlertaManual">mostrarAlertaManual</a></li><li><a href="global.html#mostrarFormulario">mostrarFormulario</a></li><li><a href="global.html#obtenerChannelIdDesdeURL">obtenerChannelIdDesdeURL</a></li><li><a href="global.html#obtenerDatosYouTube">obtenerDatosYouTube</a></li><li><a href="global.html#obtenerIdCanal">obtenerIdCanal</a></li><li><a href="global.html#obtenerIdDesdeHandle">obtenerIdDesdeHandle</a></li><li><a href="global.html#obtenerIdDesdeUsername">obtenerIdDesdeUsername</a></li><li><a href="global.html#sequelize">sequelize</a></li><li><a href="global.html#supervisor">supervisor</a></li><li><a href="global.html#syncDatabase">syncDatabase</a></li></ul>
+    
 </nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+    <section class="package">
+        <h3> </h3>		
+    </section>
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    <section class="readme usertext">
+        <article><!-- Generated by documentation.js. Update this documentation by updating the source code. -->
+<h3>Table of Contents</h3>
+<ul>
+<li><a href="#app">app</a></li>
+<li><a href="#router">Router</a></li>
+<li><a href="#router-1">Router</a></li>
+<li><a href="#get">get</a></li>
+<li><a href="#get-1">get</a></li>
+<li><a href="#get-2">get</a></li>
+<li><a href="#get-3">get</a></li>
+<li><a href="#get-4">get</a></li>
+<li><a href="#get-5">get</a></li>
+<li><a href="#get-6">get</a></li>
+<li><a href="#get-7">get</a></li>
+<li><a href="#get-8">get</a></li>
+<li><a href="#get-9">get</a></li>
+<li><a href="#mostrarhome">mostrarHome</a>
+<ul>
+<li><a href="#parameters">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#mostrarhome-1">mostrarHome</a>
+<ul>
+<li><a href="#parameters-1">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#mostrarhome-2">mostrarHome</a>
+<ul>
+<li><a href="#parameters-2">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#post">post</a></li>
+<li><a href="#post-1">post</a></li>
+<li><a href="#post-2">post</a></li>
+<li><a href="#post-3">post</a></li>
+<li><a href="#sequelize">sequelize</a></li>
+<li><a href="#sequelize-1">sequelize</a></li>
+<li><a href="#sequelize-2">sequelize</a></li>
+<li><a href="#sequelize-3">sequelize</a></li>
+<li><a href="#formatearfecha">formatearFecha</a>
+<ul>
+<li><a href="#parameters-3">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#formatearhora">formatearHora</a>
+<ul>
+<li><a href="#parameters-4">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#verstreams">verStreams</a>
+<ul>
+<li><a href="#parameters-5">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#formularioagregar">formularioAgregar</a>
+<ul>
+<li><a href="#parameters-6">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#guardarstream">guardarStream</a>
+<ul>
+<li><a href="#parameters-7">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#verstream">verStream</a>
+<ul>
+<li><a href="#parameters-8">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#formularioeditar">formularioEditar</a>
+<ul>
+<li><a href="#parameters-9">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#actualizarstream">actualizarStream</a>
+<ul>
+<li><a href="#parameters-10">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#eliminarstream">eliminarStream</a>
+<ul>
+<li><a href="#parameters-11">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#togglestream">toggleStream</a>
+<ul>
+<li><a href="#parameters-12">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#obtenernombredesdeurl">obtenerNombreDesdeURL</a>
+<ul>
+<li><a href="#parameters-13">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#moment">moment</a></li>
+<li><a href="#moment-1">moment</a></li>
+<li><a href="#mostrarformulario">mostrarFormulario</a>
+<ul>
+<li><a href="#parameters-14">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#mostrarformulario-1">mostrarFormulario</a>
+<ul>
+<li><a href="#parameters-15">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#generartabla">generarTabla</a>
+<ul>
+<li><a href="#parameters-16">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#generargrafico">generarGrafico</a>
+<ul>
+<li><a href="#parameters-17">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#server">server</a></li>
+<li><a href="#startserver">startServer</a></li>
+<li><a href="#convertirahoraargentina">convertirAHoraArgentina</a>
+<ul>
+<li><a href="#parameters-18">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#obtenerdatosyoutube">obtenerDatosYouTube</a>
+<ul>
+<li><a href="#parameters-19">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#supervisor">supervisor</a></li>
+<li><a href="#medirstreamcontimeout">medirStreamConTimeout</a>
+<ul>
+<li><a href="#parameters-20">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#iniciarmediciones">iniciarMediciones</a></li>
+<li><a href="#datatypes">DataTypes</a></li>
+<li><a href="#datatypes-1">DataTypes</a></li>
+<li><a href="#datatypes-2">DataTypes</a></li>
+<li><a href="#extraervideoid">extraerVideoID</a>
+<ul>
+<li><a href="#parameters-21">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#extraervideoid-1">extraerVideoID</a>
+<ul>
+<li><a href="#parameters-22">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#apikey">apiKey</a></li>
+<li><a href="#saludar">saludar</a>
+<ul>
+<li><a href="#parameters-23">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#saludar-1">saludar</a>
+<ul>
+<li><a href="#parameters-24">Parameters</a></li>
+</ul>
+</li>
+<li><a href="#utils">utils</a></li>
+</ul>
+<h2>app</h2>
+<p>Punto de entrada principal de la aplicación Express.
+Configura middlewares, motor de plantillas y rutas.</p>
+<p>Este módulo sirve como bootstrap de todo el sistema:</p>
+<ul>
+<li>Carga rutas principales del sistema.</li>
+<li>Configura el motor de vistas con EJS.</li>
+<li>Sirve archivos estáticos como scripts y estilos desde /public y /modulos.</li>
+</ul>
+<h2>Router</h2>
+<p>Rutas correspondientes a la página principal del sistema.
+Este módulo define la ruta para acceder al Home del sistema.</p>
+<h2>Router</h2>
+<p>Rutas para la gestión de streams de YouTube.
+Incluye funcionalidades para ver, agregar, editar, eliminar y activar streams.</p>
+<h2>get</h2>
+<p>Muestra la página principal del sistema (Home)</p>
+<h2>get</h2>
+<p>Lista todos los streams de YouTube</p>
+<h2>get</h2>
+<p>Muestra el formulario para agregar un nuevo stream</p>
+<h2>get</h2>
+<p>Muestra el detalle de un stream específico</p>
+<h2>get</h2>
+<p>Muestra el formulario para editar un stream</p>
+<h2>get</h2>
+<p>Obtiene automáticamente el nombre del stream a partir de la URL</p>
+<h2>get</h2>
+<p>Muestra el formulario principal de DataTables para YouTube</p>
+<h2>get</h2>
+<p>Devuelve los datos en formato JSON para poblar la tabla de YouTube</p>
+<h2>get</h2>
+<p>Muestra el formulario donde el usuario elige los parámetros del gráfico</p>
+<h2>get</h2>
+<p>Genera el gráfico con los datos filtrados por el usuario</p>
+<h2>mostrarHome</h2>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code>  </li>
+<li><code>res</code>  </li>
+</ul>
+<h2>mostrarHome</h2>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code>  </li>
+<li><code>res</code>  </li>
+</ul>
+<h2>mostrarHome</h2>
+<p>Renderiza la página de inicio.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code> <strong>Express.Request</strong> Objeto de solicitud HTTP de Express.</li>
+<li><code>res</code> <strong>Express.Response</strong> Objeto de respuesta HTTP de Express.</li>
+</ul>
+<p>Returns <strong>void</strong> </p>
+<h2>post</h2>
+<p>Procesa la creación de un nuevo stream</p>
+<h2>post</h2>
+<p>Procesa la actualización de un stream</p>
+<h2>post</h2>
+<p>Elimina un stream por su ID</p>
+<h2>post</h2>
+<p>Activa o desactiva la medición del stream</p>
+<h2>sequelize</h2>
+<h2>sequelize</h2>
+<h2>sequelize</h2>
+<p>graficosYoutube.controller.js</p>
+<p>Este controlador maneja:</p>
+<ul>
+<li>La visualización del formulario para generar gráficos.</li>
+<li>El procesamiento de filtros de fecha, hora y stream para consultas.</li>
+<li>La organización de los datos de medición para ser enviados al gráfico.</li>
+<li>La renderización de gráficos usando los datos agrupados por stream.</li>
+</ul>
+<h2>sequelize</h2>
+<p>✅ Configuración de conexión a la base de datos PostgreSQL.</p>
+<p>Se utiliza para conectar el sistema a la base de datos <code>medicion_redes</code> en el host local.
+Este objeto Sequelize se importa en los modelos y controladores que requieren acceso a la base.</p>
+<p>Type: Sequelize</p>
+<h2>formatearFecha</h2>
+<p>Convierte una fecha en formato ISO (YYYY-MM-DD o completo) a formato DD/MM/YYYY.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>fechaISO</code> <strong>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</strong> Fecha en formato ISO.</li>
+</ul>
+<p>Returns <strong>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)</strong> Fecha formateada en formato DD/MM/YYYY o null si es inválida.</p>
+<h2>formatearHora</h2>
+<p>Formatea una hora quitando los segundos, dejando solo HH:mm.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>horaCompleta</code> <strong>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</strong> Hora en formato HH:mm:ss.</li>
+</ul>
+<p>Returns <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></strong> Hora en formato HH:mm, o cadena vacía si es inválida.</p>
+<h2>verStreams</h2>
+<p>Muestra todos los streams con sus configuraciones asociadas.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code>  </li>
+<li><code>res</code>  </li>
+</ul>
+<h2>formularioAgregar</h2>
+<p>Muestra el formulario para agregar un nuevo stream.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code>  </li>
+<li><code>res</code>  </li>
+</ul>
+<h2>guardarStream</h2>
+<p>Guarda un nuevo stream junto con su configuración. Extrae las horas desde la API de YouTube si es posible.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code>  </li>
+<li><code>res</code>  </li>
+</ul>
+<h2>verStream</h2>
+<p>Muestra los datos detallados de un stream individual.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code>  </li>
+<li><code>res</code>  </li>
+</ul>
+<h2>formularioEditar</h2>
+<p>Muestra el formulario para editar un stream existente.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code>  </li>
+<li><code>res</code>  </li>
+</ul>
+<h2>actualizarStream</h2>
+<p>Actualiza los datos de un stream existente.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code>  </li>
+<li><code>res</code>  </li>
+</ul>
+<h2>eliminarStream</h2>
+<p>Elimina un stream y toda su información relacionada.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code>  </li>
+<li><code>res</code>  </li>
+</ul>
+<h2>toggleStream</h2>
+<p>Cambia el estado de activo/inactivo de un stream.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code>  </li>
+<li><code>res</code>  </li>
+</ul>
+<h2>obtenerNombreDesdeURL</h2>
+<p>Consulta a la API de YouTube para obtener el título del canal y el título del video.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code>  </li>
+<li><code>res</code>  </li>
+</ul>
+<h2>moment</h2>
+<h2>moment</h2>
+<p>datatablesYoutube.controller.js</p>
+<p>Este módulo contiene los controladores para:</p>
+<ul>
+<li>Mostrar el formulario de selección para generar una tabla de mediciones.</li>
+<li>Consultar las mediciones de YouTube desde la base de datos.</li>
+<li>Filtrar por fechas, horas y stream específico.</li>
+<li>Renderizar una tabla con los resultados formateados para visualización.</li>
+</ul>
+<h2>mostrarFormulario</h2>
+<p>Muestra el formulario para seleccionar un stream y fechas/horas para generar una tabla.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code> <strong>Express.Request</strong> Objeto de solicitud HTTP de Express.</li>
+<li><code>res</code> <strong>Express.Response</strong> Objeto de respuesta HTTP de Express.</li>
+</ul>
+<p>Returns <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&lt;void&gt;</strong> </p>
+<h2>mostrarFormulario</h2>
+<p>Muestra el formulario para seleccionar streams, fechas y horas para generar gráficos.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code> <strong>Express.Request</strong> Objeto de solicitud HTTP de Express.</li>
+<li><code>res</code> <strong>Express.Response</strong> Objeto de respuesta HTTP de Express.</li>
+</ul>
+<p>Returns <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&lt;void&gt;</strong> </p>
+<h2>generarTabla</h2>
+<p>Genera y renderiza la tabla de mediciones de YouTube según los filtros ingresados.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code> <strong>Express.Request</strong> Objeto de solicitud HTTP de Express.</li>
+<li><code>res</code> <strong>Express.Response</strong> Objeto de respuesta HTTP de Express.</li>
+</ul>
+<p>Returns <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&lt;void&gt;</strong> </p>
+<h2>generarGrafico</h2>
+<p>Procesa la solicitud del formulario y genera los datos necesarios para los gráficos.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>req</code> <strong>Express.Request</strong> Objeto de solicitud HTTP de Express.</li>
+<li><code>res</code> <strong>Express.Response</strong> Objeto de respuesta HTTP de Express.</li>
+</ul>
+<p>Returns <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&lt;void&gt;</strong> </p>
+<h2>server</h2>
+<p>Archivo principal para levantar el servidor.</p>
+<ul>
+<li>Conecta con la base de datos usando Sequelize.</li>
+<li>Inicia el servidor Express.</li>
+<li>Inicia las tareas programadas (como mediciones periódicas de YouTube).</li>
+</ul>
+<h2>startServer</h2>
+<p>Inicia la aplicación Express y verifica la conexión a la base de datos.</p>
+<p>Returns <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&lt;void&gt;</strong> </p>
+<h2>convertirAHoraArgentina</h2>
+<p>Convierte una hora en formato UTC a la hora local de Argentina (HH:mm:ss).</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>utcString</code> <strong>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)</strong> Hora en formato ISO UTC.</li>
+</ul>
+<p>Returns <strong>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)</strong> Hora convertida a la zona 'America/Argentina/Buenos_Aires'.</p>
+<h2>obtenerDatosYouTube</h2>
+<p>Obtiene y guarda los datos de un stream de YouTube.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>stream</code> <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></strong> Objeto del stream con datos y configuración.</li>
+</ul>
+<h2>supervisor</h2>
+<p>Supervisa e inicia las mediciones para todos los streams activos.</p>
+<h2>medirStreamConTimeout</h2>
+<p>Ejecuta una medición programada para un stream en base a su configuración.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>stream</code> <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></strong> Stream a medir (puede ser parcial, solo requiere <code>id</code>).</li>
+</ul>
+<h2>iniciarMediciones</h2>
+<p>Inicia el proceso de mediciones luego de verificar la conexión a la base de datos.</p>
+<h2>DataTypes</h2>
+<p>Modelo Sequelize: StreamYouTube</p>
+<p>Representa un stream de YouTube a medir.</p>
+<p>✅ Campos definidos:</p>
+<ul>
+<li>nombre_stream: Nombre descriptivo del stream (ej. &quot;Canal XYZ - Video en Vivo&quot;).</li>
+<li>url_stream: Enlace directo al video del stream de YouTube.</li>
+<li>id_canal: ID único del canal de YouTube asociado al stream.</li>
+</ul>
+<p>📌 Relaciones:</p>
+<ul>
+<li>Uno a muchos con MedicionYouTube (un stream puede tener múltiples mediciones).</li>
+</ul>
+<h2>DataTypes</h2>
+<p>Modelo Sequelize: ConfiguracionYouTube</p>
+<p>Define la configuración individual para cada stream de YouTube en el sistema de mediciones.</p>
+<p>✅ Campos definidos:</p>
+<ul>
+<li>streamId: Clave primaria y clave foránea hacia StreamYouTube.</li>
+<li>fecha: Fecha de inicio de la medición.</li>
+<li>fecha_final: Fecha final opcional para finalizar la medición.</li>
+<li>hora_comienzo_medicion: Hora manual de inicio (opcional).</li>
+<li>hora_fin_medicion: Hora manual de finalización (opcional).</li>
+<li>actual_start_time: Hora real de inicio extraída de la API (opcional).</li>
+<li>actual_end_time: Hora real de finalización extraída de la API (opcional).</li>
+<li>intervalo_medicion: Intervalo entre mediciones en minutos (1 a 1440).</li>
+<li>activo: Indica si el stream está activo para medición.</li>
+</ul>
+<p>📌 Relaciones:</p>
+<ul>
+<li>Uno a uno con StreamYouTube mediante streamId.</li>
+</ul>
+<p>Este modelo se utiliza en medicionYoutube.js y otros componentes para controlar los rangos de medición y frecuencia.</p>
+<h2>DataTypes</h2>
+<p>Modelo Sequelize: MedicionYouTube</p>
+<p>Representa una medición puntual de un stream de YouTube.
+Cada registro corresponde a una observación realizada en una fecha y hora específica.</p>
+<p>✅ Campos definidos:</p>
+<ul>
+<li>streamId: ID del stream asociado (clave foránea hacia streams_youtube).</li>
+<li>fecha: Fecha en la que se realizó la medición (YYYY-MM-DD).</li>
+<li>hora_medicion: Hora exacta de la medición (HH:mm:ss).</li>
+<li>suscriptores_canal: Cantidad total de suscriptores del canal en el momento de la medición.</li>
+<li>cantidad_videos_canal: Total de videos en el canal.</li>
+<li>vistas_canal: Cantidad total de vistas del canal.</li>
+<li>view_count: Cantidad de vistas del video en vivo.</li>
+<li>concurrent_viewers: Espectadores concurrentes (si está disponible).</li>
+<li>likes_video: Total de likes del video.</li>
+<li>comentarios_video: Total de comentarios del video.</li>
+</ul>
+<p>📌 Relaciones:</p>
+<ul>
+<li>Muchos a uno con StreamYouTube (por medio de streamId).</li>
+</ul>
+<p>Este modelo se utiliza en <code>medicionYoutube.js</code> para registrar estadísticas durante la transmisión.</p>
+<h2>extraerVideoID</h2>
+<h3>Parameters</h3>
+<ul>
+<li><code>url</code>  </li>
+</ul>
+<h2>extraerVideoID</h2>
+<p>Extrae el ID de un video de YouTube a partir de una URL completa.</p>
+<p>Esta función soporta distintos formatos de URLs de YouTube, incluyendo:</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=VIDEO_ID">https://www.youtube.com/watch?v=VIDEO_ID</a></li>
+<li><a href="https://youtu.be/VIDEO_ID">https://youtu.be/VIDEO_ID</a></li>
+<li><a href="https://www.youtube.com/embed/VIDEO_ID">https://www.youtube.com/embed/VIDEO_ID</a></li>
+<li><a href="https://www.youtube.com/shorts/VIDEO_ID">https://www.youtube.com/shorts/VIDEO_ID</a></li>
+</ul>
+<p>Si no encuentra un ID válido, devuelve la URL original sin espacios.</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>url</code> <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></strong> La URL del video de YouTube.</li>
+</ul>
+<p>Returns <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></strong> El ID del video (11 caracteres) o la URL limpia si no se puede extraer.</p>
+<h2>apiKey</h2>
+<p>Clave de API para acceder a los servicios de YouTube Data API v3.</p>
+<p>Esta clave se utiliza para realizar solicitudes autenticadas a la API
+desde los controladores del sistema, como <code>medicionYoutube.js</code> y <code>youtube.controller.js</code>.</p>
+<p>⚠️ IMPORTANTE: No compartas esta clave públicamente en producción.</p>
+<p>Type: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></p>
+<h2>saludar</h2>
+<h3>Parameters</h3>
+<ul>
+<li><code>nombre</code>  </li>
+</ul>
+<h2>saludar</h2>
+<p>Dice hola</p>
+<h3>Parameters</h3>
+<ul>
+<li><code>nombre</code> <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></strong> El nombre a saludar</li>
+</ul>
+<p>Returns <strong><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></strong> </p>
+<h2>utils</h2>
+<p>Utilidad para obtener la ruta del archivo actual (<code>__filename</code>) y su directorio (<code>__dirname</code>)
+usando <code>import.meta.url</code>, útil para evitar lógica repetida en <code>app.js</code>.</p>
+<p>Este patrón es común en aplicaciones ES Modules para resolver rutas relativas.</p></article>
+    </section>
+
+
+
+
+
+
+    
+    
+</div>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Jul 19 2025 13:59:57 GMT-0300 (Argentina Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> on Sun Jul 20 2025 22:04:30 GMT-0300 (Argentina Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    
+    <script src="docs-init.js"></script>
+    
 </body>
 </html>

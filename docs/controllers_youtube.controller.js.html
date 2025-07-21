@@ -1,23 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="utf-8">
-    <title>JSDoc: Source: controllers/youtube.controller.js</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
+    <title>controllers/youtube.controller.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div id="main">
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
 
-    <h1 class="page-title">Source: controllers/youtube.controller.js</h1>
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-app.html">app</a></li><li><a href="module-controllers_graficosYoutubeController.html">controllers/graficosYoutubeController</a><ul class='methods'><li data-type='method'><a href="module-controllers_graficosYoutubeController.html#~generarGrafico">generarGrafico</a></li><li data-type='method'><a href="module-controllers_graficosYoutubeController.html#~mostrarFormulario">mostrarFormulario</a></li></ul></li><li><a href="module-controllers_homecontroller.html">controllers/homecontroller</a><ul class='methods'><li data-type='method'><a href="module-controllers_homecontroller.html#~mostrarHome">mostrarHome</a></li></ul></li><li><a href="module-controllers_utilscontroller.html">controllers/utilscontroller</a><ul class='methods'><li data-type='method'><a href="module-controllers_utilscontroller.html#~extraerVideoID">extraerVideoID</a></li></ul></li><li><a href="module-controllers_youtubecontroller.html">controllers/youtubecontroller</a><ul class='methods'><li data-type='method'><a href="module-controllers_youtubecontroller.html#.actualizarStream">actualizarStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.eliminarStream">eliminarStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.formularioAgregar">formularioAgregar</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.formularioEditar">formularioEditar</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.guardarStream">guardarStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.obtenerNombreDesdeURL">obtenerNombreDesdeURL</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.toggleStream">toggleStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.verStream">verStream</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#.verStreams">verStreams</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#~formatearFecha">formatearFecha</a></li><li data-type='method'><a href="module-controllers_youtubecontroller.html#~formatearHora">formatearHora</a></li></ul></li><li><a href="module-index.html">index</a><ul class='methods'><li data-type='method'><a href="module-index.html#~startServer">startServer</a></li></ul></li><li><a href="module-utils_pathHelper.html">utils/pathHelper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#apiKey">apiKey</a></li><li><a href="global.html#autocompletarIdCanal">autocompletarIdCanal</a></li><li><a href="global.html#canalEstaEnVivo">canalEstaEnVivo</a></li><li><a href="global.html#convertirAHoraArgentina">convertirAHoraArgentina</a></li><li><a href="global.html#dataTable">dataTable</a></li><li><a href="global.html#extractHandle">extractHandle</a></li><li><a href="global.html#generarTabla">generarTabla</a></li><li><a href="global.html#iniciarMediciones">iniciarMediciones</a></li><li><a href="global.html#medirStreamConTimeout">medirStreamConTimeout</a></li><li><a href="global.html#mostrarAlertaManual">mostrarAlertaManual</a></li><li><a href="global.html#mostrarFormulario">mostrarFormulario</a></li><li><a href="global.html#obtenerChannelIdDesdeURL">obtenerChannelIdDesdeURL</a></li><li><a href="global.html#obtenerDatosYouTube">obtenerDatosYouTube</a></li><li><a href="global.html#obtenerIdCanal">obtenerIdCanal</a></li><li><a href="global.html#obtenerIdDesdeHandle">obtenerIdDesdeHandle</a></li><li><a href="global.html#obtenerIdDesdeUsername">obtenerIdDesdeUsername</a></li><li><a href="global.html#sequelize">sequelize</a></li><li><a href="global.html#supervisor">supervisor</a></li><li><a href="global.html#syncDatabase">syncDatabase</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">controllers/youtube.controller.js</h1>
+    
 
     
 
@@ -27,9 +48,8 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * youtube.controller.js
- *
- * Controlador principal del módulo de YouTube.
+ * @module controllers/youtubecontroller
+ * @description Controlador principal del módulo de YouTube.
  * Gestiona:
  * - Alta, modificación, visualización y eliminación de streams.
  * - Consulta de datos desde la API de YouTube.
@@ -48,9 +68,10 @@ import { extraerVideoID } from "./utils.controller.js";
 import { apiKey } from "../config/youtube.config.js";
 
 /**
- * Convierte una fecha en formato ISO (YYYY-MM-DD o completo) a DD/MM/YYYY.
- * @param {string|null|undefined} fechaISO
- * @returns {string|null}
+ * Convierte una fecha en formato ISO (YYYY-MM-DD o completo) a formato DD/MM/YYYY.
+ * 
+ * @param {string|null|undefined} fechaISO - Fecha en formato ISO.
+ * @returns {string|null} Fecha formateada en formato DD/MM/YYYY o null si es inválida.
  */
 function formatearFecha(fechaISO) {
   if (!fechaISO) return null;
@@ -62,9 +83,10 @@ function formatearFecha(fechaISO) {
 }
 
 /**
- * Formatea la hora quitando los segundos (HH:mm).
- * @param {string|null|undefined} horaCompleta
- * @returns {string}
+ * Formatea una hora quitando los segundos, dejando solo HH:mm.
+ * 
+ * @param {string|null|undefined} horaCompleta - Hora en formato HH:mm:ss.
+ * @returns {string} Hora en formato HH:mm, o cadena vacía si es inválida.
  */
 function formatearHora(horaCompleta) {
   if (!horaCompleta) return "";
@@ -74,7 +96,12 @@ function formatearHora(horaCompleta) {
 
 /**
  * Muestra todos los streams con sus configuraciones asociadas.
- * @route GET /youtube
+ * 
+ * @async
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ * @returns {Promise&lt;void>}
  */
 export const verStreams = async (req, res) => {
   try {
@@ -106,7 +133,10 @@ export const verStreams = async (req, res) => {
 
 /**
  * Muestra el formulario para agregar un nuevo stream.
- * @route GET /youtube/agregar
+ * 
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
  */
 export const formularioAgregar = (req, res) => {
   const hoy = new Date();
@@ -123,8 +153,13 @@ export const formularioAgregar = (req, res) => {
 };
 
 /**
- * Guarda un nuevo stream junto con su configuración. Extrae horas desde la API si es posible.
- * @route POST /youtube/guardar
+ * Guarda un nuevo stream junto con su configuración.
+ * 
+ * @async
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ * @returns {Promise&lt;void>}
  */
 export const guardarStream = async (req, res) => {
   try {
@@ -205,7 +240,12 @@ export const guardarStream = async (req, res) => {
 
 /**
  * Muestra los datos detallados de un stream individual.
- * @route GET /youtube/ver/:id
+ * 
+ * @async
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ * @returns {Promise&lt;void>}
  */
 export const verStream = async (req, res) => {
   const { id } = req.params;
@@ -236,7 +276,12 @@ export const verStream = async (req, res) => {
 
 /**
  * Muestra el formulario para editar un stream existente.
- * @route GET /youtube/editar/:id
+ * 
+ * @async
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ * @returns {Promise&lt;void>}
  */
 export const formularioEditar = async (req, res) => {
   try {
@@ -266,52 +311,53 @@ export const formularioEditar = async (req, res) => {
   }
 };
 
+
 /**
- * Actualiza los datos de un stream.
- * @route POST /youtube/editar/:id
+ * Actualiza los datos de un stream existente y su configuración.
+ * 
+ * @async
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ * @returns {Promise&lt;void>}
  */
 export const actualizarStream = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      nombre,
-      url,
+      nombre_stream,
+      url_stream,
       id_canal,
-      fecha_inicial,
+      fecha,
       fecha_final,
       hora_comienzo_medicion,
       hora_fin_medicion,
       intervalo_medicion,
     } = req.body;
 
-    await StreamYouTube.update(
-      { nombre_stream: nombre, url_stream: url, id_canal },
-      { where: { id } }
-    );
-
-    const fechaInicialDate = moment(fecha_inicial, "DD/MM/YYYY", true).isValid()
-      ? moment(fecha_inicial, "DD/MM/YYYY").toDate()
+    const fechaInicioISO = moment(fecha, "DD/MM/YYYY").isValid()
+      ? moment(fecha, "DD/MM/YYYY").format("YYYY-MM-DD")
       : null;
 
-    const fechaFinalDate = fecha_final &amp;&amp; moment(fecha_final, "DD/MM/YYYY", true).isValid()
-      ? moment(fecha_final, "DD/MM/YYYY").toDate()
+    const fechaFinalISO = fecha_final &amp;&amp; moment(fecha_final, "DD/MM/YYYY").isValid()
+      ? moment(fecha_final, "DD/MM/YYYY").format("YYYY-MM-DD")
       : null;
 
-    if (!fechaInicialDate) {
-      console.error("❌ Fecha inicial inválida");
-      return res.status(400).send("Formato de fecha inválido");
-    }
+    const stream = await StreamYouTube.findByPk(id, {
+      include: ConfiguracionYouTube,
+    });
 
-    await ConfiguracionYouTube.update(
-      {
-        fecha: fechaInicialDate,
-        fecha_final: fechaFinalDate,
-        hora_comienzo_medicion: hora_comienzo_medicion?.trim() || null,
-        hora_fin_medicion: hora_fin_medicion?.trim() || null,
-        intervalo_medicion: intervalo_medicion ? parseInt(intervalo_medicion) : null,
-      },
-      { where: { streamId: id } }
-    );
+    if (!stream) return res.status(404).send("Stream no encontrado.");
+
+    await stream.update({ nombre_stream, url_stream, id_canal });
+
+    await stream.ConfiguracionYouTube.update({
+      fecha: fechaInicioISO,
+      fecha_final: fechaFinalISO,
+      hora_comienzo_medicion,
+      hora_fin_medicion,
+      intervalo_medicion,
+    });
 
     res.redirect("/youtube");
   } catch (error) {
@@ -321,16 +367,29 @@ export const actualizarStream = async (req, res) => {
 };
 
 /**
- * Elimina un stream y toda su información relacionada.
- * @route POST /youtube/eliminar/:id
+ * Elimina un stream y su configuración asociada.
+ * 
+ * @async
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ * @returns {Promise&lt;void>}
  */
 export const eliminarStream = async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
+    const stream = await StreamYouTube.findByPk(id, {
+      include: ConfiguracionYouTube,
+    });
+
+    if (!stream) return res.status(404).send("Stream no encontrado.");
 
     await MedicionYouTube.destroy({ where: { streamId: id } });
-    await ConfiguracionYouTube.destroy({ where: { streamId: id } });
-    await StreamYouTube.destroy({ where: { id } });
+
+    await stream.ConfiguracionYouTube?.destroy();
+
+    await stream.destroy();
 
     res.redirect("/youtube");
   } catch (error) {
@@ -340,60 +399,74 @@ export const eliminarStream = async (req, res) => {
 };
 
 /**
- * Cambia el estado de activo/inactivo de un stream.
- * @route POST /youtube/toggle/:id
+ * Activa o desactiva un stream.
+ * 
+ * @async
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ * @returns {Promise&lt;void>}
  */
 export const toggleStream = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const configuracion = await ConfiguracionYouTube.findOne({ where: { streamId: id } });
+    const stream = await StreamYouTube.findByPk(id, {
+      include: ConfiguracionYouTube,
+    });
 
-    if (!configuracion) {
-      return res.status(404).send("Configuración no encontrada");
-    }
+    if (!stream || !stream.ConfiguracionYouTube)
+      return res.status(404).send("Stream o configuración no encontrada.");
 
-    configuracion.activo = !configuracion.activo;
-    await configuracion.save();
+    const nuevoEstado = !stream.ConfiguracionYouTube.activo;
+
+    await stream.ConfiguracionYouTube.update({ activo: nuevoEstado });
 
     res.redirect("/youtube");
   } catch (error) {
-    console.error("Error al alternar el estado del stream:", error);
+    console.error("Error al cambiar el estado del stream:", error);
     res.status(500).send("Error al cambiar el estado del stream.");
   }
 };
 
 /**
- * Consulta a la API de YouTube para obtener el título del canal y título del video.
- * @route GET /youtube/api/nombreDesdeUrl
+ * Obtiene automáticamente el ID del canal y el título del video desde la API de YouTube.
+ * 
+ * @async
+ * @function
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ * @returns {Promise&lt;void>}
  */
 export const obtenerNombreDesdeURL = async (req, res) => {
+  const { url_stream } = req.body;
+
   try {
-    const { url } = req.query;
+    const videoID = extraerVideoID(url_stream);
 
-    if (!url) return res.status(400).json({ error: "Falta la URL" });
-
-    const videoId = extraerVideoID(url);
-
-    if (!videoId || videoId.length !== 11) {
-      return res.status(400).json({ error: "URL inválida de YouTube" });
+    if (!videoID) {
+      return res.status(400).json({ error: "No se pudo extraer el ID del video" });
     }
 
-    const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&amp;id=${videoId}&amp;key=${apiKey}`;
-    const response = await fetch(apiUrl);
+    const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&amp;id=${videoID}&amp;key=${apiKey}`;
+    const response = await fetch(videoUrl);
     const data = await response.json();
 
-    const video = data.items?.[0];
-    if (!video) return res.status(404).json({ error: "Video no encontrado en la API" });
+    if (!data.items?.length) {
+      return res.status(404).json({ error: "Video no encontrado" });
+    }
 
+    const video = data.items[0];
+    const id_canal = video.snippet.channelId;
     const channelTitle = video.snippet.channelTitle;
     const title = video.snippet.title;
 
-    const nombre = `${channelTitle} - ${title}`;
-    return res.json({ nombre });
+    const nombre_stream = `${channelTitle} - ${title}`;
+
+    res.json({ nombre_stream, id_canal });
   } catch (error) {
-    console.error("❌ Error al obtener nombre del video:", error);
-    return res.status(500).json({ error: "Error interno del servidor" });
+    console.error("Error al obtener los datos desde la API de YouTube:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 </code></pre>
@@ -403,22 +476,27 @@ export const obtenerNombreDesdeURL = async (req, res) => {
 
 
 
+    
+    
 </div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="controllers_home.controller%250A%250AEste%2520m%25C3%25B3dulo%2520define%2520el%2520controlador%2520de%2520la%2520p%25C3%25A1gina%2520principal%2520del%2520sistema.%250ASe%2520encarga%2520de%2520renderizar%2520la%2520vista%2520de%2520inicio%2520(_home_index_).module_.html">controllers/home.controller
-
-Este módulo define el controlador de la página principal del sistema.
-Se encarga de renderizar la vista de inicio ('home/index').</a></li><li><a href="module-app.html">app</a></li><li><a href="module-server.html">server</a></li><li><a href="module-utils.html">utils</a></li><li><a href="module-utils_pathHelper.html">utils/pathHelper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#actualizarStream">actualizarStream</a></li><li><a href="global.html#apiKey">apiKey</a></li><li><a href="global.html#autocompletarIdCanal">autocompletarIdCanal</a></li><li><a href="global.html#canalEstaEnVivo">canalEstaEnVivo</a></li><li><a href="global.html#convertirAHoraArgentina">convertirAHoraArgentina</a></li><li><a href="global.html#dataTable">dataTable</a></li><li><a href="global.html#eliminarStream">eliminarStream</a></li><li><a href="global.html#extractHandle">extractHandle</a></li><li><a href="global.html#extraerVideoID">extraerVideoID</a></li><li><a href="global.html#formatearFecha">formatearFecha</a></li><li><a href="global.html#formatearHora">formatearHora</a></li><li><a href="global.html#formularioAgregar">formularioAgregar</a></li><li><a href="global.html#formularioEditar">formularioEditar</a></li><li><a href="global.html#generarGrafico">generarGrafico</a></li><li><a href="global.html#generarTabla">generarTabla</a></li><li><a href="global.html#guardarStream">guardarStream</a></li><li><a href="global.html#iniciarMediciones">iniciarMediciones</a></li><li><a href="global.html#medirStreamConTimeout">medirStreamConTimeout</a></li><li><a href="global.html#mostrarAlertaManual">mostrarAlertaManual</a></li><li><a href="global.html#mostrarFormulario">mostrarFormulario</a></li><li><a href="global.html#obtenerChannelIdDesdeURL">obtenerChannelIdDesdeURL</a></li><li><a href="global.html#obtenerDatosYouTube">obtenerDatosYouTube</a></li><li><a href="global.html#obtenerIdCanal">obtenerIdCanal</a></li><li><a href="global.html#obtenerIdDesdeHandle">obtenerIdDesdeHandle</a></li><li><a href="global.html#obtenerIdDesdeUsername">obtenerIdDesdeUsername</a></li><li><a href="global.html#obtenerNombreDesdeURL">obtenerNombreDesdeURL</a></li><li><a href="global.html#sequelize">sequelize</a></li><li><a href="global.html#supervisor">supervisor</a></li><li><a href="global.html#syncDatabase">syncDatabase</a></li><li><a href="global.html#toggleStream">toggleStream</a></li><li><a href="global.html#verStream">verStream</a></li><li><a href="global.html#verStreams">verStreams</a></li></ul>
-</nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Jul 19 2025 13:59:57 GMT-0300 (Argentina Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> on Sun Jul 20 2025 22:04:30 GMT-0300 (Argentina Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    
+    <script src="docs-init.js"></script>
+    
 </body>
 </html>

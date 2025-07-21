@@ -1,5 +1,4 @@
 /**
- * @file app.js
  * @module app
  * @description Punto de entrada principal de la aplicación Express.
  * Configura middlewares, motor de plantillas y rutas.

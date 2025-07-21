@@ -1,6 +1,5 @@
 /**
- * @file index.js
- * @module server
+ * @module index
  * @description Archivo principal para levantar el servidor.
  *
  * - Conecta con la base de datos usando Sequelize.
