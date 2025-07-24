@@ -111,7 +111,7 @@
         disponibles)
       </label>
     </div>
-   <!--  ✅ Checkbox para elegir los días que se miden los streams-->
+    <!--  ✅ Checkbox para elegir los días que se miden los streams-->
     <div class="mb-3">
       <label class="form-label">Días de medición</label><br />
       <div class="form-check form-check-inline">
@@ -179,7 +179,7 @@
           class="form-check-input"
           type="checkbox"
           name="dias_medicion"
-          value="0"
+          value="7"
           id="domingo"
         />
         <label class="form-check-label" for="domingo">Dom</label>
@@ -195,6 +195,8 @@
 
 <!-- ✅ Script para completar automáticamente el nombre del stream -->
 <script src="../../public/autocompletarNombre.js" defer></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <%- include('../partials/foot.ejs') %>
 
@@ -301,4 +303,24 @@
         }
       }
     });
+  
+  // ✅ Validación para asegurarse de que al menos un día esté seleccionado 
+  document.querySelector("form").addEventListener("submit", function (event) {
+    const checkboxes = document.querySelectorAll('input[name="dias_medicion"]');
+    const alMenosUnoSeleccionado = Array.from(checkboxes).some(
+      (checkbox) => checkbox.checked
+    );
+
+    if (!alMenosUnoSeleccionado) {
+      event.preventDefault(); // Prevenir envío del formulario
+
+      Swal.fire({
+        icon: "warning",
+        title: "Días no seleccionados",
+        text: "Tiene que escoger al menos un día para guardar el stream.",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#836FFF",
+      });
+    }
+  });
 </script>

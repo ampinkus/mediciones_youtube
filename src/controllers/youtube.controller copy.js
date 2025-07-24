@@ -287,6 +287,7 @@ export const guardarStream = async (req, res) => {
  * @returns {Promise<void>}
  */
 
+
 export const verStream = async (req, res) => {
   const { id } = req.params;
 
@@ -446,6 +447,51 @@ const toISO = (raw = "") => {
  *   - **500**: ante error inesperado, responde "Error al actualizar el stream.".
  *
  * @returns {Promise<void>}
+ *
+ * @example
+ * fetch('/youtube/editar/42', {
+ *   method: 'POST',
+ *   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+ *   body: new URLSearchParams({
+ *     nombre_stream: 'Mi nuevo título',
+ *     fecha: '27/07/2025',
+ *     intervalo_medicion: 15,
+ *     dias_medicion: ['1', '3', '5']
+ *   })
+ * });
+ */
+
+/**
+ * Actualiza los datos principales de un stream de YouTube y su configuración de medición.
+ *
+ * @function actualizarStream
+ * @async
+ * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
+ *
+ *   **`req.params`**
+ *   - `id` (string): ID del stream que se desea actualizar.
+ *
+ *   **`req.body`**
+ *   - `nombre_stream` (string): Nombre descriptivo del stream.
+ *   - `url_stream` (string): URL del video en YouTube.
+ *   - `id_canal` (string): ID del canal de YouTube.
+ *   - `fecha` (string): Fecha inicial de medición en formato `DD/MM/YYYY`.
+ *   - `fecha_final` (string): Fecha final de medición en formato `DD/MM/YYYY` (opcional).
+ *   - `hora_comienzo_medicion` (string): Hora HH:mm de inicio diario (opcional).
+ *   - `hora_fin_medicion` (string): Hora HH:mm de fin diario (opcional).
+ *   - `intervalo_medicion` (number|string): Frecuencia en minutos.
+ *   - `dias_medicion` (string|string[]): Días de la semana seleccionados para realizar mediciones.
+ *       Puede ser un string (ej. "1") o un array de strings (ej. ["1", "3", "5"]).
+ *       Cada número representa un día de la semana:
+ *         1 = lunes, 2 = martes, ..., 7 = domingo.
+ *
+ * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
+ *
+ *   - **Éxito (302)**: redirige a `/youtube` después de guardar los cambios.
+ *   - **404**: si no existe el stream, responde "Stream no encontrado.".
+ *   - **500**: ante error inesperado, responde "Error al actualizar el stream.".
+ *
+ * @returns {Promise<void>}
  */
 export const actualizarStream = async (req, res) => {
   try {
@@ -471,11 +517,27 @@ export const actualizarStream = async (req, res) => {
       ? [dias_medicion]
       : [];
 
-    // if (diasSeleccionados.length === 0) {
-    //   return res
-    //     .status(400)
-    //     .send("Debe seleccionar al menos un día para guardar el stream.");
-    // }
+    if (diasSeleccionados.length === 0) {
+      return res.send(`
+        <html>
+          <head>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+          </head>
+          <body>
+            <script>
+              Swal.fire({
+                icon: 'warning',
+                title: 'Días no seleccionados',
+                text: 'Tiene que escoger al menos un día para guardar el stream.',
+                confirmButtonText: 'Aceptar'
+              }).then(() => {
+                window.history.back();
+              });
+            </script>
+          </body>
+        </html>
+      `);
+    }
 
     // ---------------- 3) Formatos ----------------
     const fechaInicioISO = toISO(fecha);
@@ -529,6 +591,7 @@ export const actualizarStream = async (req, res) => {
     return res.status(500).send("Error al actualizar el stream.");
   }
 };
+
 
 /**
  * Elimina un stream y toda la información relacionada (mediciones y configuración).
