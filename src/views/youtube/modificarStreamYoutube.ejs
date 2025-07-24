@@ -102,6 +102,25 @@
           required
         />
       </div>
+      <div class="col-12 mt-3">
+        <label class="form-label">Días de medición</label>
+        <div class="d-flex flex-wrap gap-3">
+          <% const dias = ['1','2','3','4','5','6','7']; %> <% const nombresDias
+          =
+          ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+          %> <% dias.forEach((dia, index) => { %>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="dias_medicion"
+            value="<%= dia %>" id="dia_<%= dia %>" <%=
+            stream.ConfiguracionYouTube.dias_medicion?.split(',').includes(dia)
+            ? 'checked' : '' %> />
+            <label class="form-check-label" for="dia_<%= dia %>">
+              <%= nombresDias[index] %>
+            </label>
+          </div>
+          <% }) %>
+        </div>
+      </div>
     </div>
 
     <div class="d-flex gap-2">

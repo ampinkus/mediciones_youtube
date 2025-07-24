@@ -1,8 +1,8 @@
 /**
  * Modelo Sequelize: ConfiguracionYouTube
- * 
+ *
  * Define la configuración individual para cada stream de YouTube en el sistema de mediciones.
- * 
+ *
  * ✅ Campos definidos:
  * - streamId: Clave primaria y clave foránea hacia StreamYouTube.
  * - fecha: Fecha de inicio de la medición.
@@ -13,12 +13,19 @@
  * - actual_end_time: Hora real de finalización extraída de la API (opcional).
  * - intervalo_medicion: Intervalo entre mediciones en minutos (1 a 1440).
  * - activo: Indica si el stream está activo para medición.
- * 
+ * - dias_medicion: Días de la semana en que se permiten mediciones, como string separado por comas.
+ *   Valores permitidos del 1 (lunes) al 7 (domingo). Ej: '1,3,5' = lunes, miércoles y viernes.
+ *
  * 📌 Relaciones:
  * - Uno a uno con StreamYouTube mediante streamId.
- * 
- * Este modelo se utiliza en medicionYoutube.js y otros componentes para controlar los rangos de medición y frecuencia.
+ *
+ * Este modelo se utiliza en medicionYoutube.js y otros componentes para controlar:
+ * - los rangos de fechas de medición,
+ * - el horario diario permitido,
+ * - los días de la semana válidos,
+ * - y la frecuencia de ejecución.
  */
+
 
 import { DataTypes } from "sequelize";
 import sequelize from "../database/database.js";
@@ -68,6 +75,12 @@ const ConfiguracionYouTube = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
+    },
+    dias_medicion: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment:
+        "Días de la semana separados por coma. Ej: '1,2,3' para Lun-Mar-Mié",
     },
   },
   {

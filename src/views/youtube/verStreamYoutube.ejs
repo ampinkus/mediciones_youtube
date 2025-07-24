@@ -1,38 +1,72 @@
 <!-- verStreamYoutube.ejs -->
-<%- include('../partials/head.ejs') %> 
-<%- include('../partials/homeNav.ejs') %>
+<%- include('../partials/head.ejs') %> <%- include('../partials/homeNav.ejs') %>
 
 <div class="container mt-4">
   <h2>Detalles del Stream de YouTube</h2>
 
   <div class="card mt-4">
     <div class="card-body">
-      <h5 class="card-title"><strong>Nombre:</strong> <%= stream.nombre_stream %></h5>
-      <p class="card-text"><strong>URL:</strong> <a href="<%= stream.url_stream %>" target="_blank"><%= stream.url_stream %></a></p>
-      <p class="card-text"><strong>ID del Canal:</strong> <%= stream.id_canal %></p>
+      <h5 class="card-title">
+        <strong>Nombre:</strong> <%= stream.nombre_stream %>
+      </h5>
+      <p class="card-text">
+        <strong>URL:</strong>
+        <a href="<%= stream.url_stream %>" target="_blank"
+          ><%= stream.url_stream %></a
+        >
+      </p>
+      <p class="card-text">
+        <strong>ID del Canal:</strong> <%= stream.id_canal %>
+      </p>
     </div>
   </div>
 
   <% if (stream.ConfiguracionYouTube) { %>
-    <div class="card mt-4">
-      <div class="card-body">
-        <h5 class="card-title">Configuración de la Medición</h5>
-        <p class="card-text"><strong>Fecha Inicial:</strong> <%= stream.ConfiguracionYouTube.fecha_formateada %></p>
-        <p class="card-text"><strong>Fecha Final:</strong> <%= stream.ConfiguracionYouTube.fecha_final_formateada || "—" %></p>
-        <p class="card-text"><strong>Hora Comienzo:</strong> <%= stream.ConfiguracionYouTube.hora_comienzo_medicion || "—" %></p>
-        <p class="card-text"><strong>Hora Fin:</strong> <%= stream.ConfiguracionYouTube.hora_fin_medicion || "—" %></p>
-        <p class="card-text"><strong>Hora Inicio Stream:</strong> <%= stream.ConfiguracionYouTube.actual_start_time_formateada || "—" %></p>
-        <p class="card-text"><strong>Hora Finalización Stream:</strong> <%= stream.ConfiguracionYouTube.actual_end_time_formateada || "—" %></p>
-        <p class="card-text"><strong>Intervalo de Medición (minutos):</strong> <%= stream.ConfiguracionYouTube.intervalo_medicion %></p>
-        <p class="card-text"><strong>Estado:</strong>
-          <% if (stream.ConfiguracionYouTube.activo) { %>
-            <span class="badge bg-success">Activo</span>
-          <% } else { %>
-            <span class="badge bg-secondary">Inactivo</span>
-          <% } %>
-        </p>
-      </div>
+  <div class="card mt-4">
+    <div class="card-body">
+      <h5 class="card-title">Configuración de la Medición</h5>
+      <p class="card-text">
+        <strong>Fecha Inicial:</strong> <%=
+        stream.ConfiguracionYouTube.fecha_formateada %>
+      </p>
+      <p class="card-text">
+        <strong>Fecha Final:</strong> <%=
+        stream.ConfiguracionYouTube.fecha_final_formateada || "—" %>
+      </p>
+      <p class="card-text">
+        <strong>Hora Comienzo:</strong> <%=
+        stream.ConfiguracionYouTube.hora_comienzo_medicion || "—" %>
+      </p>
+      <p class="card-text">
+        <strong>Hora Fin:</strong> <%=
+        stream.ConfiguracionYouTube.hora_fin_medicion || "—" %>
+      </p>
+      <p class="card-text">
+        <strong>Hora Inicio Stream:</strong> <%=
+        stream.ConfiguracionYouTube.actual_start_time_formateada || "—" %>
+      </p>
+      <p class="card-text">
+        <strong>Hora Finalización Stream:</strong> <%=
+        stream.ConfiguracionYouTube.actual_end_time_formateada || "—" %>
+      </p>
+      <p class="card-text">
+        <strong>Intervalo de Medición (minutos):</strong> <%=
+        stream.ConfiguracionYouTube.intervalo_medicion %>
+      </p>
+      <p class="card-text">
+        <strong>Días de Medición:</strong> <%=
+        stream.ConfiguracionYouTube.dias_medicion_legibles %>
+      </p>
+      <p class="card-text">
+        <strong>Estado:</strong>
+        <% if (stream.ConfiguracionYouTube.activo) { %>
+        <span class="badge bg-success">Activo</span>
+        <% } else { %>
+        <span class="badge bg-secondary">Inactivo</span>
+        <% } %>
+      </p>
     </div>
+  </div>
   <% } %>
 
   <div class="mt-4 d-flex gap-2">

@@ -18,7 +18,6 @@ import fetch from "node-fetch";
 import { extraerVideoID } from "./utils.controller.js";
 import { apiKey } from "../config/youtube.config.js";
 
-
 /**
  * Convierte una fecha en formato ISO (YYYY-MM-DD o completo) a formato DD/MM/YYYY.
  *
@@ -151,11 +150,15 @@ export const formularioAgregar = (req, res) => {
  *     - `hora_comienzo_medicion` (string | null): Hora manual de comienzo **HH:mm** (opcional).
  *     - `hora_fin_medicion`      (string | null): Hora manual de fin **HH:mm** (opcional).
  *     - `intervalo_medicion`     (number): Intervalo entre mediciones, en minutos.
+ *     - `dias_medicion` (string[] | string): Días seleccionados para ejecutar la medición.
+ *         - Puede ser un array (varios días seleccionados) o un string (un solo día).
+ *         - Valores esperados: "0" a "6", donde 0 = Domingo, 1 = Lunes, ..., 6 = Sábado.
  *
  *   ➡ Durante la lógica:
  *     - Se extrae `videoID` para consultar **YouTube Data API** y, si existe,
  *       obtener `actualStartTime` y `actualEndTime` para autocompletar horas.
  *     - Las fechas se validan y convierten a ISO (**YYYY-MM-DD**).
+ *     - Los días seleccionados se guardan como string separado por comas (`"1,2,3"`).
  *
  * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
  *
@@ -177,6 +180,7 @@ export const guardarStream = async (req, res) => {
       hora_comienzo_medicion,
       hora_fin_medicion,
       intervalo_medicion,
+      dias_medicion,
     } = req.body;
 
     const fechaInicioISO = moment(fecha, "DD/MM/YYYY", true).isValid()
@@ -226,6 +230,16 @@ export const guardarStream = async (req, res) => {
       }
     }
 
+    // Procesar los días seleccionados
+    let diasMedicionStr = null;
+    if (dias_medicion) {
+      if (Array.isArray(dias_medicion)) {
+        diasMedicionStr = dias_medicion.join(",");
+      } else if (typeof dias_medicion === "string") {
+        diasMedicionStr = dias_medicion;
+      }
+    }
+
     await ConfiguracionYouTube.create({
       streamId: nuevoStream.id,
       fecha: fechaInicioISO,
@@ -236,6 +250,7 @@ export const guardarStream = async (req, res) => {
       activo: true,
       actual_start_time: actualStart,
       actual_end_time: actualEnd,
+      dias_medicion: diasMedicionStr,
     });
 
     res.redirect("/youtube");
@@ -258,13 +273,20 @@ export const guardarStream = async (req, res) => {
  * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
  *
  *   - **Éxito**: renderiza la vista **`youtube/verStreamYoutube`**
- *     pasando el objeto `{ stream }`.
+ *     pasando el objeto `{ stream }`, que incluye:
+ *       - Datos generales del stream.
+ *       - Datos de configuración (`ConfiguracionYouTube`), incluyendo:
+ *         - Fechas y horas formateadas (inicio/fin manuales y reales).
+ *         - Intervalo de medición.
+ *         - Estado del stream (activo/inactivo).
+ *         - Días de medición (`dias_medicion_legibles`) como texto legible (ej. "Lunes, Miércoles").
  *   - **404**: si no existe el stream, responde con *"Stream no encontrado"*.
  *   - **500**: ante cualquier error inesperado, responde con
  *     *"Error interno del servidor"*.
  *
  * @returns {Promise<void>}
  */
+
 
 export const verStream = async (req, res) => {
   const { id } = req.params;
@@ -284,6 +306,26 @@ export const verStream = async (req, res) => {
       c.hora_fin_medicion = formatearHora(c.hora_fin_medicion);
       c.actual_start_time_formateada = formatearHora(c.actual_start_time);
       c.actual_end_time_formateada = formatearHora(c.actual_end_time);
+
+      // Nuevo: transformar los días de medición a formato legible
+      if (c.dias_medicion) {
+        const diasSemana = [
+          "Lunes",
+          "Martes",
+          "Miércoles",
+          "Jueves",
+          "Viernes",
+          "Sábado",
+          "Domingo",
+        ];
+        c.dias_medicion_legibles = c.dias_medicion
+          .split(",")
+          .map((d) => diasSemana[parseInt(d.trim(), 10) - 1])
+          .filter(Boolean)
+          .join(", ");
+      } else {
+        c.dias_medicion_legibles = "—";
+      }
     }
 
     res.render("youtube/verStreamYoutube", { stream });
@@ -348,8 +390,6 @@ export const formularioEditar = async (req, res) => {
   }
 };
 
-
-
 /**
  * Convierte una fecha ingresada por el usuario a formato ISO `YYYY-MM-DD`.
  *
@@ -358,8 +398,8 @@ export const formularioEditar = async (req, res) => {
  *   - `'DD/MM/YYYY'`
  *   - `'YYYY-MM-DD'`
  *
- * @returns {(string|undefined)}  
- *   - `string` con la fecha formateada si es válida.  
+ * @returns {(string|undefined)}
+ *   - `string` con la fecha formateada si es válida.
  *   - `undefined` si el campo viene vacío o no pasa la validación (el controlador lo interpretará como "no tocar").
  *
  * @example
@@ -368,14 +408,13 @@ export const formularioEditar = async (req, res) => {
  * toISO('');           // undefined
  */
 
-const toISO = (raw = '') => {
+const toISO = (raw = "") => {
   const limpio = raw.trim();
-  if (!limpio) return undefined;                        // usuario lo dejó vacío
+  if (!limpio) return undefined; // usuario lo dejó vacío
 
-  const m = moment(limpio, ['DD/MM/YYYY', 'YYYY-MM-DD'], true); // true ⇒ estricto
-  return m.isValid() ? m.format('YYYY-MM-DD') : undefined;      // undefined ⇒ no tocar
+  const m = moment(limpio, ["DD/MM/YYYY", "YYYY-MM-DD"], true); // true ⇒ estricto
+  return m.isValid() ? m.format("YYYY-MM-DD") : undefined; // undefined ⇒ no tocar
 };
-
 
 /**
  * Actualiza los datos principales de un stream de YouTube y su configuración de medición.
@@ -383,24 +422,28 @@ const toISO = (raw = '') => {
  * @function actualizarStream
  * @async
  * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
- *   
- *   **`req.params`**  
+ *
+ *   **`req.params`**
  *   - `id` (string): ID del stream que se desea actualizar.
- *   
- *   **`req.body`**  
- *   - `nombre_stream` (string): Nombre descriptivo del stream.  
- *   - `url_stream` (string): URL del video en YouTube.  
- *   - `id_canal` (string): ID del canal de YouTube.  
- *   - `fecha` (string): Fecha inicial de medición en formato `DD/MM/YYYY`.  
- *   - `fecha_final` (string): Fecha final de medición en formato `DD/MM/YYYY` (opcional).  
- *   - `hora_comienzo_medicion` (string): Hora HH:mm de inicio diario (opcional).  
- *   - `hora_fin_medicion` (string): Hora HH:mm de fin diario (opcional).  
+ *
+ *   **`req.body`**
+ *   - `nombre_stream` (string): Nombre descriptivo del stream.
+ *   - `url_stream` (string): URL del video en YouTube.
+ *   - `id_canal` (string): ID del canal de YouTube.
+ *   - `fecha` (string): Fecha inicial de medición en formato `DD/MM/YYYY`.
+ *   - `fecha_final` (string): Fecha final de medición en formato `DD/MM/YYYY` (opcional).
+ *   - `hora_comienzo_medicion` (string): Hora HH:mm de inicio diario (opcional).
+ *   - `hora_fin_medicion` (string): Hora HH:mm de fin diario (opcional).
  *   - `intervalo_medicion` (number|string): Frecuencia en minutos.
+ *   - `dias_medicion` (string|string[]): Días de la semana seleccionados para realizar mediciones.
+ *       Puede ser un string (ej. "1") o un array de strings (ej. ["1", "3", "5"]).
+ *       Cada número representa un día de la semana:
+ *         1 = lunes, 2 = martes, ..., 7 = domingo.
  *
  * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
- *   
- *   - **Éxito (302)**: redirige a `/youtube` después de guardar los cambios.  
- *   - **404**: si no existe el stream, responde "Stream no encontrado.".  
+ *
+ *   - **Éxito (302)**: redirige a `/youtube` después de guardar los cambios.
+ *   - **404**: si no existe el stream, responde "Stream no encontrado.".
  *   - **500**: ante error inesperado, responde "Error al actualizar el stream.".
  *
  * @returns {Promise<void>}
@@ -412,63 +455,85 @@ const toISO = (raw = '') => {
  *   body: new URLSearchParams({
  *     nombre_stream: 'Mi nuevo título',
  *     fecha: '27/07/2025',
- *     intervalo_medicion: 15
+ *     intervalo_medicion: 15,
+ *     dias_medicion: ['1', '3', '5']
  *   })
  * });
  */
+
 export const actualizarStream = async (req, res) => {
   try {
     const { id } = req.params;
 
     // ---------------- 1) Entradas ----------------
     const {
-      nombre_stream            = '',
-      url_stream               = '',
-      id_canal                 = '',
-      fecha                    = '',
-      fecha_final              = '',
-      hora_comienzo_medicion   = '',
-      hora_fin_medicion        = '',
-      intervalo_medicion       = ''
+      nombre_stream = "",
+      url_stream = "",
+      id_canal = "",
+      fecha = "",
+      fecha_final = "",
+      hora_comienzo_medicion = "",
+      hora_fin_medicion = "",
+      intervalo_medicion = "",
+      dias_medicion = [],
     } = req.body;
 
     // ---------------- 2) Formatos ----------------
     const fechaInicioISO = toISO(fecha);
-    const fechaFinalISO  = toISO(fecha_final);
+    const fechaFinalISO = toISO(fecha_final);
 
     const intervaloParsed =
-      intervalo_medicion && Number.isFinite(+intervalo_medicion) && +intervalo_medicion > 0
+      intervalo_medicion &&
+      Number.isFinite(+intervalo_medicion) &&
+      +intervalo_medicion > 0
         ? parseInt(intervalo_medicion, 10)
         : undefined;
 
+    // 🔄 Dias de medición (puede venir como string o array)
+    let diasMedicionFinal = "";
+    if (Array.isArray(dias_medicion)) {
+      diasMedicionFinal = dias_medicion.join(",");
+    } else if (typeof dias_medicion === "string" && dias_medicion.trim() !== "") {
+      diasMedicionFinal = dias_medicion;
+    }
+
     // ---------------- 3) Cargar modelos ----------------
-    const stream = await StreamYouTube.findByPk(id, { include: ConfiguracionYouTube });
-    if (!stream) return res.status(404).send('Stream no encontrado.');
+    const stream = await StreamYouTube.findByPk(id, {
+      include: ConfiguracionYouTube,
+    });
+    if (!stream) return res.status(404).send("Stream no encontrado.");
 
     // ---------------- 4) Objetos de actualización ----------------
     const streamUpdates = {};
-    if (nombre_stream.trim()) streamUpdates.nombre_stream = nombre_stream.trim();
-    if (url_stream.trim())    streamUpdates.url_stream   = url_stream.trim();
-    if (id_canal.trim())      streamUpdates.id_canal     = id_canal.trim();
+    if (nombre_stream.trim())
+      streamUpdates.nombre_stream = nombre_stream.trim();
+    if (url_stream.trim()) streamUpdates.url_stream = url_stream.trim();
+    if (id_canal.trim()) streamUpdates.id_canal = id_canal.trim();
 
     const cfgUpdates = {};
-    if (fechaInicioISO !== undefined)   cfgUpdates.fecha        = fechaInicioISO;
-    if (fechaFinalISO  !== undefined)   cfgUpdates.fecha_final  = fechaFinalISO;
-    if (hora_comienzo_medicion.trim())  cfgUpdates.hora_comienzo_medicion = hora_comienzo_medicion.trim();
-    if (hora_fin_medicion.trim())       cfgUpdates.hora_fin_medicion      = hora_fin_medicion.trim();
-    if (intervaloParsed !== undefined)  cfgUpdates.intervalo_medicion     = intervaloParsed;
+    if (fechaInicioISO !== undefined) cfgUpdates.fecha = fechaInicioISO;
+    if (fechaFinalISO !== undefined) cfgUpdates.fecha_final = fechaFinalISO;
+    if (hora_comienzo_medicion.trim())
+      cfgUpdates.hora_comienzo_medicion = hora_comienzo_medicion.trim();
+    if (hora_fin_medicion.trim())
+      cfgUpdates.hora_fin_medicion = hora_fin_medicion.trim();
+    if (intervaloParsed !== undefined)
+      cfgUpdates.intervalo_medicion = intervaloParsed;
+    if (diasMedicionFinal !== "") cfgUpdates.dias_medicion = diasMedicionFinal;
 
     // ---------------- 5) Guardar sólo si hay cambios ----------------
     const tareas = [];
-    if (Object.keys(streamUpdates).length) tareas.push(stream.update(streamUpdates));
-    if (Object.keys(cfgUpdates).length)    tareas.push(stream.ConfiguracionYouTube.update(cfgUpdates));
+    if (Object.keys(streamUpdates).length)
+      tareas.push(stream.update(streamUpdates));
+    if (Object.keys(cfgUpdates).length)
+      tareas.push(stream.ConfiguracionYouTube.update(cfgUpdates));
     await Promise.all(tareas);
 
     // ---------------- 6) Redirigir ----------------
-    return res.redirect('/youtube');
+    return res.redirect("/youtube");
   } catch (err) {
-    console.error('Error al actualizar el stream:', err);
-    return res.status(500).send('Error al actualizar el stream.');
+    console.error("Error al actualizar el stream:", err);
+    return res.status(500).send("Error al actualizar el stream.");
   }
 };
 
@@ -479,14 +544,14 @@ export const actualizarStream = async (req, res) => {
  * @async
  * @param {Express.Request} req - Objeto de solicitud HTTP de Express.
  *
- *   Contiene los siguientes parámetros en **`req.params`**  
+ *   Contiene los siguientes parámetros en **`req.params`**
  *   (provenientes de la ruta `DELETE /youtube/:id` o similar):
  *     - `id` (string): ID numérico del stream que se desea eliminar.
  *
  * @param {Express.Response} res - Objeto de respuesta HTTP de Express.
  *
- *   - **Éxito (302)**: redirige a **`/youtube`** después de eliminar el stream.  
- *   - **404**: si el stream no existe, responde con *“Stream no encontrado.”*.  
+ *   - **Éxito (302)**: redirige a **`/youtube`** después de eliminar el stream.
+ *   - **404**: si el stream no existe, responde con *“Stream no encontrado.”*.
  *   - **500**: ante un error inesperado, responde con *“Error al eliminar el stream.”*.
  *
  * @returns {Promise<void>}
@@ -565,30 +630,32 @@ export const obtenerNombreDesdeURL = async (req, res) => {
   const url = req.query.url || req.body?.url_stream;
 
   if (!url) {
-    return res.status(400).json({ error: 'URL no proporcionada' });
+    return res.status(400).json({ error: "URL no proporcionada" });
   }
 
   try {
     const videoID = extraerVideoID(url);
     if (!videoID) {
-      return res.status(400).json({ error: 'No se pudo extraer el ID del video' });
+      return res
+        .status(400)
+        .json({ error: "No se pudo extraer el ID del video" });
     }
 
     const apiURL = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoID}&key=${apiKey}`;
     const respuesta = await fetch(apiURL);
-    const datos     = await respuesta.json();
+    const datos = await respuesta.json();
 
     if (!datos.items?.length) {
-      return res.status(404).json({ error: 'Video no encontrado' });
+      return res.status(404).json({ error: "Video no encontrado" });
     }
 
     const v = datos.items[0];
     const nombre_stream = `${v.snippet.channelTitle} - ${v.snippet.title}`;
-    const id_canal      = v.snippet.channelId;
+    const id_canal = v.snippet.channelId;
 
     return res.json({ nombre_stream, id_canal });
   } catch (err) {
-    console.error('Error al consultar YouTube:', err);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    console.error("Error al consultar YouTube:", err);
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 };

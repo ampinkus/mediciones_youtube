@@ -24,6 +24,18 @@ function convertirAHoraArgentina(utcString) {
 }
 
 /**
+ * Verifica si hoy es uno de los días permitidos para realizar la medición.
+ * @param {string|null} diasMedicion - Cadena con los días permitidos separados por coma (1 = lunes, 7 = domingo).
+ * @returns {boolean} - true si hoy está incluido o si no hay restricción; false si no debe medir hoy.
+ */
+function esDiaPermitido(diasMedicion) {
+  if (!diasMedicion) return true; // si está vacío, no hay restricción
+  const dias = diasMedicion.split(',').map(d => parseInt(d.trim(), 10));
+  const diaHoy = DateTime.now().setZone("America/Argentina/Buenos_Aires").weekday; // 1 = lunes, 7 = domingo
+  return dias.includes(diaHoy);
+}
+
+/**
  * Obtiene y guarda los datos de un stream de YouTube.
  * @param {object} stream - Objeto del stream con datos y configuración.
  */
@@ -169,14 +181,21 @@ async function medirStreamConTimeout(stream) {
       activo,
       fecha,
       fecha_final,
+      dias_medicion // nuevo campo considerado
     } = config;
 
     const usarHoraStream = config.usar_hora_stream === true;
 
     const ahora = new Date();
-    const hoy = DateTime.now()
-      .setZone("America/Argentina/Buenos_Aires")
-      .toISODate();
+    const hoy = DateTime.now().setZone("America/Argentina/Buenos_Aires").toISODate();
+
+    if (!esDiaPermitido(dias_medicion)) {
+      console.log(`📆 Hoy no es un día habilitado para medición de ${streamActualizado.nombre_stream}`);
+      return setTimeout(
+        () => medirStreamConTimeout({ id: streamActualizado.id }),
+        120 * 1000
+      );
+    }
 
     if (hoy < fecha || (fecha_final && hoy > fecha_final)) {
       console.log(
