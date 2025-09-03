@@ -1,7 +1,5 @@
-// src/config/youtube.config.js
-/* 
-Se usa en medicionYoutube.js, youtube.controller.js
-*/
+import dotenv from "dotenv";
+dotenv.config();
 
 /**
  * Clave de API para acceder a los servicios de YouTube Data API v3.
@@ -13,4 +11,5 @@ Se usa en medicionYoutube.js, youtube.controller.js
  *
  * @constant {string}
  */
-export const apiKey = "AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0";
+export const apiKey = process.env.YOUTUBE_API_KEY;
+

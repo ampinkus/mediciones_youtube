@@ -46,7 +46,7 @@
 </div>
 
 <script>
-  var apiKey = "AIzaSyDIgZET6RXzONn3Mx8odAFXQYYqBeBbBu0"; // Insert your YouTube Data API v3 Key here.
+  var apiKey = ""; // Insert your YouTube Data API v3 Key here.
 
   function channel() {
     const channelID = document.querySelector("#channelID").value.trim();
